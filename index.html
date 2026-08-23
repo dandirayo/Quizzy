@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizzy — Kenali Dirimu</title>
+<style>
+:root{
+  --bg:#0f0f1a;
+  --card:#1a1a2e;
+  --card2:#20203a;
+  --text:#f0f0f5;
+  --muted:#9a9ab0;
+  --border:#2d2d47;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  padding:48px 20px;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.22;
+  z-index:0;
+  pointer-events:none;
+}
+body::before{width:320px;height:320px;background:#7c3aed;top:-100px;left:-100px;}
+body::after{width:300px;height:300px;background:#ec4899;bottom:-100px;right:-100px;}
+.wrap{max-width:880px;margin:0 auto;position:relative;z-index:1;}
+header{text-align:center;margin-bottom:48px;}
+
+.hero{position:relative;display:flex;align-items:center;justify-content:center;height:250px;margin-bottom:4px;}
+.hero-glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.4;pointer-events:none;}
+.hero-glow.g1{width:220px;height:220px;background:#7c3aed;top:10px;left:calc(50% - 180px);}
+.hero-glow.g2{width:190px;height:190px;background:#ec4899;top:30px;left:calc(50% + 30px);}
+.hero-svg{position:relative;z-index:1;width:100%;max-width:360px;height:auto;}
+.node{transform-box:fill-box;transform-origin:center;animation:nodePulse 3s ease-in-out infinite;}
+@keyframes nodePulse{0%,100%{opacity:.65;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}
+h1{
+  font-size:32px;
+  background:linear-gradient(90deg,#7c3aed,#ec4899);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:10px;
+}
+.subtitle{color:var(--muted);font-size:15px;max-width:480px;margin:0 auto;line-height:1.6;}
+
+.profile-section{margin-bottom:32px;}
+.profile-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px 26px;
+}
+.profile-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;}
+.profile-header h2{font-size:16px;}
+.profile-reset{
+  background:none;border:none;color:var(--muted);font-size:11.5px;cursor:pointer;text-decoration:underline;
+  white-space:nowrap;
+}
+.profile-reset:hover{color:#ef4444;}
+.profile-badges{display:flex;gap:12px;flex-wrap:wrap;}
+.profile-badge{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px 16px;
+  text-decoration:none;
+  color:var(--text);
+  transition:transform .15s ease, border-color .15s ease;
+  flex:1;
+  min-width:180px;
+}
+.profile-badge:hover{transform:translateY(-3px);border-color:var(--accent2);}
+.pb-emoji{font-size:26px;}
+.pb-text strong{font-size:14px;display:block;}
+.pb-text small{color:var(--muted);font-size:11.5px;}
+.badge-empty{
+  justify-content:center;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
+  border-style:dashed;
+}
+.profile-hint{font-size:11px;color:var(--muted);margin-top:14px;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+  margin-bottom:40px;
+}
+.quiz-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:26px;
+  text-decoration:none;
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  position:relative;
+  overflow:hidden;
+}
+.quiz-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(0,0,0,0.35);
+}
+.quiz-card .accent-bar{
+  position:absolute;top:0;left:0;right:0;height:4px;
+}
+.card-mbti .accent-bar{background:linear-gradient(90deg,#7c3aed,#a855f7);}
+.card-attach .accent-bar{background:linear-gradient(90deg,#ec4899,#f472b6);}
+.card-soon .accent-bar{background:linear-gradient(90deg,#4b5563,#6b7280);}
+
+.card-emoji{font-size:38px;}
+.card-title{font-size:19px;font-weight:700;}
+.card-desc{font-size:13.5px;color:var(--muted);line-height:1.6;flex:1;}
+.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.tag{
+  font-size:10.5px;
+  padding:4px 10px;
+  border-radius:20px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--muted);
+  font-weight:600;
+}
+.card-mbti .tag.highlight{color:#a855f7;border-color:#a855f7;background:rgba(168,85,247,0.1);}
+.card-attach .tag.highlight{color:#f472b6;border-color:#f472b6;background:rgba(244,114,182,0.1);}
+
+.card-cta{
+  font-size:13px;font-weight:700;margin-top:8px;
+  display:flex;align-items:center;gap:6px;
+}
+.card-mbti .card-cta{color:#a855f7;}
+.card-attach .card-cta{color:#f472b6;}
+
+.quiz-card.disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.7;}
+footer a{color:var(--muted);}
+
+@media(max-width:480px){
+  .hero{height:190px;}
+  .hero-svg{max-width:280px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hero">
+      <div class="hero-glow g1"></div>
+      <div class="hero-glow g2"></div>
+      <svg class="hero-svg" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="brainGrad" x1="120" y1="70" x2="360" y2="270" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#ec4899"/>
+          </linearGradient>
+        </defs>
+        <!-- brain blob: overlapping same-fill circles merge into one seamless silhouette -->
+        <g fill="url(#brainGrad)">
+          <circle cx="170" cy="130" r="58"/>
+          <circle cx="215" cy="100" r="50"/>
+          <circle cx="165" cy="195" r="50"/>
+          <circle cx="220" cy="205" r="46"/>
+          <circle cx="310" cy="130" r="58"/>
+          <circle cx="265" cy="100" r="50"/>
+          <circle cx="315" cy="195" r="50"/>
+          <circle cx="260" cy="205" r="46"/>
+          <circle cx="240" cy="225" r="42"/>
+          <circle cx="200" cy="240" r="28"/>
+          <circle cx="280" cy="240" r="28"/>
+        </g>
+        <!-- grooves carved in page-background color -->
+        <g fill="none" stroke="#0f0f1a" stroke-width="4" stroke-linecap="round" opacity="0.9">
+          <path d="M240,85 C230,120 250,140 238,170 C228,195 248,205 240,250"/>
+        </g>
+        <g fill="none" stroke="#0f0f1a" stroke-width="2.5" stroke-linecap="round" opacity="0.8">
+          <path d="M180,110 C195,105 200,120 190,130"/>
+          <path d="M165,160 C180,155 185,170 172,178"/>
+          <path d="M300,110 C285,105 280,120 290,130"/>
+          <path d="M315,160 C300,155 295,170 308,178"/>
+        </g>
+        <!-- constellation connectors -->
+        <g stroke="#f0f0f5" stroke-width="1" opacity="0.22">
+          <line x1="240" y1="55" x2="200" y2="75"/>
+          <line x1="240" y1="55" x2="280" y2="75"/>
+          <line x1="200" y1="75" x2="140" y2="135"/>
+          <line x1="280" y1="75" x2="340" y2="135"/>
+          <line x1="140" y1="135" x2="170" y2="215"/>
+          <line x1="340" y1="135" x2="310" y2="215"/>
+          <line x1="170" y1="215" x2="240" y2="255"/>
+          <line x1="310" y1="215" x2="240" y2="255"/>
+          <line x1="140" y1="135" x2="105" y2="175"/>
+          <line x1="340" y1="135" x2="375" y2="175"/>
+        </g>
+        <!-- network nodes representing the different quiz dimensions -->
+        <g>
+          <circle class="node" cx="240" cy="55" r="5" fill="#a855f7" style="animation-delay:0s"/>
+          <circle class="node" cx="200" cy="75" r="4" fill="#22c55e" style="animation-delay:.3s"/>
+          <circle class="node" cx="280" cy="75" r="4" fill="#ef4444" style="animation-delay:.6s"/>
+          <circle class="node" cx="140" cy="135" r="5" fill="#3b82f6" style="animation-delay:.9s"/>
+          <circle class="node" cx="340" cy="135" r="5" fill="#eab308" style="animation-delay:1.2s"/>
+          <circle class="node" cx="170" cy="215" r="4" fill="#ec4899" style="animation-delay:1.5s"/>
+          <circle class="node" cx="310" cy="215" r="4" fill="#a855f7" style="animation-delay:1.8s"/>
+          <circle class="node" cx="240" cy="255" r="5" fill="#3b82f6" style="animation-delay:2.1s"/>
+          <circle class="node" cx="105" cy="175" r="3" fill="#22c55e" style="animation-delay:2.4s"/>
+          <circle class="node" cx="375" cy="175" r="3" fill="#ef4444" style="animation-delay:2.7s"/>
+        </g>
+      </svg>
+    </div>
+    <h1>Quizzy</h1>
+    <p class="subtitle">Kumpulan kuis kepribadian berbasis kerangka psikologi yang diakui, buat kenal diri sendiri (dan orang lain) lebih dalam.</p>
+  </header>
+
+  <section class="profile-section" id="profileSection" style="display:none;">
+    <div class="profile-card">
+      <div class="profile-header">
+        <h2>✨ Profil Kamu</h2>
+        <button class="profile-reset" onclick="resetProfile()">Hapus data</button>
+      </div>
+      <div class="profile-badges" id="profileBadges"></div>
+      <p class="profile-hint">Hasil disimpan otomatis di browser ini aja (tidak dikirim ke server mana pun).</p>
+    </div>
+  </section>
+
+  <div class="grid">
+    <a class="quiz-card card-mbti" href="mbti-quiz.html">
+      <div class="accent-bar"></div>
+      <div class="card-emoji">🧠</div>
+      <div class="card-title">Tes Kepribadian MBTI</div>
+      <p class="card-desc">28 pertanyaan untuk menemukan salah satu dari 16 tipe kepribadian: dari INFJ sampai ESTP.</p>
+      <div class="card-tags">
+        <span class="tag highlight">16 Tipe</span>
+        <span class="tag">28 Soal</span>
+        <span class="tag">~5 Menit</span>
+      </div>
+      <div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-attach" href="attachment-style-quiz.html">
+      <div class="accent-bar"></div>
+      <div class="card-emoji">🔗</div>
+      <div class="card-title">Tes Attachment Style</div>
+      <p class="card-desc">Kenali pola kelekatanmu dalam hubungan — Secure, Anxious, Avoidant, atau Fearful — berdasarkan teori attachment.</p>
+      <div class="card-tags">
+        <span class="tag highlight">4 Gaya</span>
+        <span class="tag">24 Soal</span>
+        <span class="tag">~5 Menit</span>
+      </div>
+      <div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <div class="quiz-card card-soon disabled">
+      <div class="accent-bar"></div>
+      <div class="card-emoji">🌿</div>
+      <div class="card-title">Big Five (OCEAN)</div>
+      <p class="card-desc">Model kepribadian paling divalidasi secara ilmiah di psikologi akademis. Segera hadir.</p>
+      <div class="card-tags"><span class="tag">Coming Soon</span></div>
+      <div class="card-cta" style="color:var(--muted);">Segera hadir</div>
+    </div>
+  </div>
+
+  <footer>
+    Hasil kuis di situs ini bersifat edukatif &amp; reflektif, bukan alat diagnosis klinis.<br>
+    Dikembangkan berdasarkan kerangka teori psikologi yang diakui secara umum.
+  </footer>
+</div>
+
+<script>
+function loadProfile(){
+  let mbti = null, attach = null;
+  try{ mbti = JSON.parse(localStorage.getItem('quizzy_mbti') || 'null'); }catch(e){}
+  try{ attach = JSON.parse(localStorage.getItem('quizzy_attachment') || 'null'); }catch(e){}
+
+  const section = document.getElementById('profileSection');
+  const badges = document.getElementById('profileBadges');
+
+  if(!mbti && !attach){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  badges.innerHTML = '';
+
+  if(mbti){
+    badges.innerHTML += `
+      <a href="mbti-quiz.html" class="profile-badge">
+        <span class="pb-emoji">${mbti.emoji}</span>
+        <span class="pb-text"><strong>${mbti.code}</strong><small>${mbti.name}</small></span>
+      </a>`;
+  }else{
+    badges.innerHTML += `<a href="mbti-quiz.html" class="profile-badge badge-empty">+ Ambil Tes MBTI</a>`;
+  }
+
+  if(attach){
+    badges.innerHTML += `
+      <a href="attachment-style-quiz.html" class="profile-badge">
+        <span class="pb-emoji">${attach.emoji}</span>
+        <span class="pb-text"><strong>${attach.name}</strong></span>
+      </a>`;
+  }else{
+    badges.innerHTML += `<a href="attachment-style-quiz.html" class="profile-badge badge-empty">+ Ambil Tes Attachment</a>`;
+  }
+}
+
+function resetProfile(){
+  localStorage.removeItem('quizzy_mbti');
+  localStorage.removeItem('quizzy_attachment');
+  loadProfile();
+}
+
+loadProfile();
+</script>
+</body>
+</html>

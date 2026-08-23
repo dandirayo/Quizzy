@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI Personality Quiz</title>
+<style>
+:root{
+  --bg:#0f0f1a;
+  --card:#1a1a2e;
+  --card2:#20203a;
+  --text:#f0f0f5;
+  --muted:#9a9ab0;
+  --accent1:#7c3aed;
+  --accent2:#a855f7;
+  --blue:#3b82f6;
+  --green:#22c55e;
+  --red:#ef4444;
+  --yellow:#eab308;
+  --border:#2d2d47;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.22;
+  z-index:0;
+  pointer-events:none;
+}
+body::before{width:300px;height:300px;background:var(--accent1);top:-90px;left:-90px;}
+body::after{width:280px;height:280px;background:var(--accent2);bottom:-90px;right:-90px;}
+.container{
+  width:100%;
+  max-width:640px;
+  position:relative;
+  z-index:1;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 28px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  position:relative;
+  overflow:hidden;
+}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* Intro */
+.logo{
+  font-size:42px;
+  text-align:center;
+  margin-bottom:6px;
+}
+h1{
+  text-align:center;
+  font-size:26px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin-bottom:8px;
+}
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:28px;
+  line-height:1.5;
+}
+.dims{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:28px;
+}
+.dim-card{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+}
+.dim-card .letters{
+  font-weight:700;
+  font-size:16px;
+  margin-bottom:4px;
+}
+.dim-card .desc{
+  font-size:12px;
+  color:var(--muted);
+}
+.dim-EI .letters{color:var(--blue);}
+.dim-SN .letters{color:var(--green);}
+.dim-TF .letters{color:var(--red);}
+.dim-JP .letters{color:var(--yellow);}
+
+button.primary{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  color:#fff;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+button.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(124,58,237,0.4);
+}
+button.primary:active{transform:translateY(0);}
+button.primary:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+/* Quiz */
+.progress-wrap{
+  height:8px;
+  background:var(--card2);
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  border-radius:8px;
+  transition:width .3s ease;
+  width:0%;
+}
+.progress-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:16px;
+}
+.badge{
+  display:inline-block;
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.5px;
+  margin-bottom:18px;
+}
+.badge-EI{background:rgba(59,130,246,0.15);color:var(--blue);border:1px solid var(--blue);}
+.badge-SN{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid var(--green);}
+.badge-TF{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid var(--red);}
+.badge-JP{background:rgba(234,179,8,0.15);color:var(--yellow);border:1px solid var(--yellow);}
+
+.question-text{
+  font-size:20px;
+  font-weight:600;
+  line-height:1.4;
+  margin-bottom:26px;
+  min-height:80px;
+}
+.options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:26px;
+}
+.option{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  background:var(--card2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .15s ease;
+  font-size:14px;
+}
+.option:hover{
+  border-color:var(--accent2);
+  background:rgba(168,85,247,0.08);
+}
+.option.selected{
+  border-color:var(--accent2);
+  background:rgba(168,85,247,0.15);
+  box-shadow:0 0 0 1px var(--accent2);
+}
+.option .dots{
+  font-size:14px;
+  letter-spacing:2px;
+  color:var(--accent2);
+  min-width:56px;
+}
+.nav-row{
+  display:flex;
+  gap:12px;
+}
+.nav-row button.secondary{
+  flex:0 0 auto;
+  padding:16px 20px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  background:transparent;
+  color:var(--text);
+  font-size:15px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.nav-row button.secondary:hover{
+  border-color:var(--accent2);
+}
+.nav-row button.secondary:disabled{
+  opacity:0.3;
+  cursor:not-allowed;
+}
+.nav-row .primary{flex:1;}
+
+.home-link{
+  position:absolute;
+  top:18px;
+  left:18px;
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+  z-index:2;
+}
+.home-link:hover{color:var(--accent2);}
+
+.result-actions{display:flex;gap:10px;}
+.result-actions .primary{flex:1;}
+.secondary-btn{
+  flex:0 0 auto;
+  padding:16px 18px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  background:transparent;
+  color:var(--text);
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+  white-space:nowrap;
+}
+.secondary-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 20px;
+  border-radius:10px;
+  font-size:13px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:100;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Result */
+.result-header{
+  text-align:center;
+  margin-bottom:24px;
+}
+.result-emblem{position:relative;width:130px;height:130px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.emblem-ring{position:absolute;inset:0;width:100%;height:100%;animation:emblemSpin 20s linear infinite;}
+@keyframes emblemSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.result-emoji{position:relative;z-index:1;font-size:56px;}
+.result-code{
+  font-size:52px;
+  font-weight:800;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  letter-spacing:2px;
+}
+.result-name{font-size:20px;font-weight:600;margin-top:4px;}
+.result-tagline{color:var(--muted);font-size:14px;margin-top:6px;font-style:italic;}
+
+.traits{margin:26px 0;display:flex;flex-direction:column;gap:14px;}
+.trait-row{}
+.trait-labels{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+.trait-track{
+  position:relative;
+  height:10px;
+  background:var(--card2);
+  border-radius:8px;
+  overflow:hidden;
+}
+.trait-fill{
+  position:absolute;
+  top:0;
+  height:100%;
+  width:0%;
+  border-radius:8px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  transition:width 1s cubic-bezier(.22,1,.36,1);
+}
+.trait-fill.left{right:50%;}
+.trait-fill.right{left:50%;}
+
+.result-desc{
+  font-size:14px;
+  line-height:1.7;
+  color:#d8d8e6;
+  margin-bottom:24px;
+}
+.sw-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:24px;
+}
+.sw-box{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+}
+.sw-box h3{
+  font-size:13px;
+  margin-bottom:10px;
+}
+.sw-box.strengths h3{color:var(--green);}
+.sw-box.weaknesses h3{color:var(--red);}
+.sw-box ul{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.sw-box li{
+  font-size:12.5px;
+  color:#c8c8dc;
+  padding-left:14px;
+  position:relative;
+}
+.sw-box li:before{
+  content:"•";
+  position:absolute;
+  left:0;
+  color:var(--accent2);
+}
+.famous{
+  margin-bottom:28px;
+}
+.famous h3{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.chip{
+  background:rgba(124,58,237,0.15);
+  border:1px solid var(--accent2);
+  color:var(--accent2);
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+}
+@media(max-width:480px){
+  .card{padding:26px 18px;}
+  .result-code{font-size:40px;}
+  .dims{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <a href="index.html" class="home-link">← Beranda</a>
+
+    <!-- INTRO -->
+    <div class="screen active" id="screen-intro">
+      <div class="logo">🧠</div>
+      <h1>Tes Kepribadian MBTI</h1>
+      <p class="subtitle">Jawab 28 pernyataan singkat untuk menemukan salah satu dari 16 tipe kepribadian kamu. Jujur pada diri sendiri ya!</p>
+      <div class="dims">
+        <div class="dim-card dim-EI">
+          <div class="letters">E / I</div>
+          <div class="desc">Extrovert vs Introvert</div>
+        </div>
+        <div class="dim-card dim-SN">
+          <div class="letters">S / N</div>
+          <div class="desc">Sensing vs Intuition</div>
+        </div>
+        <div class="dim-card dim-TF">
+          <div class="letters">T / F</div>
+          <div class="desc">Thinking vs Feeling</div>
+        </div>
+        <div class="dim-card dim-JP">
+          <div class="letters">J / P</div>
+          <div class="desc">Judging vs Perceiving</div>
+        </div>
+      </div>
+      <button class="primary" onclick="startQuiz()">Mulai Quiz 🚀</button>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label">
+        <span id="progressText">Pertanyaan 1 / 28</span>
+        <span id="progressPct">4%</span>
+      </div>
+      <div id="dimBadge" class="badge badge-EI">EXTROVERT / INTROVERT</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsWrap"></div>
+      <div class="nav-row">
+        <button class="secondary" id="btnBack" onclick="prevQuestion()">← Kembali</button>
+        <button class="primary" id="btnNext" onclick="nextQuestion()" disabled>Lanjut →</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="screen-result">
+      <div class="result-header">
+        <div class="result-emblem">
+          <svg class="emblem-ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="emblemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7c3aed"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="92" fill="none" stroke="url(#emblemGrad)" stroke-width="2" stroke-dasharray="4 10" opacity="0.7"/>
+            <circle cx="100" cy="8" r="4" fill="#a855f7"/>
+            <circle cx="192" cy="100" r="3" fill="#7c3aed"/>
+            <circle cx="100" cy="192" r="4" fill="#a855f7"/>
+            <circle cx="8" cy="100" r="3" fill="#7c3aed"/>
+            <circle cx="165" cy="35" r="2.5" fill="#a855f7"/>
+            <circle cx="165" cy="165" r="2.5" fill="#7c3aed"/>
+            <circle cx="35" cy="165" r="2.5" fill="#a855f7"/>
+            <circle cx="35" cy="35" r="2.5" fill="#7c3aed"/>
+          </svg>
+          <div class="result-emoji" id="resEmoji">🦉</div>
+        </div>
+        <div class="result-code" id="resCode">INFJ</div>
+        <div class="result-name" id="resName">The Advocate</div>
+        <div class="result-tagline" id="resTagline">"Tagline"</div>
+      </div>
+
+      <div class="traits" id="traitsWrap"></div>
+
+      <p class="result-desc" id="resDesc"></p>
+
+      <div class="sw-grid">
+        <div class="sw-box strengths">
+          <h3>💪 KEKUATAN</h3>
+          <ul id="resStrengths"></ul>
+        </div>
+        <div class="sw-box weaknesses">
+          <h3>⚠️ KELEMAHAN</h3>
+          <ul id="resWeaknesses"></ul>
+        </div>
+      </div>
+
+      <div class="famous">
+        <h3>✨ TOKOH TERKENAL DENGAN TIPE INI</h3>
+        <div class="chips" id="resFamous"></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="secondary-btn" onclick="shareCurrentResult()">📤 Bagikan</button>
+        <button class="primary" onclick="restartQuiz()">Ulangi Quiz 🔄</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============ QUESTION DATA ============ */
+// dim: 'EI' | 'SN' | 'TF' | 'JP'
+// dir: 'A' => Sangat Setuju condong ke huruf kiri (E/S/T/J), 'B' => flip
+const questions = [
+  // E/I (7)
+  {dim:'EI', dir:'A', text:'Saya merasa berenergi setelah menghabiskan waktu di keramaian atau pesta.'},
+  {dim:'EI', dir:'B', text:'Saya lebih suka menghabiskan akhir pekan sendirian atau dengan sedikit orang dekat.'},
+  {dim:'EI', dir:'A', text:'Saya mudah memulai percakapan dengan orang yang baru dikenal.'},
+  {dim:'EI', dir:'B', text:'Saya butuh waktu sendiri untuk memulihkan energi setelah bersosialisasi.'},
+  {dim:'EI', dir:'A', text:'Saya cenderung berpikir sambil berbicara, bukan memikirkannya dulu.'},
+  {dim:'EI', dir:'A', text:'Saya senang menjadi pusat perhatian dalam suatu kelompok.'},
+  {dim:'EI', dir:'B', text:'Saya lebih suka mendengarkan daripada berbicara dalam diskusi kelompok.'},
+
+  // S/N (7)
+  {dim:'SN', dir:'A', text:'Saya lebih percaya pada fakta dan pengalaman konkret daripada teori abstrak.'},
+  {dim:'SN', dir:'B', text:'Saya sering memikirkan kemungkinan dan makna tersembunyi di balik sesuatu.'},
+  {dim:'SN', dir:'A', text:'Saya lebih suka instruksi yang jelas dan langkah demi langkah.'},
+  {dim:'SN', dir:'B', text:'Saya lebih tertarik pada ide-ide baru daripada detail praktis.'},
+  {dim:'SN', dir:'A', text:'Saya fokus pada apa yang nyata dan terjadi saat ini.'},
+  {dim:'SN', dir:'B', text:'Saya suka berimajinasi tentang masa depan dan kemungkinan yang belum terjadi.'},
+  {dim:'SN', dir:'A', text:'Saya lebih percaya pengalaman langsung daripada intuisi atau firasat.'},
+
+  // T/F (7)
+  {dim:'TF', dir:'A', text:'Saya membuat keputusan berdasarkan logika, bukan perasaan.'},
+  {dim:'TF', dir:'B', text:'Perasaan orang lain sangat memengaruhi keputusan yang saya ambil.'},
+  {dim:'TF', dir:'A', text:'Saya lebih menghargai kejujuran yang blak-blakan daripada basa-basi yang menyenangkan.'},
+  {dim:'TF', dir:'B', text:'Saya lebih mengutamakan harmoni dibanding memenangkan sebuah argumen.'},
+  {dim:'TF', dir:'A', text:'Saya menganalisis situasi secara objektif sebelum bertindak.'},
+  {dim:'TF', dir:'B', text:'Saya mudah berempati dan ikut merasakan emosi orang lain.'},
+  {dim:'TF', dir:'A', text:'Kritik terhadap pekerjaan saya lebih saya lihat sebagai fakta, bukan serangan pribadi.'},
+
+  // J/P (7)
+  {dim:'JP', dir:'A', text:'Saya suka membuat rencana matang sebelum melakukan sesuatu.'},
+  {dim:'JP', dir:'B', text:'Saya lebih suka bersikap fleksibel dan spontan daripada terikat jadwal.'},
+  {dim:'JP', dir:'A', text:'Saya merasa tidak nyaman jika pekerjaan belum selesai sebelum tenggat waktu.'},
+  {dim:'JP', dir:'B', text:'Saya sering menunda keputusan untuk tetap membuka banyak pilihan.'},
+  {dim:'JP', dir:'A', text:'Ruang kerja dan hidup saya cenderung terorganisir dan rapi.'},
+  {dim:'JP', dir:'B', text:'Saya menikmati mengerjakan sesuatu secara mendadak tanpa rencana detail.'},
+  {dim:'JP', dir:'A', text:'Saya lebih suka menyelesaikan satu tugas sepenuhnya sebelum pindah ke tugas lain.'},
+];
+
+const dimBadgeLabel = {
+  EI:'EXTROVERT / INTROVERT',
+  SN:'SENSING / INTUITION',
+  TF:'THINKING / FEELING',
+  JP:'JUDGING / PERCEIVING'
+};
+
+const scaleOptions = [
+  {label:'Sangat Setuju', value:3, dots:'●●●'},
+  {label:'Setuju', value:1, dots:'●●○'},
+  {label:'Tidak Setuju', value:-1, dots:'○○●'},
+  {label:'Sangat Tidak Setuju', value:-3, dots:'○○○'},
+];
+
+/* ============ MBTI TYPE DATA ============ */
+const typeData = {
+  INTJ:{name:'The Architect', tagline:'Perencana strategis dengan visi jauh ke depan', emoji:'🏛️',
+    desc:'INTJ adalah pemikir strategis yang independen dan penuh visi. Mereka menyukai sistem, logika, dan efisiensi, serta selalu mencari cara terbaik untuk mencapai tujuan jangka panjang. Di balik sikap tenangnya, tersembunyi imajinasi yang kuat dan tekad yang tak mudah goyah.',
+    strengths:['Berpikir strategis & analitis','Mandiri dan percaya diri','Berorientasi pada hasil','Cepat memahami sistem kompleks'],
+    weaknesses:['Terkesan dingin/arogan','Sulit mengekspresikan emosi','Terlalu kritis pada diri sendiri','Kurang sabar dengan inefisiensi'],
+    famous:['Elon Musk','Mark Zuckerberg','Nikola Tesla','Michelle Obama','Isaac Newton']},
+  INTP:{name:'The Logician', tagline:'Penjelajah ide dengan rasa ingin tahu tanpa batas', emoji:'🔬',
+    desc:'INTP adalah pemikir inovatif yang haus akan pengetahuan dan pemahaman mendalam. Mereka senang membedah ide-ide kompleks, menemukan pola tersembunyi, dan mengeksplorasi kemungkinan teoretis tanpa terikat konvensi.',
+    strengths:['Analitis dan objektif','Kreatif dalam memecahkan masalah','Berpikiran terbuka','Pengetahuan luas dan mendalam'],
+    weaknesses:['Sulit mengelola waktu','Kurang peka secara sosial','Cenderung menunda tindakan','Sulit menyelesaikan hal rutin'],
+    famous:['Albert Einstein','Bill Gates','Charles Darwin','Marie Curie','Rene Descartes']},
+  ENTJ:{name:'The Commander', tagline:'Pemimpin tegas yang berani mengambil keputusan', emoji:'👑',
+    desc:'ENTJ adalah pemimpin alami yang tegas, percaya diri, dan berorientasi pada tujuan. Mereka mampu melihat gambaran besar sekaligus menyusun strategi konkret untuk mewujudkannya, serta tidak segan memimpin orang lain menuju kesuksesan.',
+    strengths:['Kepemimpinan yang kuat','Percaya diri & tegas','Perencana strategis handal','Efisien dalam mengambil keputusan'],
+    weaknesses:['Kurang sabar','Bisa terlalu dominan','Sulit menerima kritik','Mengabaikan sisi emosional'],
+    famous:['Steve Jobs','Margaret Thatcher','Gordon Ramsay','Franklin D. Roosevelt','Whitney Wolfe Herd']},
+  ENTP:{name:'The Debater', tagline:'Pemikir cerdas yang mencintai perdebatan ide', emoji:'💡',
+    desc:'ENTP adalah inovator cerdas dan penuh energi yang senang mengeksplorasi ide-ide baru dari berbagai sudut pandang. Mereka pandai berargumen, cepat beradaptasi, dan selalu mencari tantangan intelektual baru.',
+    strengths:['Kreatif & inovatif','Pandai berkomunikasi','Cepat beradaptasi','Berpikir cepat dan lincah'],
+    weaknesses:['Mudah bosan','Suka menunda pekerjaan','Argumentatif berlebihan','Kurang fokus jangka panjang'],
+    famous:['Mark Twain','Thomas Edison','Celine Dion','Steve Wozniak','Sacha Baron Cohen']},
+  INFJ:{name:'The Advocate', tagline:'Idealis tenang dengan wawasan mendalam tentang manusia', emoji:'🦉',
+    desc:'INFJ adalah pribadi idealis yang penuh empati namun tetap terarah pada prinsip yang kuat. Mereka memiliki kemampuan unik untuk memahami emosi orang lain sekaligus visi jangka panjang untuk membuat dunia menjadi tempat yang lebih baik.',
+    strengths:['Empati yang mendalam','Idealis & berprinsip','Kreatif dan berwawasan luas','Berkomitmen tinggi pada tujuan'],
+    weaknesses:['Mudah kelelahan (burnout)','Terlalu perfeksionis','Sulit menerima kritik','Cenderung menutup diri'],
+    famous:['Nelson Mandela','Martin Luther King Jr.','Lady Gaga','Taylor Swift','Mother Teresa']},
+  INFP:{name:'The Mediator', tagline:'Jiwa puitis yang setia pada nilai-nilai pribadinya', emoji:'🌸',
+    desc:'INFP adalah individu yang penuh idealisme dan kreativitas, digerakkan oleh nilai-nilai pribadi yang mendalam. Mereka senang mengeksplorasi makna hidup dan selalu berusaha menciptakan dunia yang lebih harmonis dan autentik.',
+    strengths:['Kreatif dan imajinatif','Empatik & penyayang','Idealis dan tulus','Fleksibel dan terbuka pikiran'],
+    weaknesses:['Terlalu sensitif','Sulit realistis','Menghindari konflik','Mudah kehilangan fokus'],
+    famous:['William Shakespeare','J.R.R. Tolkien','Johnny Depp','Björk','Princess Diana']},
+  ENFJ:{name:'The Protagonist', tagline:'Pemimpin karismatik yang menginspirasi orang lain', emoji:'🌟',
+    desc:'ENFJ adalah pemimpin karismatik yang tulus peduli pada perkembangan orang lain. Mereka mahir membaca emosi orang di sekitarnya dan menggunakan kemampuan itu untuk memotivasi, menyatukan, serta menginspirasi orang menuju tujuan bersama.',
+    strengths:['Karismatik dan persuasif','Empati tinggi','Pemimpin alami','Berorientasi pada orang lain'],
+    weaknesses:['Terlalu mengutamakan orang lain','Sensitif terhadap kritik','Sulit membuat keputusan sulit','Mudah kelelahan emosional'],
+    famous:['Barack Obama','Oprah Winfrey','Maya Angelou','Malala Yousafzai','John Cena']},
+  ENFP:{name:'The Campaigner', tagline:'Jiwa bebas yang antusias dan penuh imajinasi', emoji:'✨',
+    desc:'ENFP adalah pribadi yang bersemangat, kreatif, dan penuh rasa ingin tahu. Mereka melihat kehidupan sebagai rangkaian kemungkinan tak terbatas dan senang menginspirasi orang lain lewat antusiasme serta koneksi yang tulus.',
+    strengths:['Antusias dan energik','Kreatif & imajinatif','Komunikator ulung','Mudah beradaptasi'],
+    weaknesses:['Mudah teralihkan','Sulit fokus pada detail','Terlalu emosional','Menghindari rutinitas'],
+    famous:['Robin Williams','Walt Disney','Ellen DeGeneres','Robert Downey Jr.','Will Smith']},
+  ISTJ:{name:'The Logistician', tagline:'Praktis dan bertanggung jawab, dapat diandalkan', emoji:'📋',
+    desc:'ISTJ adalah pribadi yang teliti, bertanggung jawab, dan sangat menghargai tradisi serta keteraturan. Mereka bekerja secara sistematis, menepati janji, dan dapat diandalkan dalam segala situasi.',
+    strengths:['Disiplin dan bertanggung jawab','Teliti dan terorganisir','Jujur dan dapat dipercaya','Praktis dalam bertindak'],
+    weaknesses:['Kaku terhadap perubahan','Sulit mengekspresikan emosi','Terlalu keras kepala','Kurang fleksibel'],
+    famous:['George Washington','Angela Merkel','Warren Buffett','Natalie Portman','Queen Elizabeth II']},
+  ISFJ:{name:'The Defender', tagline:'Pelindung setia yang hangat dan penuh perhatian', emoji:'🛡️',
+    desc:'ISFJ adalah pribadi yang hangat, setia, dan sangat memperhatikan kebutuhan orang lain. Mereka bekerja dengan tekun di belakang layar, menjaga stabilitas, dan selalu siap membantu orang-orang di sekitarnya.',
+    strengths:['Setia dan dapat diandalkan','Sabar dan perhatian','Teliti dan pekerja keras','Pengamat yang baik'],
+    weaknesses:['Sulit menolak permintaan','Menghindari konflik','Terlalu mengorbankan diri','Sulit beradaptasi dengan perubahan mendadak'],
+    famous:['Kate Middleton','Beyoncé','Rosa Parks','Anne Hathaway','Vin Diesel']},
+  ESTJ:{name:'The Executive', tagline:'Pengatur ulung yang menjunjung tinggi ketertiban', emoji:'📊',
+    desc:'ESTJ adalah pribadi yang terorganisir, tegas, dan berorientasi pada hasil. Mereka unggul dalam mengelola sumber daya dan orang, serta selalu memastikan segala sesuatu berjalan sesuai rencana dan aturan.',
+    strengths:['Terorganisir dan efisien','Pemimpin tegas','Bertanggung jawab','Praktis dan realistis'],
+    weaknesses:['Kaku dan keras kepala','Kurang toleran pada perbedaan','Sulit menerima kritik','Terlalu fokus pada aturan'],
+    famous:['Frank Sinatra','Judge Judy','Lyndon B. Johnson','Sonia Sotomayor','Vince Lombardi']},
+  ESFJ:{name:'The Consul', tagline:'Penggerak sosial yang peduli dan penuh perhatian', emoji:'🤝',
+    desc:'ESFJ adalah pribadi yang hangat, ramah, dan sangat peduli pada keharmonisan sosial. Mereka pandai membaca kebutuhan orang lain dan senang berperan aktif menjaga hubungan serta komunitas tetap solid.',
+    strengths:['Peduli dan suportif','Komunikator yang hangat','Terorganisir','Loyal pada kelompok'],
+    weaknesses:['Terlalu peduli pada pendapat orang lain','Sulit menerima kritik','Menghindari konflik','Mudah merasa tidak dihargai'],
+    famous:['Taylor Swift','Jennifer Garner','Bill Clinton','Hugh Jackman','Steve Harvey']},
+  ISTP:{name:'The Virtuoso', tagline:'Pengrajin praktis yang ahli memecahkan masalah', emoji:'🔧',
+    desc:'ISTP adalah pribadi yang tenang, logis, dan sangat praktis. Mereka senang memahami cara kerja sesuatu secara langsung, tangkas dalam memecahkan masalah, dan menikmati kebebasan untuk bertindak sesuai insting.',
+    strengths:['Praktis dan logis','Tenang di bawah tekanan','Adaptif dan mandiri','Ahli memecahkan masalah teknis'],
+    weaknesses:['Sulit mengekspresikan perasaan','Cenderung menghindari komitmen','Mudah bosan dengan rutinitas','Kurang peka terhadap orang lain'],
+    famous:['Clint Eastwood','Bear Grylls','Michael Jordan','Scarlett Johansson','Tom Cruise']},
+  ISFP:{name:'The Adventurer', tagline:'Seniman fleksibel yang menikmati keindahan hidup', emoji:'🎨',
+    desc:'ISFP adalah pribadi yang lembut, artistik, dan hidup pada saat ini. Mereka menghargai kebebasan berekspresi, memiliki cita rasa estetika yang kuat, serta setia pada nilai-nilai pribadi mereka.',
+    strengths:['Kreatif dan artistik','Fleksibel dan spontan','Penuh empati','Setia pada nilai pribadi'],
+    weaknesses:['Terlalu sensitif','Menghindari konflik','Sulit merencanakan jangka panjang','Mudah stres di bawah tekanan'],
+    famous:['Michael Jackson','Bob Dylan','Rihanna','Frida Kahlo','David Bowie']},
+  ESTP:{name:'The Entrepreneur', tagline:'Pribadi enerjik yang berani mengambil risiko', emoji:'⚡',
+    desc:'ESTP adalah pribadi yang enerjik, spontan, dan sangat menikmati aksi nyata. Mereka pandai membaca situasi dengan cepat, berani mengambil risiko, dan senang menjadi pusat perhatian dalam momen penuh aksi.',
+    strengths:['Berani dan spontan','Pandai bersosialisasi','Praktis dan tegas','Cepat beradaptasi dengan situasi'],
+    weaknesses:['Kurang sabar','Mudah bosan dengan teori','Impulsif dalam bertindak','Kurang peka terhadap konsekuensi jangka panjang'],
+    famous:['Donald Trump','Madonna','Ernest Hemingway','Eddie Murphy','Jack Nicholson']},
+  ESFP:{name:'The Entertainer', tagline:'Penghibur spontan yang mencintai kehidupan', emoji:'🎉',
+    desc:'ESFP adalah pribadi yang ceria, spontan, dan penuh semangat menjalani hidup. Mereka senang menjadi pusat perhatian, mudah bergaul, dan selalu berusaha membuat suasana di sekitarnya menyenangkan.',
+    strengths:['Antusias dan ramah','Spontan dan energik','Pandai bersosialisasi','Praktis dan realistis'],
+    weaknesses:['Mudah teralihkan','Menghindari konflik','Kurang perencanaan jangka panjang','Sensitif terhadap kritik'],
+    famous:['Marilyn Monroe','Adele','Jamie Foxx','Miley Cyrus','Elton John']},
+};
+
+/* ============ STATE ============ */
+let answers = new Array(questions.length).fill(null);
+let current = 0;
+
+/* ============ NAVIGATION ============ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz(){
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[current];
+  const total = questions.length;
+  const pct = Math.round(((current+1)/total)*100);
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Pertanyaan ${current+1} / ${total}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  const badge = document.getElementById('dimBadge');
+  badge.className = 'badge badge-' + q.dim;
+  badge.textContent = dimBadgeLabel[q.dim];
+
+  document.getElementById('questionText').textContent = q.text;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  scaleOptions.forEach(opt=>{
+    const div = document.createElement('div');
+    div.className = 'option';
+    if(answers[current] === opt.value) div.classList.add('selected');
+    div.innerHTML = `<span class="dots">${opt.dots}</span><span>${opt.label}</span>`;
+    div.onclick = ()=>selectAnswer(opt.value);
+    wrap.appendChild(div);
+  });
+
+  document.getElementById('btnBack').disabled = current === 0;
+  document.getElementById('btnNext').disabled = answers[current] === null;
+  document.getElementById('btnNext').textContent = (current === total-1) ? 'Lihat Hasil 🎉' : 'Lanjut →';
+}
+
+function selectAnswer(value){
+  answers[current] = value;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(answers[current] === null) return;
+  if(current === questions.length - 1){
+    calculateResult();
+    return;
+  }
+  current++;
+  renderQuestion();
+}
+
+function prevQuestion(){
+  if(current === 0) return;
+  current--;
+  renderQuestion();
+}
+
+/* ============ SCORING ============ */
+function calculateResult(){
+  const scores = {EI:0, SN:0, TF:0, JP:0};
+
+  questions.forEach((q, i)=>{
+    let val = answers[i];
+    if(q.dir === 'B') val = -val;
+    scores[q.dim] += val;
+  });
+
+  const letters = {
+    EI: scores.EI >= 0 ? 'E' : 'I',
+    SN: scores.SN >= 0 ? 'S' : 'N',
+    TF: scores.TF >= 0 ? 'T' : 'F',
+    JP: scores.JP >= 0 ? 'J' : 'P',
+  };
+
+  const code = letters.EI + letters.SN + letters.TF + letters.JP;
+
+  // max possible per dimension = 7 questions * 3 = 21
+  const maxScore = 21;
+  const percents = {
+    EI: Math.round((Math.abs(scores.EI)/maxScore)*50 + 50),
+    SN: Math.round((Math.abs(scores.SN)/maxScore)*50 + 50),
+    TF: Math.round((Math.abs(scores.TF)/maxScore)*50 + 50),
+    JP: Math.round((Math.abs(scores.JP)/maxScore)*50 + 50),
+  };
+
+  showResult(code, letters, percents);
+}
+
+/* ============ RESULT RENDER ============ */
+const dimPairs = {
+  EI: ['E','I','Extrovert','Introvert'],
+  SN: ['S','N','Sensing','Intuition'],
+  TF: ['T','F','Thinking','Feeling'],
+  JP: ['J','P','Judging','Perceiving'],
+};
+
+let currentShareText = '';
+
+function showResult(code, letters, percents){
+  const data = typeData[code];
+
+  // simpan hasil di browser (localStorage) supaya bisa ditampilkan di halaman utama
+  try{
+    localStorage.setItem('quizzy_mbti', JSON.stringify({
+      code: code,
+      name: data.name,
+      emoji: data.emoji,
+      date: new Date().toISOString()
+    }));
+  }catch(e){}
+
+  const shareUrl = location.origin + location.pathname.replace(/[^/]+$/, 'index.html');
+  currentShareText = `Aku baru ikutan Tes Kepribadian MBTI dan hasilnya ${code} - ${data.name} ${data.emoji}!\n"${data.tagline}"\n\nCoba juga di: ${shareUrl}`;
+
+  document.getElementById('resEmoji').textContent = data.emoji;
+  document.getElementById('resCode').textContent = code;
+  document.getElementById('resName').textContent = data.name;
+  document.getElementById('resTagline').textContent = '"' + data.tagline + '"';
+  document.getElementById('resDesc').textContent = data.desc;
+
+  document.getElementById('resStrengths').innerHTML = data.strengths.map(s=>`<li>${s}</li>`).join('');
+  document.getElementById('resWeaknesses').innerHTML = data.weaknesses.map(w=>`<li>${w}</li>`).join('');
+  document.getElementById('resFamous').innerHTML = data.famous.map(f=>`<span class="chip">${f}</span>`).join('');
+
+  // Traits bars
+  const traitsWrap = document.getElementById('traitsWrap');
+  traitsWrap.innerHTML = '';
+  const dimKeys = ['EI','SN','TF','JP'];
+  dimKeys.forEach(dim=>{
+    const [leftL, rightL, leftName, rightName] = dimPairs[dim];
+    const activeLetter = letters[dim];
+    const pct = percents[dim];
+    const isLeft = activeLetter === leftL;
+
+    const row = document.createElement('div');
+    row.className = 'trait-row';
+    row.innerHTML = `
+      <div class="trait-labels">
+        <span style="color:${isLeft ? 'var(--accent2)' : 'var(--muted)'}">${leftName} (${leftL})</span>
+        <span style="color:${!isLeft ? 'var(--accent2)' : 'var(--muted)'}">${rightName} (${rightL})</span>
+      </div>
+      <div class="trait-track">
+        <div class="trait-fill ${isLeft ? 'left' : 'right'}" data-pct="${pct}"></div>
+      </div>
+    `;
+    traitsWrap.appendChild(row);
+  });
+
+  showScreen('screen-result');
+
+  // trigger animation after render
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.trait-fill').forEach(fill=>{
+        const pct = fill.getAttribute('data-pct');
+        fill.style.width = pct + '%';
+      });
+    }, 100);
+  });
+}
+
+function restartQuiz(){
+  showScreen('screen-intro');
+}
+
+/* ============ SHARE & TOAST ============ */
+async function shareCurrentResult(){
+  if(navigator.share){
+    try{
+      await navigator.share({ title: 'Hasil Tes Kepribadian MBTI', text: currentShareText });
+      return;
+    }catch(e){ /* user membatalkan atau share gagal, lanjut ke fallback copy */ }
+  }
+  try{
+    await navigator.clipboard.writeText(currentShareText);
+    showToast('Hasil disalin ke clipboard! 📋');
+  }catch(e){
+    showToast('Gagal menyalin. Coba salin manual ya.');
+  }
+}
+
+function showToast(msg){
+  let toast = document.getElementById('toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

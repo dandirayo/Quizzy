@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attachment Style Quiz</title>
+<style>
+:root{
+  --bg:#0f0f1a;
+  --card:#1a1a2e;
+  --card2:#20203a;
+  --text:#f0f0f5;
+  --muted:#9a9ab0;
+  --accent1:#ec4899;
+  --accent2:#f472b6;
+  --anx:#f59e0b;
+  --avo:#38bdf8;
+  --border:#2d2d47;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.22;
+  z-index:0;
+  pointer-events:none;
+}
+body::before{width:300px;height:300px;background:var(--accent1);top:-90px;left:-90px;}
+body::after{width:280px;height:280px;background:var(--avo);bottom:-90px;right:-90px;}
+.container{width:100%;max-width:640px;position:relative;z-index:1;}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 28px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  position:relative;
+  overflow:hidden;
+}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.logo{font-size:42px;text-align:center;margin-bottom:6px;}
+h1{
+  text-align:center;font-size:24px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:8px;
+}
+.subtitle{text-align:center;color:var(--muted);font-size:14px;margin-bottom:22px;line-height:1.6;}
+.disclaimer{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent2);
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:24px;
+  line-height:1.6;
+}
+.dims{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.dim-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.dim-card .letters{font-weight:700;font-size:15px;margin-bottom:4px;}
+.dim-card .desc{font-size:11.5px;color:var(--muted);line-height:1.4;}
+.dim-anx .letters{color:var(--anx);}
+.dim-avo .letters{color:var(--avo);}
+
+button.primary{
+  width:100%;padding:16px;border:none;border-radius:12px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  color:#fff;font-size:16px;font-weight:600;cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+button.primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(236,72,153,0.4);}
+button.primary:active{transform:translateY(0);}
+button.primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.progress-wrap{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:8px;transition:width .3s ease;width:0%;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:16px;}
+.badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:18px;}
+.badge-ANX{background:rgba(245,158,11,0.15);color:var(--anx);border:1px solid var(--anx);}
+.badge-AVO{background:rgba(56,189,248,0.15);color:var(--avo);border:1px solid var(--avo);}
+
+.question-text{font-size:19px;font-weight:600;line-height:1.4;margin-bottom:26px;min-height:80px;}
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;}
+.option{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  background:var(--card2);border:1.5px solid var(--border);border-radius:12px;
+  cursor:pointer;transition:all .15s ease;font-size:14px;
+}
+.option:hover{border-color:var(--accent2);background:rgba(244,114,182,0.08);}
+.option.selected{border-color:var(--accent2);background:rgba(244,114,182,0.15);box-shadow:0 0 0 1px var(--accent2);}
+.option .dots{font-size:14px;letter-spacing:2px;color:var(--accent2);min-width:56px;}
+.nav-row{display:flex;gap:12px;}
+.nav-row button.secondary{
+  flex:0 0 auto;padding:16px 20px;border:1.5px solid var(--border);border-radius:12px;
+  background:transparent;color:var(--text);font-size:15px;cursor:pointer;transition:all .15s ease;
+}
+.nav-row button.secondary:hover{border-color:var(--accent2);}
+.nav-row button.secondary:disabled{opacity:0.3;cursor:not-allowed;}
+.nav-row .primary{flex:1;}
+
+.home-link{
+  position:absolute;
+  top:18px;
+  left:18px;
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+  z-index:2;
+}
+.home-link:hover{color:var(--accent2);}
+
+.result-actions{display:flex;gap:10px;}
+.result-actions .primary{flex:1;}
+.secondary-btn{
+  flex:0 0 auto;
+  padding:16px 18px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  background:transparent;
+  color:var(--text);
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+  white-space:nowrap;
+}
+.secondary-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 20px;
+  border-radius:10px;
+  font-size:13px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:100;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.result-header{text-align:center;margin-bottom:24px;}
+.result-emblem{position:relative;width:130px;height:130px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+.emblem-ring{position:absolute;inset:0;width:100%;height:100%;animation:emblemSpin 20s linear infinite;}
+@keyframes emblemSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.result-emoji{position:relative;z-index:1;font-size:56px;}
+.result-code{
+  font-size:34px;font-weight:800;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.result-tagline{color:var(--muted);font-size:14px;margin-top:6px;font-style:italic;}
+
+.traits{margin:26px 0;display:flex;flex-direction:column;gap:16px;}
+.trait-row{}
+.trait-labels{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:5px;}
+.trait-track{position:relative;height:10px;background:var(--card2);border-radius:8px;overflow:hidden;}
+.trait-fill{position:absolute;top:0;left:0;height:100%;width:0%;border-radius:8px;transition:width 1s cubic-bezier(.22,1,.36,1);}
+.trait-fill.anx{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.trait-fill.avo{background:linear-gradient(90deg,#0ea5e9,#38bdf8);}
+
+.result-desc{font-size:14px;line-height:1.7;color:#d8d8e6;margin-bottom:24px;}
+.sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.sw-box{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.sw-box h3{font-size:13px;margin-bottom:10px;}
+.sw-box.strengths h3{color:#22c55e;}
+.sw-box.weaknesses h3{color:#ef4444;}
+.sw-box ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.sw-box li{font-size:12.5px;color:#c8c8dc;padding-left:14px;position:relative;}
+.sw-box li:before{content:"•";position:absolute;left:0;color:var(--accent2);}
+.growth{
+  background:var(--card2);border:1px solid var(--border);border-radius:12px;
+  padding:16px;margin-bottom:24px;
+}
+.growth h3{font-size:13px;color:var(--accent2);margin-bottom:10px;}
+.growth p{font-size:13px;line-height:1.7;color:#c8c8dc;}
+.result-footnote{font-size:11px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.6;}
+
+@media(max-width:480px){
+  .card{padding:26px 18px;}
+  .result-code{font-size:26px;}
+  .dims{grid-template-columns:1fr;}
+  .sw-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <a href="index.html" class="home-link">← Beranda</a>
+
+    <!-- INTRO -->
+    <div class="screen active" id="screen-intro">
+      <div class="logo">🔗</div>
+      <h1>Tes Attachment Style</h1>
+      <p class="subtitle">Kenali pola kelekatan (attachment) kamu dalam hubungan dekat — berdasarkan model dua dimensi yang dipakai dalam penelitian psikologi hubungan.</p>
+      <div class="dims">
+        <div class="dim-card dim-anx">
+          <div class="letters">ANXIETY</div>
+          <div class="desc">Seberapa cemas kamu akan ditinggalkan/tidak dicintai</div>
+        </div>
+        <div class="dim-card dim-avo">
+          <div class="letters">AVOIDANCE</div>
+          <div class="desc">Seberapa kamu menghindari kedekatan emosional</div>
+        </div>
+      </div>
+      <div class="disclaimer">
+        ℹ️ Kuis ini disusun berdasarkan kerangka teori attachment (Bowlby, Ainsworth) dan model dua dimensi Anxiety–Avoidance (Brennan, Clark & Shaver) yang umum dipakai dalam riset psikologi hubungan — bukan alat diagnostik klinis. Untuk pemahaman diri lebih dalam, konsultasikan dengan psikolog.
+      </div>
+      <button class="primary" onclick="startQuiz()">Mulai Quiz 💗</button>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label">
+        <span id="progressText">Pertanyaan 1 / 24</span>
+        <span id="progressPct">4%</span>
+      </div>
+      <div id="dimBadge" class="badge badge-ANX">ANXIETY</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsWrap"></div>
+      <div class="nav-row">
+        <button class="secondary" id="btnBack" onclick="prevQuestion()">← Kembali</button>
+        <button class="primary" id="btnNext" onclick="nextQuestion()" disabled>Lanjut →</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="screen-result">
+      <div class="result-header">
+        <div class="result-emblem">
+          <svg class="emblem-ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="emblemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ec4899"/>
+                <stop offset="100%" stop-color="#f472b6"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="92" fill="none" stroke="url(#emblemGrad)" stroke-width="2" stroke-dasharray="4 10" opacity="0.7"/>
+            <circle cx="100" cy="8" r="4" fill="#f472b6"/>
+            <circle cx="192" cy="100" r="3" fill="#ec4899"/>
+            <circle cx="100" cy="192" r="4" fill="#f472b6"/>
+            <circle cx="8" cy="100" r="3" fill="#ec4899"/>
+            <circle cx="165" cy="35" r="2.5" fill="#f472b6"/>
+            <circle cx="165" cy="165" r="2.5" fill="#ec4899"/>
+            <circle cx="35" cy="165" r="2.5" fill="#f472b6"/>
+            <circle cx="35" cy="35" r="2.5" fill="#ec4899"/>
+          </svg>
+          <div class="result-emoji" id="resEmoji">💗</div>
+        </div>
+        <div class="result-code" id="resName">Secure Attachment</div>
+        <div class="result-tagline" id="resTagline">"Tagline"</div>
+      </div>
+
+      <div class="traits" id="traitsWrap"></div>
+
+      <p class="result-desc" id="resDesc"></p>
+
+      <div class="sw-grid">
+        <div class="sw-box strengths">
+          <h3>💪 CIRI KHAS POSITIF</h3>
+          <ul id="resStrengths"></ul>
+        </div>
+        <div class="sw-box weaknesses">
+          <h3>⚠️ TANTANGAN</h3>
+          <ul id="resWeaknesses"></ul>
+        </div>
+      </div>
+
+      <div class="growth">
+        <h3>🌱 TIPS BERTUMBUH</h3>
+        <p id="resGrowth"></p>
+      </div>
+
+      <p class="result-footnote">Hasil ini adalah gambaran umum berbasis teori attachment, bukan diagnosis. Gaya kelekatan bisa berubah seiring waktu dan pengalaman hubungan.</p>
+
+      <div class="result-actions">
+        <button class="secondary-btn" onclick="shareCurrentResult()">📤 Bagikan</button>
+        <button class="primary" onclick="restartQuiz()">Ulangi Quiz 🔄</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============ QUESTION DATA ============ */
+// dim: 'ANX' (anxiety) | 'AVO' (avoidance)
+// dir: 'A' => Sangat Setuju menaikkan skor dimensi, 'B' => flip (reverse-scored)
+const questions = [
+  // Anxiety (12)
+  {dim:'ANX', dir:'A', text:'Saya khawatir pasangan/orang dekat saya tidak benar-benar mencintai saya.'},
+  {dim:'ANX', dir:'A', text:'Saya sering butuh kepastian berulang kali bahwa saya dicintai.'},
+  {dim:'ANX', dir:'A', text:'Saya cemas saat pasangan/sahabat lama tidak membalas pesan saya.'},
+  {dim:'ANX', dir:'B', text:'Saya merasa tenang meski hubungan sedang tidak "sempurna".'},
+  {dim:'ANX', dir:'A', text:'Saya takut orang yang saya sayangi akan meninggalkan saya.'},
+  {dim:'ANX', dir:'A', text:'Saya sering memikirkan hubungan saya secara berlebihan.'},
+  {dim:'ANX', dir:'B', text:'Saya percaya diri bahwa saya layak dicintai apa adanya.'},
+  {dim:'ANX', dir:'A', text:'Saya mudah cemburu atau merasa terancam oleh kedekatan pasangan dengan orang lain.'},
+  {dim:'ANX', dir:'A', text:'Saya butuh validasi terus-menerus dari orang terdekat untuk merasa aman.'},
+  {dim:'ANX', dir:'B', text:'Saya tidak mudah panik walau hubungan sedang renggang sementara.'},
+  {dim:'ANX', dir:'A', text:'Saya sering merasa lebih dekat dengan pasangan dibanding sebaliknya.'},
+  {dim:'ANX', dir:'A', text:'Konflik kecil dalam hubungan membuat saya sangat cemas akan berakhirnya hubungan itu.'},
+
+  // Avoidance (12)
+  {dim:'AVO', dir:'A', text:'Saya merasa tidak nyaman ketika orang lain terlalu dekat secara emosional.'},
+  {dim:'AVO', dir:'A', text:'Saya lebih suka menyelesaikan masalah sendiri daripada bergantung pada orang lain.'},
+  {dim:'AVO', dir:'B', text:'Saya nyaman berbagi perasaan terdalam dengan orang yang saya percaya.'},
+  {dim:'AVO', dir:'A', text:'Saya cenderung menjaga jarak emosional meski dalam hubungan dekat.'},
+  {dim:'AVO', dir:'A', text:'Saya sulit mempercayai orang lain sepenuhnya.'},
+  {dim:'AVO', dir:'B', text:'Saya merasa nyaman bergantung pada pasangan/sahabat saat butuh dukungan.'},
+  {dim:'AVO', dir:'A', text:'Saya lebih memilih kemandirian daripada keintiman yang terlalu dalam.'},
+  {dim:'AVO', dir:'A', text:'Saya cenderung menutup diri ketika orang lain mencoba mendekat secara emosional.'},
+  {dim:'AVO', dir:'B', text:'Saya mudah mengungkapkan kasih sayang secara terbuka.'},
+  {dim:'AVO', dir:'A', text:'Saya merasa "terkekang" ketika hubungan menjadi terlalu intens.'},
+  {dim:'AVO', dir:'B', text:'Saya percaya bahwa bergantung pada orang lain adalah hal yang wajar dan sehat.'},
+  {dim:'AVO', dir:'A', text:'Saya lebih fokus pada pencapaian pribadi daripada membangun kedekatan emosional.'},
+];
+
+const dimBadgeLabel = { ANX:'ANXIETY', AVO:'AVOIDANCE' };
+
+const scaleOptions = [
+  {label:'Sangat Setuju', value:3, dots:'●●●'},
+  {label:'Setuju', value:1, dots:'●●○'},
+  {label:'Tidak Setuju', value:-1, dots:'○○●'},
+  {label:'Sangat Tidak Setuju', value:-3, dots:'○○○'},
+];
+
+/* ============ RESULT TYPE DATA ============ */
+// Quadrants based on low/high Anxiety x low/high Avoidance
+const typeData = {
+  secure:{
+    name:'Secure Attachment', emoji:'💗',
+    tagline:'Nyaman dengan kedekatan maupun kemandirian',
+    desc:'Kamu cenderung merasa aman dalam hubungan — nyaman menjadi dekat dengan orang lain sekaligus nyaman menjadi diri sendiri. Kamu tidak terlalu cemas akan ditinggalkan, dan tidak merasa terancam oleh keintiman. Ini adalah gaya kelekatan yang paling terkait dengan hubungan jangka panjang yang sehat menurut penelitian.',
+    strengths:['Mampu percaya & dipercaya','Komunikasi terbuka & jujur','Nyaman dengan keintiman','Stabil secara emosional dalam konflik'],
+    weaknesses:['Bisa terlalu menganggap wajar hubungan yang stabil','Kurang siap menghadapi pasangan dengan gaya insecure','Terkadang meremehkan sinyal red flag','Perlu tetap waspada agar tidak complacent'],
+    growth:'Kamu berada di titik yang baik — teruslah menjadi ruang aman bagi orang lain, dan tetap sadar bahwa pasangan dengan gaya anxious/avoidant mungkin butuh kesabaran ekstra darimu.'
+  },
+  anxious:{
+    name:'Anxious-Preoccupied', emoji:'🌊',
+    tagline:'Sangat menghargai kedekatan, tapi sering diliputi kecemasan',
+    desc:'Kamu sangat menginginkan kedekatan emosional dan sering mencari kepastian bahwa kamu dicintai. Namun rasa cemas akan ditinggalkan atau tidak cukup dicintai bisa membuatmu terlalu bergantung secara emosional pada validasi orang lain.',
+    strengths:['Sangat peduli & penuh kasih sayang','Berkomitmen tinggi dalam hubungan','Peka terhadap perasaan pasangan','Berusaha keras menjaga hubungan'],
+    weaknesses:['Mudah cemas & overthinking','Butuh validasi terus-menerus','Rentan cemburu berlebihan','Sulit merasa "cukup aman" dalam hubungan'],
+    growth:'Latih self-soothing (menenangkan diri sendiri) sebelum mencari kepastian dari orang lain. Journaling, terapi, atau teknik mindfulness bisa membantu meredakan kecemasan akan ditinggalkan.'
+  },
+  avoidant:{
+    name:'Dismissive-Avoidant', emoji:'🛶',
+    tagline:'Menghargai kemandirian, cenderung menjaga jarak emosional',
+    desc:'Kamu sangat menghargai kemandirian dan sering merasa tidak nyaman dengan kedekatan emosional yang terlalu dalam. Kamu cenderung mengandalkan diri sendiri dan bisa menjaga jarak saat hubungan terasa terlalu intens.',
+    strengths:['Mandiri dan kuat secara emosional','Tenang di bawah tekanan','Tidak mudah panik saat konflik','Fokus pada pencapaian pribadi'],
+    weaknesses:['Sulit membuka diri sepenuhnya','Cenderung menghindar saat hubungan makin dalam','Bisa terkesan dingin/menjauh','Sulit meminta bantuan orang lain'],
+    growth:'Cobalah melatih diri untuk berbagi perasaan secara bertahap dengan orang yang kamu percaya. Kedekatan emosional bukan ancaman terhadap kemandirianmu — keduanya bisa berjalan bersama.'
+  },
+  fearful:{
+    name:'Fearful-Avoidant', emoji:'🌪️',
+    tagline:'Menginginkan kedekatan, tapi juga takut akan disakiti',
+    desc:'Kamu memiliki keinginan kuat untuk dekat dengan orang lain, namun di saat yang sama merasa takut akan tersakiti atau dikecewakan. Ini menciptakan pola tarik-ulur — mendekat lalu menjauh — yang bisa membingungkan bagi diri sendiri maupun pasangan.',
+    strengths:['Sangat memahami kompleksitas emosi','Empati mendalam terhadap orang yang terluka','Reflektif terhadap pengalaman masa lalu','Berpotensi tumbuh besar lewat kesadaran diri'],
+    weaknesses:['Pola tarik-ulur dalam hubungan','Kesulitan mempercayai kestabilan hubungan','Rentan terhadap konflik internal (ingin dekat vs takut disakiti)','Mudah merasa kewalahan secara emosional'],
+    growth:'Gaya ini sering berakar dari pengalaman masa lalu yang campur aduk. Terapi (khususnya pendekatan berbasis attachment) sangat membantu untuk memahami pola ini dan membangun rasa aman secara bertahap.'
+  }
+};
+
+/* ============ STATE ============ */
+let answers = new Array(questions.length).fill(null);
+let current = 0;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz(){
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[current];
+  const total = questions.length;
+  const pct = Math.round(((current+1)/total)*100);
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Pertanyaan ${current+1} / ${total}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  const badge = document.getElementById('dimBadge');
+  badge.className = 'badge badge-' + q.dim;
+  badge.textContent = dimBadgeLabel[q.dim];
+
+  document.getElementById('questionText').textContent = q.text;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  scaleOptions.forEach(opt=>{
+    const div = document.createElement('div');
+    div.className = 'option';
+    if(answers[current] === opt.value) div.classList.add('selected');
+    div.innerHTML = `<span class="dots">${opt.dots}</span><span>${opt.label}</span>`;
+    div.onclick = ()=>selectAnswer(opt.value);
+    wrap.appendChild(div);
+  });
+
+  document.getElementById('btnBack').disabled = current === 0;
+  document.getElementById('btnNext').disabled = answers[current] === null;
+  document.getElementById('btnNext').textContent = (current === total-1) ? 'Lihat Hasil 🎉' : 'Lanjut →';
+}
+
+function selectAnswer(value){
+  answers[current] = value;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(answers[current] === null) return;
+  if(current === questions.length - 1){
+    calculateResult();
+    return;
+  }
+  current++;
+  renderQuestion();
+}
+
+function prevQuestion(){
+  if(current === 0) return;
+  current--;
+  renderQuestion();
+}
+
+/* ============ SCORING ============ */
+function calculateResult(){
+  const scores = {ANX:0, AVO:0};
+
+  questions.forEach((q, i)=>{
+    let val = answers[i];
+    if(q.dir === 'B') val = -val;
+    scores[q.dim] += val;
+  });
+
+  // max possible per dimension = 12 questions * 3 = 36
+  const maxScore = 36;
+  const anxPct = Math.round(((scores.ANX + maxScore) / (maxScore*2)) * 100); // 0-100, 50=neutral
+  const avoPct = Math.round(((scores.AVO + maxScore) / (maxScore*2)) * 100);
+
+  const highAnx = scores.ANX >= 0;
+  const highAvo = scores.AVO >= 0;
+
+  let key;
+  if(!highAnx && !highAvo) key = 'secure';
+  else if(highAnx && !highAvo) key = 'anxious';
+  else if(!highAnx && highAvo) key = 'avoidant';
+  else key = 'fearful';
+
+  showResult(key, anxPct, avoPct);
+}
+
+/* ============ RESULT RENDER ============ */
+let currentShareText = '';
+
+function showResult(key, anxPct, avoPct){
+  const data = typeData[key];
+
+  // simpan hasil di browser (localStorage) supaya bisa ditampilkan di halaman utama
+  try{
+    localStorage.setItem('quizzy_attachment', JSON.stringify({
+      key: key,
+      name: data.name,
+      emoji: data.emoji,
+      date: new Date().toISOString()
+    }));
+  }catch(e){}
+
+  const shareUrl = location.origin + location.pathname.replace(/[^/]+$/, 'index.html');
+  currentShareText = `Aku baru ikutan Tes Attachment Style dan hasilnya ${data.name} ${data.emoji}!\n"${data.tagline}"\n\nCoba juga di: ${shareUrl}`;
+
+  document.getElementById('resEmoji').textContent = data.emoji;
+  document.getElementById('resName').textContent = data.name;
+  document.getElementById('resTagline').textContent = '"' + data.tagline + '"';
+  document.getElementById('resDesc').textContent = data.desc;
+
+  document.getElementById('resStrengths').innerHTML = data.strengths.map(s=>`<li>${s}</li>`).join('');
+  document.getElementById('resWeaknesses').innerHTML = data.weaknesses.map(w=>`<li>${w}</li>`).join('');
+  document.getElementById('resGrowth').textContent = data.growth;
+
+  const traitsWrap = document.getElementById('traitsWrap');
+  traitsWrap.innerHTML = `
+    <div class="trait-row">
+      <div class="trait-labels">
+        <span style="color:var(--anx)">Anxiety Rendah</span>
+        <span style="color:var(--anx)">Anxiety Tinggi</span>
+      </div>
+      <div class="trait-track"><div class="trait-fill anx" data-pct="${anxPct}"></div></div>
+    </div>
+    <div class="trait-row">
+      <div class="trait-labels">
+        <span style="color:var(--avo)">Avoidance Rendah</span>
+        <span style="color:var(--avo)">Avoidance Tinggi</span>
+      </div>
+      <div class="trait-track"><div class="trait-fill avo" data-pct="${avoPct}"></div></div>
+    </div>
+  `;
+
+  showScreen('screen-result');
+
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.trait-fill').forEach(fill=>{
+        const pct = fill.getAttribute('data-pct');
+        fill.style.width = pct + '%';
+      });
+    }, 100);
+  });
+}
+
+function restartQuiz(){
+  showScreen('screen-intro');
+}
+
+/* ============ SHARE & TOAST ============ */
+async function shareCurrentResult(){
+  if(navigator.share){
+    try{
+      await navigator.share({ title: 'Hasil Tes Attachment Style', text: currentShareText });
+      return;
+    }catch(e){ /* user membatalkan atau share gagal, lanjut ke fallback copy */ }
+  }
+  try{
+    await navigator.clipboard.writeText(currentShareText);
+    showToast('Hasil disalin ke clipboard! 📋');
+  }catch(e){
+    showToast('Gagal menyalin. Coba salin manual ya.');
+  }
+}
+
+function showToast(msg){
+  let toast = document.getElementById('toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
