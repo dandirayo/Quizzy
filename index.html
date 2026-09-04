@@ -121,6 +121,7 @@ h1{
 }
 .card-mbti .accent-bar{background:linear-gradient(90deg,#7c3aed,#a855f7);}
 .card-attach .accent-bar{background:linear-gradient(90deg,#ec4899,#f472b6);}
+.card-marriage .accent-bar{background:linear-gradient(90deg,#14b8a6,#f97316);}
 .card-soon .accent-bar{background:linear-gradient(90deg,#4b5563,#6b7280);}
 
 .card-emoji{font-size:38px;}
@@ -138,6 +139,7 @@ h1{
 }
 .card-mbti .tag.highlight{color:#a855f7;border-color:#a855f7;background:rgba(168,85,247,0.1);}
 .card-attach .tag.highlight{color:#f472b6;border-color:#f472b6;background:rgba(244,114,182,0.1);}
+.card-marriage .tag.highlight{color:#14b8a6;border-color:#14b8a6;background:rgba(20,184,166,0.1);}
 
 .card-cta{
   font-size:13px;font-weight:700;margin-top:8px;
@@ -145,6 +147,7 @@ h1{
 }
 .card-mbti .card-cta{color:#a855f7;}
 .card-attach .card-cta{color:#f472b6;}
+.card-marriage .card-cta{color:#14b8a6;}
 
 .quiz-card.disabled{
   opacity:0.5;
@@ -268,6 +271,19 @@ footer a{color:var(--muted);}
       <div class="card-cta">Mulai Quiz →</div>
     </a>
 
+    <a class="quiz-card card-marriage" href="marriage-readiness-quiz.html">
+      <div class="accent-bar"></div>
+      <div class="card-emoji">💍</div>
+      <div class="card-title">Tes Kesiapan Menikah</div>
+      <p class="card-desc">Self-assessment berbasis persentase untuk melihat kesiapan emosi, komunikasi, finansial, peran, nilai, dan komitmen sebelum menikah.</p>
+      <div class="card-tags">
+        <span class="tag highlight">Persentase</span>
+        <span class="tag">10 / 30 Soal</span>
+        <span class="tag">Rujukan Ilmiah</span>
+      </div>
+      <div class="card-cta">Mulai Quiz →</div>
+    </a>
+
     <div class="quiz-card card-soon disabled">
       <div class="accent-bar"></div>
       <div class="card-emoji">🌿</div>
@@ -286,14 +302,15 @@ footer a{color:var(--muted);}
 
 <script>
 function loadProfile(){
-  let mbti = null, attach = null;
+  let mbti = null, attach = null, marriage = null;
   try{ mbti = JSON.parse(localStorage.getItem('quizzy_mbti') || 'null'); }catch(e){}
   try{ attach = JSON.parse(localStorage.getItem('quizzy_attachment') || 'null'); }catch(e){}
+  try{ marriage = JSON.parse(localStorage.getItem('quizzy_marriage') || 'null'); }catch(e){}
 
   const section = document.getElementById('profileSection');
   const badges = document.getElementById('profileBadges');
 
-  if(!mbti && !attach){
+  if(!mbti && !attach && !marriage){
     section.style.display = 'none';
     return;
   }
@@ -319,11 +336,22 @@ function loadProfile(){
   }else{
     badges.innerHTML += `<a href="attachment-style-quiz.html" class="profile-badge badge-empty">+ Ambil Tes Attachment</a>`;
   }
+
+  if(marriage){
+    badges.innerHTML += `
+      <a href="marriage-readiness-quiz.html" class="profile-badge">
+        <span class="pb-emoji">${marriage.emoji}</span>
+        <span class="pb-text"><strong>${marriage.score}%</strong><small>${marriage.title}</small></span>
+      </a>`;
+  }else{
+    badges.innerHTML += `<a href="marriage-readiness-quiz.html" class="profile-badge badge-empty">+ Ambil Tes Menikah</a>`;
+  }
 }
 
 function resetProfile(){
   localStorage.removeItem('quizzy_mbti');
   localStorage.removeItem('quizzy_attachment');
+  localStorage.removeItem('quizzy_marriage');
   loadProfile();
 }
 

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tes Kesiapan Menikah</title>
+<style>
+:root{
+  --bg:#0f0f1a;
+  --card:#1a1a2e;
+  --card2:#20203a;
+  --text:#f0f0f5;
+  --muted:#9a9ab0;
+  --accent1:#14b8a6;
+  --accent2:#f97316;
+  --green:#22c55e;
+  --yellow:#eab308;
+  --red:#ef4444;
+  --border:#2d2d47;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.2;
+  z-index:0;
+  pointer-events:none;
+}
+body::before{width:300px;height:300px;background:var(--accent1);top:-90px;left:-90px;}
+body::after{width:280px;height:280px;background:var(--accent2);bottom:-90px;right:-90px;}
+.container{width:100%;max-width:700px;position:relative;z-index:1;}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 28px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  position:relative;
+  overflow:hidden;
+}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.home-link{
+  position:absolute;
+  top:18px;
+  left:18px;
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+  z-index:2;
+}
+.home-link:hover{color:var(--accent1);}
+.logo{font-size:42px;text-align:center;margin-bottom:6px;}
+h1{
+  text-align:center;
+  font-size:25px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin-bottom:8px;
+}
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+  margin:0 auto 22px;
+  line-height:1.6;
+  max-width:560px;
+}
+.disclaimer{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent1);
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:22px;
+  line-height:1.6;
+}
+.mode-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:24px;
+}
+.mode-card{
+  background:var(--card2);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  text-align:left;
+  color:var(--text);
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.mode-card:hover,.mode-card.selected{
+  border-color:var(--accent1);
+  background:rgba(20,184,166,0.12);
+}
+.mode-card strong{display:block;font-size:15px;margin-bottom:6px;}
+.mode-card span{display:block;color:var(--muted);font-size:12px;line-height:1.5;}
+.dims{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:24px;
+}
+.dim-card{
+  background:rgba(32,32,58,0.74);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+}
+.dim-card strong{display:block;font-size:12px;color:var(--accent1);margin-bottom:4px;}
+.dim-card span{display:block;font-size:11px;color:var(--muted);line-height:1.35;}
+button.primary{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+button.primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,184,166,0.28);}
+button.primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.progress-wrap{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:8px;transition:width .3s ease;width:0%;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:16px;}
+.badge{
+  display:inline-block;
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.5px;
+  margin-bottom:18px;
+  background:rgba(20,184,166,0.15);
+  color:var(--accent1);
+  border:1px solid var(--accent1);
+}
+.question-text{font-size:19px;font-weight:650;line-height:1.45;margin-bottom:24px;min-height:82px;}
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;}
+.option{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 15px;
+  background:var(--card2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .15s ease;
+  font-size:13.5px;
+}
+.option:hover{border-color:var(--accent1);background:rgba(20,184,166,0.08);}
+.option.selected{border-color:var(--accent1);background:rgba(20,184,166,0.16);box-shadow:0 0 0 1px var(--accent1);}
+.option .score{min-width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,0.06);font-size:12px;font-weight:800;color:var(--accent1);}
+.nav-row{display:flex;gap:12px;}
+.nav-row button.secondary,.secondary-btn{
+  flex:0 0 auto;
+  padding:16px 18px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  background:transparent;
+  color:var(--text);
+  font-size:14px;
+  font-weight:650;
+  cursor:pointer;
+  transition:all .15s ease;
+  white-space:nowrap;
+}
+.nav-row button.secondary:hover,.secondary-btn:hover{border-color:var(--accent1);color:var(--accent1);}
+.nav-row button.secondary:disabled{opacity:.3;cursor:not-allowed;}
+.nav-row .primary{flex:1;}
+.result-header{text-align:center;margin-bottom:24px;}
+.result-emoji{font-size:48px;margin-bottom:4px;}
+.result-score{
+  font-size:54px;
+  font-weight:850;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.result-title{font-size:20px;font-weight:750;margin-top:2px;}
+.result-desc{font-size:14px;line-height:1.7;color:#d8d8e6;margin:12px 0 24px;text-align:left;}
+.dim-results{display:flex;flex-direction:column;gap:13px;margin-bottom:24px;}
+.dim-row{}
+.dim-labels{display:flex;justify-content:space-between;gap:12px;font-size:12px;font-weight:750;margin-bottom:6px;}
+.dim-labels span:last-child{color:var(--muted);font-weight:650;}
+.dim-track{height:10px;background:var(--card2);border-radius:8px;overflow:hidden;}
+.dim-fill{height:100%;width:0%;border-radius:8px;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width 1s cubic-bezier(.22,1,.36,1);}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.insight-box,.sources{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+}
+.insight-box h3,.sources h3{font-size:13px;margin-bottom:9px;color:var(--accent1);}
+.insight-box p,.sources li{font-size:12.5px;color:#c8c8dc;line-height:1.65;}
+.sources{margin-bottom:24px;}
+.sources ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.sources a{color:#7dd3fc;text-decoration:none;}
+.sources a:hover{text-decoration:underline;}
+.result-actions{display:flex;gap:10px;}
+.result-actions .primary{flex:1;}
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 20px;
+  border-radius:10px;
+  font-size:13px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:100;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:560px){
+  .card{padding:28px 18px;}
+  .mode-grid,.dims,.insight-grid{grid-template-columns:1fr;}
+  .result-score{font-size:44px;}
+  .question-text{font-size:18px;}
+  .result-actions{flex-direction:column;}
+  .secondary-btn{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <a href="index.html" class="home-link">← Beranda</a>
+
+    <div class="screen active" id="screen-intro">
+      <div class="logo">💍</div>
+      <h1>Tes Kesiapan Menikah</h1>
+      <p class="subtitle">Sebelum melangkah lebih jauh, coba cek dulu kesiapanmu. Kuis ini membantu kamu melihat bekal emosional, komunikasi, finansial, peran keluarga, nilai hidup, dan komitmen dengan cara yang ringan tapi tetap bermakna.</p>
+
+      <div class="mode-grid">
+        <button class="mode-card selected" id="mode-short" onclick="selectMode('short')">
+          <strong>Cek Cepat</strong>
+          <span>10 pertanyaan inti untuk membaca gambaran awal kesiapanmu. Cocok kalau kamu ingin refleksi singkat tanpa terlalu lama mikir.</span>
+        </button>
+        <button class="mode-card" id="mode-long" onclick="selectMode('long')">
+          <strong>Refleksi Lengkap</strong>
+          <span>30 pertanyaan yang lebih dalam untuk membedah area penting sebelum menikah. Cocok kalau kamu ingin hasil yang lebih kaya dan serius.</span>
+        </button>
+      </div>
+
+      <div class="dims">
+        <div class="dim-card"><strong>Emosi</strong><span>Mengelola marah, kecewa, cemas, dan konflik.</span></div>
+        <div class="dim-card"><strong>Komunikasi</strong><span>Membahas masalah tanpa saling melukai.</span></div>
+        <div class="dim-card"><strong>Finansial</strong><span>Kesiapan membicarakan uang dan prioritas hidup.</span></div>
+        <div class="dim-card"><strong>Peran</strong><span>Tanggung jawab rumah tangga dan keluarga.</span></div>
+        <div class="dim-card"><strong>Nilai</strong><span>Keselarasan prinsip, spiritualitas, dan arah hidup.</span></div>
+        <div class="dim-card"><strong>Komitmen</strong><span>Kesiapan bertumbuh bersama dalam jangka panjang.</span></div>
+      </div>
+
+      <div class="disclaimer">
+        Kuis ini bersifat edukatif dan reflektif. Pertanyaannya disusun dari tema yang sering muncul dalam riset kesiapan menikah dan asesmen pranikah, bukan alat diagnosis atau pengganti konseling profesional.
+      </div>
+
+      <button class="primary" onclick="startQuiz()">Mulai Cek Kesiapan</button>
+    </div>
+
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label">
+        <span id="progressText">Pertanyaan 1 / 10</span>
+        <span id="progressPct">10%</span>
+      </div>
+      <div id="dimBadge" class="badge">EMOSI</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsWrap"></div>
+      <div class="nav-row">
+        <button class="secondary" id="btnBack" onclick="prevQuestion()">← Kembali</button>
+        <button class="primary" id="btnNext" onclick="nextQuestion()" disabled>Lanjut →</button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-result">
+      <div class="result-header">
+        <div class="result-emoji" id="resultEmoji">🌿</div>
+        <div class="result-score" id="resultScore">76%</div>
+        <div class="result-title" id="resultTitle">Cukup Siap</div>
+      </div>
+
+      <p class="result-desc" id="resultDesc"></p>
+      <div class="dim-results" id="dimResults"></div>
+
+      <div class="insight-grid">
+        <div class="insight-box">
+          <h3>Area Terkuat</h3>
+          <p id="strongestText"></p>
+        </div>
+        <div class="insight-box">
+          <h3>Area Perlu Dibahas</h3>
+          <p id="lowestText"></p>
+        </div>
+      </div>
+
+      <div class="sources">
+        <h3>Dasar Rujukan</h3>
+        <ul>
+          <li><a href="https://journal.ipb.ac.id/jikk/article/download/9982/7804" target="_blank" rel="noopener">Krisnatuti & Oktaviani, Jurnal Ilmu Keluarga dan Konsumen IPB</a></li>
+          <li><a href="https://www.prepare-enrich.com/couples/" target="_blank" rel="noopener">PREPARE/ENRICH Couples Assessment</a></li>
+          <li><a href="https://journals.sagepub.com/doi/10.1177/019251397018002002" target="_blank" rel="noopener">Holman & Li, Journal of Family Issues</a></li>
+          <li><a href="https://eric.ed.gov/?id=EJ484637" target="_blank" rel="noopener">Larson & Holman, Family Relations</a></li>
+          <li><a href="https://www.gottman.com/product/the-seven-principles-for-making-marriage-work/" target="_blank" rel="noopener">Gottman & Silver, The Seven Principles for Making Marriage Work</a></li>
+        </ul>
+      </div>
+
+      <div class="result-actions">
+        <button class="secondary-btn" onclick="shareCurrentResult()">Bagikan</button>
+        <button class="primary" onclick="restartQuiz()">Ulangi Quiz</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const shortQuestions = [
+  {dim:'Komitmen', text:'Saya memahami alasan utama saya ingin menikah.'},
+  {dim:'Komitmen', text:'Saya siap menjalani komitmen jangka panjang dengan pasangan.'},
+  {dim:'Komunikasi', text:'Saya dan pasangan bisa membicarakan masalah tanpa saling menyakiti.'},
+  {dim:'Emosi', text:'Saya mampu mengelola emosi saat konflik.'},
+  {dim:'Finansial', text:'Saya dan pasangan sudah membicarakan rencana keuangan setelah menikah.'},
+  {dim:'Peran', text:'Saya siap berbagi tanggung jawab rumah tangga.'},
+  {dim:'Emosi', text:'Saya menerima bahwa pasangan memiliki kekurangan.'},
+  {dim:'Nilai', text:'Saya dan pasangan memiliki nilai hidup yang cukup sejalan.'},
+  {dim:'Komitmen', text:'Saya tidak menikah hanya karena tekanan umur, keluarga, atau lingkungan.'},
+  {dim:'Komitmen', text:'Saya siap belajar dan bertumbuh bersama pasangan setelah menikah.'}
+];
+
+const longQuestions = [
+  {dim:'Komitmen', text:'Saya memahami alasan pribadi saya ingin menikah.'},
+  {dim:'Komitmen', text:'Saya tidak melihat pernikahan sebagai solusi instan atas masalah hidup.'},
+  {dim:'Peran', text:'Saya siap menjalani perubahan peran dari individu menjadi pasangan hidup.'},
+  {dim:'Komitmen', text:'Saya mampu mengambil keputusan besar dengan pertimbangan matang.'},
+  {dim:'Komitmen', text:'Saya siap bertanggung jawab atas pilihan saya dalam pernikahan.'},
+  {dim:'Emosi', text:'Saya mampu mengelola marah, kecewa, dan cemburu secara sehat.'},
+  {dim:'Emosi', text:'Saya bisa meminta maaf ketika melakukan kesalahan.'},
+  {dim:'Emosi', text:'Saya bisa memaafkan tanpa terus mengungkit kesalahan lama.'},
+  {dim:'Emosi', text:'Saya tidak mudah mengancam pergi atau mengakhiri hubungan saat konflik.'},
+  {dim:'Emosi', text:'Saya mampu menenangkan diri sebelum membahas masalah penting.'},
+  {dim:'Komunikasi', text:'Saya dan pasangan bisa berbicara terbuka tentang perasaan.'},
+  {dim:'Komunikasi', text:'Saya merasa didengar oleh pasangan.'},
+  {dim:'Komunikasi', text:'Saya juga berusaha memahami sudut pandang pasangan.'},
+  {dim:'Komunikasi', text:'Saya dan pasangan bisa membahas topik sensitif dengan cukup aman.'},
+  {dim:'Komunikasi', text:'Saya tidak menggunakan hinaan, sindiran kasar, atau diam berkepanjangan saat bertengkar.'},
+  {dim:'Finansial', text:'Saya dan pasangan sudah membicarakan penghasilan, utang, tabungan, dan gaya belanja.'},
+  {dim:'Finansial', text:'Saya siap menyusun prioritas keuangan bersama pasangan.'},
+  {dim:'Finansial', text:'Saya memahami bahwa masalah finansial bisa memengaruhi kualitas pernikahan.'},
+  {dim:'Finansial', text:'Saya siap hidup sesuai kemampuan ekonomi bersama.'},
+  {dim:'Finansial', text:'Saya dan pasangan punya gambaran tentang pekerjaan, karier, atau sumber penghasilan setelah menikah.'},
+  {dim:'Peran', text:'Saya memahami tanggung jawab sebagai suami atau istri dalam rumah tangga.'},
+  {dim:'Peran', text:'Saya siap berbagi pekerjaan rumah secara adil.'},
+  {dim:'Peran', text:'Saya dan pasangan sudah membicarakan rencana memiliki anak atau tidak.'},
+  {dim:'Peran', text:'Saya siap menghadapi keterlibatan keluarga besar dengan batasan yang sehat.'},
+  {dim:'Peran', text:'Saya dan pasangan punya cara untuk mengambil keputusan keluarga bersama.'},
+  {dim:'Nilai', text:'Saya dan pasangan memiliki nilai moral atau spiritual yang dapat saling dihormati.'},
+  {dim:'Nilai', text:'Saya siap menjaga komitmen ketika hubungan sedang tidak mudah.'},
+  {dim:'Nilai', text:'Saya merasa aman menjadi diri sendiri di hadapan pasangan.'},
+  {dim:'Nilai', text:'Saya percaya pasangan juga bersedia bertumbuh dan memperbaiki diri.'},
+  {dim:'Komitmen', text:'Saya siap membangun kehidupan pernikahan sebagai kerja sama, bukan hanya perasaan cinta.'}
+];
+
+const scaleOptions = [
+  {label:'Sangat tidak setuju', value:1},
+  {label:'Tidak setuju', value:2},
+  {label:'Netral / ragu-ragu', value:3},
+  {label:'Setuju', value:4},
+  {label:'Sangat setuju', value:5}
+];
+
+const descriptions = [
+  {min:80, emoji:'🌱', title:'Siap Secara Umum', desc:'Kamu menunjukkan kesiapan yang kuat di banyak area penting. Tetap gunakan hasil ini sebagai bahan percakapan dengan pasangan, terutama untuk menjaga ekspektasi tetap realistis.'},
+  {min:60, emoji:'🌿', title:'Cukup Siap', desc:'Kamu sudah punya fondasi yang baik, tetapi masih ada beberapa topik yang perlu dibicarakan lebih matang. Ini posisi yang sehat untuk mulai memperjelas rencana dan kebiasaan bersama.'},
+  {min:40, emoji:'🧭', title:'Perlu Banyak Persiapan', desc:'Ada beberapa area penting yang masih perlu diperkuat sebelum mengambil keputusan besar. Diskusi terbuka, konseling pranikah, atau kelas persiapan menikah bisa sangat membantu.'},
+  {min:0, emoji:'🕯️', title:'Belum Siap', desc:'Hasil ini menunjukkan banyak hal mendasar yang sebaiknya dibereskan lebih dulu. Pernikahan akan terasa jauh lebih sehat ketika keputusan dibuat dari kesiapan, bukan tekanan.'}
+];
+
+const dimensionTips = {
+  Emosi:'Latih cara menenangkan diri, meminta maaf, dan membahas konflik saat kondisi sudah lebih stabil.',
+  Komunikasi:'Buat kebiasaan ngobrol tentang hal sulit tanpa menyalahkan, menghina, atau mendiamkan terlalu lama.',
+  Finansial:'Bicarakan pemasukan, utang, tabungan, gaya belanja, dan prioritas sebelum menikah.',
+  Peran:'Perjelas pembagian tugas rumah, batas keluarga besar, karier, dan rencana anak.',
+  Nilai:'Bahas prinsip hidup, spiritualitas, batasan, dan arah masa depan bersama.',
+  Komitmen:'Pastikan keputusan menikah datang dari kesiapan sadar, bukan semata tekanan atau rasa takut kehilangan.'
+};
+
+let selectedMode = 'short';
+let questions = shortQuestions;
+let answers = [];
+let current = 0;
+let currentShareText = '';
+
+function selectMode(mode){
+  selectedMode = mode;
+  document.getElementById('mode-short').classList.toggle('selected', mode === 'short');
+  document.getElementById('mode-long').classList.toggle('selected', mode === 'long');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(screen=>screen.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz(){
+  questions = selectedMode === 'short' ? shortQuestions : longQuestions;
+  answers = new Array(questions.length).fill(null);
+  current = 0;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[current];
+  const total = questions.length;
+  const pct = Math.round(((current + 1) / total) * 100);
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Pertanyaan ${current + 1} / ${total}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('dimBadge').textContent = q.dim.toUpperCase();
+  document.getElementById('questionText').textContent = q.text;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  scaleOptions.forEach(opt=>{
+    const item = document.createElement('div');
+    item.className = 'option';
+    if(answers[current] === opt.value) item.classList.add('selected');
+    item.innerHTML = `<span class="score">${opt.value}</span><span>${opt.label}</span>`;
+    item.onclick = ()=>selectAnswer(opt.value);
+    wrap.appendChild(item);
+  });
+
+  document.getElementById('btnBack').disabled = current === 0;
+  document.getElementById('btnNext').disabled = answers[current] === null;
+  document.getElementById('btnNext').textContent = current === total - 1 ? 'Lihat Hasil' : 'Lanjut →';
+}
+
+function selectAnswer(value){
+  answers[current] = value;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(answers[current] === null) return;
+  if(current === questions.length - 1){
+    calculateResult();
+    return;
+  }
+  current++;
+  renderQuestion();
+}
+
+function prevQuestion(){
+  if(current === 0) return;
+  current--;
+  renderQuestion();
+}
+
+function calculateResult(){
+  const total = answers.reduce((sum, value)=>sum + value, 0);
+  const max = questions.length * 5;
+  const percentage = Math.round((total / max) * 100);
+  const category = descriptions.find(item=>percentage >= item.min);
+
+  const dimensionScores = {};
+  questions.forEach((question, index)=>{
+    if(!dimensionScores[question.dim]) dimensionScores[question.dim] = {score:0, max:0};
+    dimensionScores[question.dim].score += answers[index];
+    dimensionScores[question.dim].max += 5;
+  });
+
+  const dimensions = Object.keys(dimensionScores).map(name=>({
+    name,
+    percent: Math.round((dimensionScores[name].score / dimensionScores[name].max) * 100)
+  })).sort((a,b)=>b.percent - a.percent);
+
+  showResult(percentage, category, dimensions);
+}
+
+function showResult(percentage, category, dimensions){
+  const strongest = dimensions[0];
+  const lowest = dimensions[dimensions.length - 1];
+  const versionName = selectedMode === 'short' ? 'Versi Singkat' : 'Versi Lengkap';
+
+  document.getElementById('resultEmoji').textContent = category.emoji;
+  document.getElementById('resultScore').textContent = percentage + '%';
+  document.getElementById('resultTitle').textContent = category.title;
+  document.getElementById('resultDesc').textContent = category.desc;
+  document.getElementById('strongestText').textContent = `${strongest.name} (${strongest.percent}%). Area ini tampak paling matang dari jawabanmu.`;
+  document.getElementById('lowestText').textContent = `${lowest.name} (${lowest.percent}%). ${dimensionTips[lowest.name]}`;
+
+  document.getElementById('dimResults').innerHTML = dimensions.map(item=>`
+    <div class="dim-row">
+      <div class="dim-labels">
+        <span>${item.name}</span>
+        <span>${item.percent}%</span>
+      </div>
+      <div class="dim-track"><div class="dim-fill" data-pct="${item.percent}"></div></div>
+    </div>
+  `).join('');
+
+  try{
+    localStorage.setItem('quizzy_marriage', JSON.stringify({
+      score: percentage,
+      title: category.title,
+      emoji: category.emoji,
+      mode: selectedMode,
+      date: new Date().toISOString()
+    }));
+  }catch(e){}
+
+  const shareUrl = location.origin + location.pathname.replace(/[^/]+$/, 'index.html');
+  currentShareText = `Aku baru ikut Tes Kesiapan Menikah (${versionName}) dan hasilku ${percentage}% - ${category.title}.\n\nCoba juga di: ${shareUrl}`;
+
+  showScreen('screen-result');
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.dim-fill').forEach(fill=>{
+        fill.style.width = fill.getAttribute('data-pct') + '%';
+      });
+    }, 100);
+  });
+}
+
+function restartQuiz(){
+  showScreen('screen-intro');
+}
+
+async function shareCurrentResult(){
+  if(navigator.share){
+    try{
+      await navigator.share({ title:'Hasil Tes Kesiapan Menikah', text:currentShareText });
+      return;
+    }catch(e){}
+  }
+  try{
+    await navigator.clipboard.writeText(currentShareText);
+    showToast('Hasil disalin ke clipboard.');
+  }catch(e){
+    showToast('Gagal menyalin. Coba salin manual ya.');
+  }
+}
+
+function showToast(msg){
+  let toast = document.getElementById('toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
