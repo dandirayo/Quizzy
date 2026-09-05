@@ -122,6 +122,7 @@ h1{
 .card-mbti .accent-bar{background:linear-gradient(90deg,#7c3aed,#a855f7);}
 .card-attach .accent-bar{background:linear-gradient(90deg,#ec4899,#f472b6);}
 .card-marriage .accent-bar{background:linear-gradient(90deg,#14b8a6,#f97316);}
+.card-bigfive .accent-bar{background:linear-gradient(90deg,#22c55e,#3b82f6);}
 .card-soon .accent-bar{background:linear-gradient(90deg,#4b5563,#6b7280);}
 
 .card-emoji{font-size:38px;}
@@ -140,6 +141,7 @@ h1{
 .card-mbti .tag.highlight{color:#a855f7;border-color:#a855f7;background:rgba(168,85,247,0.1);}
 .card-attach .tag.highlight{color:#f472b6;border-color:#f472b6;background:rgba(244,114,182,0.1);}
 .card-marriage .tag.highlight{color:#14b8a6;border-color:#14b8a6;background:rgba(20,184,166,0.1);}
+.card-bigfive .tag.highlight{color:#22c55e;border-color:#22c55e;background:rgba(34,197,94,0.1);}
 
 .card-cta{
   font-size:13px;font-weight:700;margin-top:8px;
@@ -148,6 +150,7 @@ h1{
 .card-mbti .card-cta{color:#a855f7;}
 .card-attach .card-cta{color:#f472b6;}
 .card-marriage .card-cta{color:#14b8a6;}
+.card-bigfive .card-cta{color:#22c55e;}
 
 .quiz-card.disabled{
   opacity:0.5;
@@ -284,14 +287,18 @@ footer a{color:var(--muted);}
       <div class="card-cta">Mulai Quiz →</div>
     </a>
 
-    <div class="quiz-card card-soon disabled">
+    <a class="quiz-card card-bigfive" href="big-five-quiz.html">
       <div class="accent-bar"></div>
       <div class="card-emoji">🌿</div>
       <div class="card-title">Big Five (OCEAN)</div>
-      <p class="card-desc">Model kepribadian paling divalidasi secara ilmiah di psikologi akademis. Segera hadir.</p>
-      <div class="card-tags"><span class="tag">Coming Soon</span></div>
-      <div class="card-cta" style="color:var(--muted);">Segera hadir</div>
-    </div>
+      <p class="card-desc">Ukur lima dimensi utama kepribadianmu: Openness, Conscientiousness, Extraversion, Agreeableness, dan Neuroticism.</p>
+      <div class="card-tags">
+        <span class="tag highlight">5 Dimensi</span>
+        <span class="tag">25 Soal</span>
+        <span class="tag">Trait-Based</span>
+      </div>
+      <div class="card-cta">Mulai Quiz →</div>
+    </a>
   </div>
 
   <footer>
@@ -302,15 +309,16 @@ footer a{color:var(--muted);}
 
 <script>
 function loadProfile(){
-  let mbti = null, attach = null, marriage = null;
+  let mbti = null, attach = null, marriage = null, bigfive = null;
   try{ mbti = JSON.parse(localStorage.getItem('quizzy_mbti') || 'null'); }catch(e){}
   try{ attach = JSON.parse(localStorage.getItem('quizzy_attachment') || 'null'); }catch(e){}
   try{ marriage = JSON.parse(localStorage.getItem('quizzy_marriage') || 'null'); }catch(e){}
+  try{ bigfive = JSON.parse(localStorage.getItem('quizzy_bigfive') || 'null'); }catch(e){}
 
   const section = document.getElementById('profileSection');
   const badges = document.getElementById('profileBadges');
 
-  if(!mbti && !attach && !marriage){
+  if(!mbti && !attach && !marriage && !bigfive){
     section.style.display = 'none';
     return;
   }
@@ -346,12 +354,23 @@ function loadProfile(){
   }else{
     badges.innerHTML += `<a href="marriage-readiness-quiz.html" class="profile-badge badge-empty">+ Ambil Tes Menikah</a>`;
   }
+
+  if(bigfive){
+    badges.innerHTML += `
+      <a href="big-five-quiz.html" class="profile-badge">
+        <span class="pb-emoji">${bigfive.emoji}</span>
+        <span class="pb-text"><strong>${bigfive.title}</strong><small>${bigfive.dominant} ${bigfive.score}%</small></span>
+      </a>`;
+  }else{
+    badges.innerHTML += `<a href="big-five-quiz.html" class="profile-badge badge-empty">+ Ambil Tes Big Five</a>`;
+  }
 }
 
 function resetProfile(){
   localStorage.removeItem('quizzy_mbti');
   localStorage.removeItem('quizzy_attachment');
   localStorage.removeItem('quizzy_marriage');
+  localStorage.removeItem('quizzy_bigfive');
   loadProfile();
 }
 

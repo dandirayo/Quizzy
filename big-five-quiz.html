@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tes Big Five OCEAN</title>
+<style>
+:root{
+  --bg:#0f0f1a;
+  --card:#1a1a2e;
+  --card2:#20203a;
+  --text:#f0f0f5;
+  --muted:#9a9ab0;
+  --accent1:#22c55e;
+  --accent2:#3b82f6;
+  --opn:#a855f7;
+  --con:#22c55e;
+  --ext:#f97316;
+  --agr:#ec4899;
+  --neu:#38bdf8;
+  --border:#2d2d47;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.2;
+  z-index:0;
+  pointer-events:none;
+}
+body::before{width:300px;height:300px;background:var(--accent1);top:-90px;left:-90px;}
+body::after{width:280px;height:280px;background:var(--accent2);bottom:-90px;right:-90px;}
+.container{width:100%;max-width:700px;position:relative;z-index:1;}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 28px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  position:relative;
+  overflow:hidden;
+}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.home-link{
+  position:absolute;
+  top:18px;
+  left:18px;
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+  z-index:2;
+}
+.home-link:hover{color:var(--accent1);}
+.logo{font-size:42px;text-align:center;margin-bottom:6px;}
+h1{
+  text-align:center;
+  font-size:25px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin-bottom:8px;
+}
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+  margin:0 auto 22px;
+  line-height:1.6;
+  max-width:560px;
+}
+.dims{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-bottom:22px;
+}
+.dim-card{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 10px;
+  text-align:center;
+}
+.dim-card strong{display:block;font-size:12px;margin-bottom:4px;}
+.dim-card span{display:block;font-size:10.5px;color:var(--muted);line-height:1.35;}
+.opn strong{color:var(--opn);}
+.con strong{color:var(--con);}
+.ext strong{color:var(--ext);}
+.agr strong{color:var(--agr);}
+.neu strong{color:var(--neu);}
+.disclaimer{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent1);
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:24px;
+  line-height:1.6;
+}
+button.primary{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+button.primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(34,197,94,0.28);}
+button.primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.progress-wrap{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:8px;transition:width .3s ease;width:0%;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:16px;}
+.badge{
+  display:inline-block;
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.5px;
+  margin-bottom:18px;
+  background:rgba(34,197,94,0.15);
+  color:var(--accent1);
+  border:1px solid var(--accent1);
+}
+.question-text{font-size:19px;font-weight:650;line-height:1.45;margin-bottom:24px;min-height:82px;}
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;}
+.option{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 15px;
+  background:var(--card2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .15s ease;
+  font-size:13.5px;
+}
+.option:hover{border-color:var(--accent1);background:rgba(34,197,94,0.08);}
+.option.selected{border-color:var(--accent1);background:rgba(34,197,94,0.16);box-shadow:0 0 0 1px var(--accent1);}
+.option .score{min-width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,0.06);font-size:12px;font-weight:800;color:var(--accent1);}
+.nav-row{display:flex;gap:12px;}
+.nav-row button.secondary,.secondary-btn{
+  flex:0 0 auto;
+  padding:16px 18px;
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  background:transparent;
+  color:var(--text);
+  font-size:14px;
+  font-weight:650;
+  cursor:pointer;
+  transition:all .15s ease;
+  white-space:nowrap;
+}
+.nav-row button.secondary:hover,.secondary-btn:hover{border-color:var(--accent1);color:var(--accent1);}
+.nav-row button.secondary:disabled{opacity:.3;cursor:not-allowed;}
+.nav-row .primary{flex:1;}
+.result-header{text-align:center;margin-bottom:22px;}
+.result-emoji{font-size:48px;margin-bottom:4px;}
+.result-title{
+  font-size:30px;
+  font-weight:850;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.result-tagline{font-size:14px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.trait-results{display:flex;flex-direction:column;gap:14px;margin-bottom:24px;}
+.trait-row{}
+.trait-labels{display:flex;justify-content:space-between;gap:12px;font-size:12px;font-weight:750;margin-bottom:6px;}
+.trait-labels span:last-child{color:var(--muted);font-weight:650;}
+.trait-track{height:10px;background:var(--card2);border-radius:8px;overflow:hidden;}
+.trait-fill{height:100%;width:0%;border-radius:8px;transition:width 1s cubic-bezier(.22,1,.36,1);}
+.fill-O{background:linear-gradient(90deg,#7c3aed,var(--opn));}
+.fill-C{background:linear-gradient(90deg,#16a34a,var(--con));}
+.fill-E{background:linear-gradient(90deg,#ea580c,var(--ext));}
+.fill-A{background:linear-gradient(90deg,#db2777,var(--agr));}
+.fill-N{background:linear-gradient(90deg,#0ea5e9,var(--neu));}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.insight-box,.sources{
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+}
+.insight-box h3,.sources h3{font-size:13px;margin-bottom:9px;color:var(--accent1);}
+.insight-box p,.sources li{font-size:12.5px;color:#c8c8dc;line-height:1.65;}
+.sources{margin-bottom:24px;}
+.sources ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.sources a{color:#7dd3fc;text-decoration:none;}
+.sources a:hover{text-decoration:underline;}
+.result-actions{display:flex;gap:10px;}
+.result-actions .primary{flex:1;}
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 20px;
+  border-radius:10px;
+  font-size:13px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:100;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:620px){
+  .card{padding:28px 18px;}
+  .dims{grid-template-columns:1fr;}
+  .insight-grid{grid-template-columns:1fr;}
+  .result-title{font-size:25px;}
+  .result-actions{flex-direction:column;}
+  .secondary-btn{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <a href="index.html" class="home-link">← Beranda</a>
+
+    <div class="screen active" id="screen-intro">
+      <div class="logo">🌿</div>
+      <h1>Tes Big Five OCEAN</h1>
+      <p class="subtitle">Lihat peta kepribadianmu lewat lima dimensi besar yang paling sering dipakai dalam psikologi akademis: terbuka pada pengalaman, disiplin, sosial, kooperatif, dan stabilitas emosi.</p>
+
+      <div class="dims">
+        <div class="dim-card opn"><strong>Openness</strong><span>Imajinatif, penasaran, suka ide baru.</span></div>
+        <div class="dim-card con"><strong>Conscientiousness</strong><span>Teratur, tekun, bertanggung jawab.</span></div>
+        <div class="dim-card ext"><strong>Extraversion</strong><span>Ekspresif, aktif, berenergi sosial.</span></div>
+        <div class="dim-card agr"><strong>Agreeableness</strong><span>Hangat, empatik, mudah bekerja sama.</span></div>
+        <div class="dim-card neu"><strong>Neuroticism</strong><span>Sensitif pada stres dan emosi negatif.</span></div>
+      </div>
+
+      <div class="disclaimer">
+        Big Five adalah model trait, jadi hasilnya bukan satu tipe mutlak. Skor akan ditampilkan sebagai persentase per dimensi agar kamu bisa membaca pola dirimu dengan lebih halus.
+      </div>
+
+      <button class="primary" onclick="startQuiz()">Mulai Tes Big Five</button>
+    </div>
+
+    <div class="screen" id="screen-quiz">
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label">
+        <span id="progressText">Pertanyaan 1 / 25</span>
+        <span id="progressPct">4%</span>
+      </div>
+      <div id="dimBadge" class="badge">OPENNESS</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsWrap"></div>
+      <div class="nav-row">
+        <button class="secondary" id="btnBack" onclick="prevQuestion()">← Kembali</button>
+        <button class="primary" id="btnNext" onclick="nextQuestion()" disabled>Lanjut →</button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-result">
+      <div class="result-header">
+        <div class="result-emoji" id="resultEmoji">🧭</div>
+        <div class="result-title" id="resultTitle">Creative Planner</div>
+        <p class="result-tagline" id="resultTagline"></p>
+      </div>
+
+      <div class="trait-results" id="traitResults"></div>
+
+      <div class="insight-grid">
+        <div class="insight-box">
+          <h3>Dimensi Dominan</h3>
+          <p id="dominantText"></p>
+        </div>
+        <div class="insight-box">
+          <h3>Area Seimbang</h3>
+          <p id="growthText"></p>
+        </div>
+      </div>
+
+      <div class="sources">
+        <h3>Dasar Rujukan</h3>
+        <ul>
+          <li><a href="https://ipip.ori.org/" target="_blank" rel="noopener">International Personality Item Pool, Oregon Research Institute</a></li>
+          <li><a href="https://openpsychometrics.org/tests/IPIP-BFFM/" target="_blank" rel="noopener">Open Psychometrics, IPIP Big-Five Factor Markers</a></li>
+          <li><a href="https://search.gesis.org/" target="_blank" rel="noopener">John, Donahue & Kentle, Big Five Inventory</a></li>
+          <li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0092656605000553" target="_blank" rel="noopener">Goldberg et al., public-domain personality measures</a></li>
+        </ul>
+      </div>
+
+      <div class="result-actions">
+        <button class="secondary-btn" onclick="shareCurrentResult()">Bagikan</button>
+        <button class="primary" onclick="restartQuiz()">Ulangi Quiz</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const traits = {
+  O:{name:'Openness', low:'Praktis dan membumi', high:'Imajinatif dan eksploratif'},
+  C:{name:'Conscientiousness', low:'Fleksibel dan spontan', high:'Terencana dan disiplin'},
+  E:{name:'Extraversion', low:'Tenang dan reflektif', high:'Aktif dan ekspresif'},
+  A:{name:'Agreeableness', low:'Tegas dan kritis', high:'Hangat dan kooperatif'},
+  N:{name:'Neuroticism', low:'Stabil dan tenang', high:'Sensitif dan mudah tertekan'}
+};
+
+const questions = [
+  {trait:'O', reverse:false, text:'Saya senang mencoba ide, aktivitas, atau pengalaman baru.'},
+  {trait:'O', reverse:false, text:'Saya sering tertarik pada seni, desain, musik, cerita, atau hal kreatif lainnya.'},
+  {trait:'O', reverse:false, text:'Saya suka memikirkan kemungkinan yang belum pernah dicoba sebelumnya.'},
+  {trait:'O', reverse:true, text:'Saya lebih nyaman jika segala sesuatu berjalan dengan cara yang sudah biasa.'},
+  {trait:'O', reverse:false, text:'Saya mudah penasaran dengan topik yang tidak familiar.'},
+
+  {trait:'C', reverse:false, text:'Saya terbiasa menyelesaikan tugas yang sudah saya mulai.'},
+  {trait:'C', reverse:false, text:'Saya suka membuat rencana sebelum mengerjakan sesuatu yang penting.'},
+  {trait:'C', reverse:false, text:'Saya merasa bertanggung jawab untuk menepati janji dan tenggat waktu.'},
+  {trait:'C', reverse:true, text:'Saya sering menunda hal penting sampai mendekati batas waktu.'},
+  {trait:'C', reverse:false, text:'Saya cukup teratur dalam mengelola pekerjaan, barang, atau jadwal.'},
+
+  {trait:'E', reverse:false, text:'Saya merasa berenergi setelah bertemu atau mengobrol dengan banyak orang.'},
+  {trait:'E', reverse:false, text:'Saya mudah memulai percakapan dengan orang baru.'},
+  {trait:'E', reverse:false, text:'Saya senang terlibat dalam aktivitas kelompok.'},
+  {trait:'E', reverse:true, text:'Saya lebih sering menyimpan pikiran saya untuk diri sendiri.'},
+  {trait:'E', reverse:false, text:'Saya cenderung ekspresif saat menunjukkan antusiasme.'},
+
+  {trait:'A', reverse:false, text:'Saya mudah berempati ketika orang lain sedang kesulitan.'},
+  {trait:'A', reverse:false, text:'Saya berusaha menjaga hubungan tetap hangat dan saling menghargai.'},
+  {trait:'A', reverse:false, text:'Saya cukup percaya bahwa kebanyakan orang punya niat baik.'},
+  {trait:'A', reverse:true, text:'Saya mudah curiga terhadap motif orang lain.'},
+  {trait:'A', reverse:false, text:'Saya lebih suka bekerja sama daripada bersaing secara keras.'},
+
+  {trait:'N', reverse:false, text:'Saya mudah merasa cemas ketika menghadapi ketidakpastian.'},
+  {trait:'N', reverse:false, text:'Saya sering memikirkan hal buruk yang mungkin terjadi.'},
+  {trait:'N', reverse:false, text:'Mood saya cukup mudah berubah karena tekanan kecil.'},
+  {trait:'N', reverse:true, text:'Saya biasanya tetap tenang saat situasi menjadi sulit.'},
+  {trait:'N', reverse:false, text:'Saya mudah merasa kewalahan ketika banyak masalah datang bersamaan.'}
+];
+
+const scaleOptions = [
+  {label:'Sangat tidak setuju', value:1},
+  {label:'Tidak setuju', value:2},
+  {label:'Netral / ragu-ragu', value:3},
+  {label:'Setuju', value:4},
+  {label:'Sangat setuju', value:5}
+];
+
+const profileLabels = [
+  {key:'O', emoji:'🎨', high:'Creative Explorer', text:'Kamu kuat di rasa ingin tahu, imajinasi, dan keinginan mencoba hal baru.'},
+  {key:'C', emoji:'📋', high:'Steady Planner', text:'Kamu kuat di struktur, tanggung jawab, dan kemampuan menuntaskan rencana.'},
+  {key:'E', emoji:'✨', high:'Social Spark', text:'Kamu mendapat energi dari interaksi, aktivitas, dan ekspresi diri.'},
+  {key:'A', emoji:'🤝', high:'Warm Collaborator', text:'Kamu kuat di empati, kerja sama, dan menjaga hubungan tetap sehat.'},
+  {key:'N', emoji:'🌊', high:'Sensitive Processor', text:'Kamu peka terhadap tekanan dan sering memproses emosi dengan intens.'}
+];
+
+let answers = new Array(questions.length).fill(null);
+let current = 0;
+let currentShareText = '';
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(screen=>screen.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz(){
+  answers = new Array(questions.length).fill(null);
+  current = 0;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[current];
+  const total = questions.length;
+  const pct = Math.round(((current + 1) / total) * 100);
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Pertanyaan ${current + 1} / ${total}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('dimBadge').textContent = traits[q.trait].name.toUpperCase();
+  document.getElementById('questionText').textContent = q.text;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  scaleOptions.forEach(opt=>{
+    const item = document.createElement('div');
+    item.className = 'option';
+    if(answers[current] === opt.value) item.classList.add('selected');
+    item.innerHTML = `<span class="score">${opt.value}</span><span>${opt.label}</span>`;
+    item.onclick = ()=>selectAnswer(opt.value);
+    wrap.appendChild(item);
+  });
+
+  document.getElementById('btnBack').disabled = current === 0;
+  document.getElementById('btnNext').disabled = answers[current] === null;
+  document.getElementById('btnNext').textContent = current === total - 1 ? 'Lihat Hasil' : 'Lanjut →';
+}
+
+function selectAnswer(value){
+  answers[current] = value;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(answers[current] === null) return;
+  if(current === questions.length - 1){
+    calculateResult();
+    return;
+  }
+  current++;
+  renderQuestion();
+}
+
+function prevQuestion(){
+  if(current === 0) return;
+  current--;
+  renderQuestion();
+}
+
+function calculateResult(){
+  const scores = {
+    O:{score:0,max:0},
+    C:{score:0,max:0},
+    E:{score:0,max:0},
+    A:{score:0,max:0},
+    N:{score:0,max:0}
+  };
+
+  questions.forEach((question, index)=>{
+    const raw = answers[index];
+    const value = question.reverse ? 6 - raw : raw;
+    scores[question.trait].score += value;
+    scores[question.trait].max += 5;
+  });
+
+  const results = Object.keys(scores).map(key=>({
+    key,
+    name: traits[key].name,
+    percent: Math.round((scores[key].score / scores[key].max) * 100)
+  }));
+
+  showResult(results);
+}
+
+function showResult(results){
+  const sorted = [...results].sort((a,b)=>b.percent - a.percent);
+  const dominant = sorted[0];
+  const lowest = sorted[sorted.length - 1];
+  const profile = profileLabels.find(item=>item.key === dominant.key);
+
+  document.getElementById('resultEmoji').textContent = profile.emoji;
+  document.getElementById('resultTitle').textContent = profile.high;
+  document.getElementById('resultTagline').textContent = `${profile.text} Dimensi terendahmu adalah ${lowest.name}, yang bisa menjadi area menarik untuk diseimbangkan.`;
+
+  document.getElementById('dominantText').textContent = `${dominant.name} (${dominant.percent}%). ${getTraitText(dominant.key, dominant.percent)}`;
+  document.getElementById('growthText').textContent = `${lowest.name} (${lowest.percent}%). ${getTraitText(lowest.key, lowest.percent)}`;
+
+  document.getElementById('traitResults').innerHTML = results.map(item=>`
+    <div class="trait-row">
+      <div class="trait-labels">
+        <span>${item.name}</span>
+        <span>${item.percent}% - ${item.percent >= 60 ? traits[item.key].high : traits[item.key].low}</span>
+      </div>
+      <div class="trait-track"><div class="trait-fill fill-${item.key}" data-pct="${item.percent}"></div></div>
+    </div>
+  `).join('');
+
+  try{
+    localStorage.setItem('quizzy_bigfive', JSON.stringify({
+      title: profile.high,
+      emoji: profile.emoji,
+      dominant: dominant.name,
+      score: dominant.percent,
+      date: new Date().toISOString()
+    }));
+  }catch(e){}
+
+  const shareUrl = location.origin + location.pathname.replace(/[^/]+$/, 'index.html');
+  currentShareText = `Aku baru ikut Tes Big Five OCEAN dan profilku ${profile.high}. Dimensi dominanku ${dominant.name} (${dominant.percent}%).\n\nCoba juga di: ${shareUrl}`;
+
+  showScreen('screen-result');
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.trait-fill').forEach(fill=>{
+        fill.style.width = fill.getAttribute('data-pct') + '%';
+      });
+    }, 100);
+  });
+}
+
+function getTraitText(key, percent){
+  const level = percent >= 75 ? 'tinggi' : percent >= 55 ? 'cukup tinggi' : percent >= 45 ? 'sedang' : percent >= 30 ? 'cukup rendah' : 'rendah';
+  const notes = {
+    O:`Skor ${level} menunjukkan caramu merespons ide baru, kreativitas, dan pengalaman yang tidak biasa.`,
+    C:`Skor ${level} menggambarkan kecenderunganmu dalam disiplin, keteraturan, dan konsistensi menyelesaikan tujuan.`,
+    E:`Skor ${level} menunjukkan seberapa besar energi sosial, ekspresi, dan aktivitas luar berperan dalam hidupmu.`,
+    A:`Skor ${level} menggambarkan kecenderunganmu untuk berempati, bekerja sama, dan mempercayai orang lain.`,
+    N:`Skor ${level} menunjukkan sensitivitasmu terhadap stres, kecemasan, dan tekanan emosional.`
+  };
+  return notes[key];
+}
+
+function restartQuiz(){
+  showScreen('screen-intro');
+}
+
+async function shareCurrentResult(){
+  if(navigator.share){
+    try{
+      await navigator.share({ title:'Hasil Tes Big Five OCEAN', text:currentShareText });
+      return;
+    }catch(e){}
+  }
+  try{
+    await navigator.clipboard.writeText(currentShareText);
+    showToast('Hasil disalin ke clipboard.');
+  }catch(e){
+    showToast('Gagal menyalin. Coba salin manual ya.');
+  }
+}
+
+function showToast(msg){
+  let toast = document.getElementById('toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>toast.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
