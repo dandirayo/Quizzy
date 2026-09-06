@@ -1,0 +1,36 @@
+.pageContainer {
+  min-height: 100vh;
+  background-color: #0f0f1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.topNav {
+  width: 100%;
+  max-width: 720px;
+  padding: 1rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.backLink {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: #f1f5f9;
+}
+
+.quizWrapper {
+  width: 100%;
+  max-width: 720px;
+  flex: 1;
+  background-color: #0f0f1a; /* match background */
+  position: relative;
+}
