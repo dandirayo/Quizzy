@@ -1,77 +1,405 @@
 .container {
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding: 2rem 1.25rem 4rem;
 }
 
 .authPrompt {
+  max-width: 480px;
+  margin: 3rem auto;
   text-align: center;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.promptTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.promptDesc {
-  color: var(--muted);
-  font-size: 1.1rem;
-  max-width: 500px;
-  line-height: 1.6;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-  color: var(--muted);
-  font-size: 1.2rem;
-}
-
-.profileCard {
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.emptyState {
-  text-align: center;
+  padding: 2.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
 
-.emptyIcon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+.promptIcon {
+  font-size: 3.5rem;
 }
 
-.emptyState h3 {
-  font-size: 1.5rem;
+.promptTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
   color: var(--text);
 }
 
-.emptyState p {
+.promptDesc {
   color: var(--muted);
-  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+/* Profile Header Card */
+.profileCard {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.cardGlow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.headerMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  min-width: 260px;
+}
+
+.avatarWrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 2px solid var(--accent);
+  padding: 3px;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.displayName {
+  font-size: clamp(1.3rem, 3vw + 0.5rem, 1.6rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.username {
+  font-size: 0.9rem;
+  color: var(--accent2);
+  font-weight: 600;
+}
+
+.bio {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  margin-top: 0.35rem;
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Personality DNA Section */
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sectionSubtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.dnaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.dnaCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.dnaCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.dnaHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dnaEmoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.dnaBadgeTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.dnaCategory {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.dnaTagline {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.dnaDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.traitItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.traitBarWrap {
+  width: 90px;
+  height: 6px;
+  background: var(--card2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.traitBarFill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+/* History / Badge Grid */
+.badgesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.quizHistoryCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+.quizHistoryCard:hover {
+  border-color: var(--accent2);
+}
+
+.historyTop {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.historyEmoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.historyTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.historyResult {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.historyFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.retakeLink {
+  color: var(--accent2);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.retakeLink:hover {
+  text-decoration: underline;
+}
+
+.emptyState {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+}
+
+/* Edit Profile Modal (Mobile Viewport Optimized) */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 640px) {
+  .container {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .profileCard {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .headerMain {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .userInfo {
+    width: 100%;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .headerActions button,
+  .headerActions a {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .dnaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .badgesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modalActions {
+    flex-direction: column-reverse;
+  }
+
+  .modalActions button {
+    width: 100%;
+  }
 }

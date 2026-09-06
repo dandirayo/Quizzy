@@ -1,0 +1,9 @@
+services:
+  quizzy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quizzy_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
