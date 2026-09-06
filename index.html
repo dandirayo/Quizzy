@@ -107,27 +107,54 @@ h1{
   margin-bottom:30px;
 }
 .category-tabs{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
 }
 .category-tab{
+  --cat:#a855f7;
   border:1px solid var(--border);
-  background:rgba(32,32,58,.72);
-  color:var(--soft);
-  border-radius:999px;
-  padding:9px 14px;
-  font-size:12px;
-  font-weight:700;
+  background:linear-gradient(145deg,rgba(32,32,58,.92),rgba(26,26,46,.72));
+  color:var(--text);
+  border-radius:16px;
+  padding:14px;
+  min-height:96px;
+  text-align:left;
   cursor:pointer;
-  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+  position:relative;
+  overflow:hidden;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
 }
-.category-tab:hover{transform:translateY(-2px);border-color:#7dd3fc;color:#fff;}
+.category-tab::after{
+  content:"";
+  position:absolute;
+  width:70px;height:70px;
+  right:-28px;bottom:-35px;
+  border-radius:50%;
+  background:var(--cat);
+  filter:blur(24px);
+  opacity:.16;
+  transition:opacity .18s ease;
+}
+.category-tab:hover{transform:translateY(-3px);border-color:var(--cat);box-shadow:0 12px 26px rgba(0,0,0,.22);}
+.category-tab:hover::after{opacity:.3;}
 .category-tab.active{
-  background:linear-gradient(90deg,rgba(124,58,237,.24),rgba(236,72,153,.2));
-  border-color:#a855f7;
-  color:#fff;
+  background:linear-gradient(145deg,rgba(124,58,237,.22),rgba(26,26,46,.9));
+  border-color:var(--cat);
+  box-shadow:0 0 0 1px rgba(168,85,247,.16),0 14px 32px rgba(0,0,0,.24);
 }
+.category-tab.active::before{content:"✓";position:absolute;top:10px;right:11px;color:var(--cat);font-size:12px;font-weight:900;}
+.category-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;margin-bottom:10px;font-size:18px;background:rgba(168,85,247,.1);border:1px solid var(--cat);}
+.category-name{display:block;font-size:13px;font-weight:800;line-height:1.25;padding-right:16px;}
+.category-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;color:var(--muted);font-size:10.5px;}
+.category-example{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.category-count{flex:none;color:var(--cat);font-weight:800;}
+.category-recommendation{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;margin-top:14px;padding:15px 17px;border:1px solid var(--border);border-radius:15px;background:rgba(20,20,38,.72);}
+.recommendation-icon{font-size:24px;}
+.recommendation-copy strong{display:block;font-size:13px;margin-bottom:4px;}
+.recommendation-copy p{color:var(--muted);font-size:12px;line-height:1.5;}
+.recommendation-list{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;}
+.recommendation-chip{font-size:10.5px;font-weight:700;color:var(--soft);padding:6px 9px;border-radius:999px;background:var(--card2);border:1px solid var(--border);}
 
 .grid{
   display:grid;
@@ -160,6 +187,13 @@ h1{
 .card-attach .accent-bar{background:linear-gradient(90deg,#ec4899,#f472b6);}
 .card-marriage .accent-bar{background:linear-gradient(90deg,#14b8a6,#f97316);}
 .card-bigfive .accent-bar{background:linear-gradient(90deg,#22c55e,#3b82f6);}
+.card-riasec .accent-bar{background:linear-gradient(90deg,#3b82f6,#06b6d4);}
+.card-growth .accent-bar{background:linear-gradient(90deg,#f59e0b,#22c55e);}
+.card-emotion .accent-bar{background:linear-gradient(90deg,#f97316,#ec4899);}
+.card-social .accent-bar{background:linear-gradient(90deg,#06b6d4,#8b5cf6);}
+.card-procrastination .accent-bar{background:linear-gradient(90deg,#22c55e,#3b82f6);}
+.card-money .accent-bar{background:linear-gradient(90deg,#eab308,#f97316);}
+.card-groupchat .accent-bar{background:linear-gradient(90deg,#f43f5e,#8b5cf6);}
 .card-soon .accent-bar{background:linear-gradient(90deg,#4b5563,#6b7280);}
 
 .card-emoji{font-size:38px;}
@@ -179,6 +213,13 @@ h1{
 .card-attach .tag.highlight{color:#f472b6;border-color:#f472b6;background:rgba(244,114,182,0.1);}
 .card-marriage .tag.highlight{color:#14b8a6;border-color:#14b8a6;background:rgba(20,184,166,0.1);}
 .card-bigfive .tag.highlight{color:#22c55e;border-color:#22c55e;background:rgba(34,197,94,0.1);}
+.card-riasec .tag.highlight{color:#3b82f6;border-color:#3b82f6;background:rgba(59,130,246,.1);}
+.card-growth .tag.highlight{color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,.1);}
+.card-emotion .tag.highlight{color:#f97316;border-color:#f97316;background:rgba(249,115,22,.1);}
+.card-social .tag.highlight{color:#06b6d4;border-color:#06b6d4;background:rgba(6,182,212,.1);}
+.card-procrastination .tag.highlight{color:#22c55e;border-color:#22c55e;background:rgba(34,197,94,.1);}
+.card-money .tag.highlight{color:#eab308;border-color:#eab308;background:rgba(234,179,8,.1);}
+.card-groupchat .tag.highlight{color:#f43f5e;border-color:#f43f5e;background:rgba(244,63,94,.1);}
 .tag.type{color:#7dd3fc;border-color:rgba(125,211,252,.55);background:rgba(14,165,233,.1);}
 
 .card-cta{
@@ -189,6 +230,7 @@ h1{
 .card-attach .card-cta{color:#f472b6;}
 .card-marriage .card-cta{color:#14b8a6;}
 .card-bigfive .card-cta{color:#22c55e;}
+.card-riasec .card-cta{color:#3b82f6;}.card-growth .card-cta{color:#f59e0b;}.card-emotion .card-cta{color:#f97316;}.card-social .card-cta{color:#06b6d4;}.card-procrastination .card-cta{color:#22c55e;}.card-money .card-cta{color:#eab308;}.card-groupchat .card-cta{color:#f43f5e;}
 
 .quiz-card.disabled{
   opacity:0.5;
@@ -207,6 +249,33 @@ h1{
   line-height:1.6;
 }
 .empty-state strong{color:var(--text);}
+
+.suggestion-section{display:none;margin:-10px 0 38px;}
+.suggestion-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px;}
+.suggestion-heading h2{font-size:16px;}
+.suggestion-heading p{font-size:12px;color:var(--muted);}
+.suggestion-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.suggestion-card{
+  --suggestion:#a855f7;
+  position:relative;
+  overflow:hidden;
+  min-height:190px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(155deg,rgba(32,32,58,.88),rgba(20,20,38,.8));
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.suggestion-card::after{content:"";position:absolute;right:-35px;top:-35px;width:90px;height:90px;border-radius:50%;background:var(--suggestion);filter:blur(34px);opacity:.14;}
+.suggestion-top{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative;z-index:1;}
+.suggestion-emoji{font-size:24px;}
+.suggestion-status{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--suggestion);border:1px solid var(--suggestion);border-radius:999px;padding:4px 7px;}
+.suggestion-card h3{font-size:15px;line-height:1.35;position:relative;z-index:1;}
+.suggestion-card p{font-size:12.5px;line-height:1.55;color:var(--muted);flex:1;position:relative;z-index:1;}
+.suggestion-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border);font-size:10.5px;color:var(--muted);position:relative;z-index:1;}
+.suggestion-type{color:var(--soft);font-weight:700;}
 
 .roadmap{
   margin:12px 0 36px;
@@ -286,7 +355,16 @@ footer a{color:var(--muted);}
   .hero-svg{max-width:280px;}
   .section-title{display:block;}
   .section-title p{margin-top:8px;}
+  .category-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+  .category-tab{min-height:92px;padding:12px;}
+  .category-recommendation{grid-template-columns:auto 1fr;}
+  .recommendation-list{grid-column:1/-1;justify-content:flex-start;}
+  .suggestion-grid{grid-template-columns:1fr;}
+  .suggestion-heading{display:block;}
+  .suggestion-heading p{margin-top:5px;}
 }
+@media(min-width:481px) and (max-width:820px){.category-tabs{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(min-width:481px) and (max-width:760px){.suggestion-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -376,25 +454,26 @@ footer a{color:var(--muted);}
       </div>
       <p>Pilih kategori besar, lalu masuk ke quiz yang sudah aktif. Label di kartu membantu membedakan mana yang berbasis riset, refleksi diri, atau hiburan.</p>
     </div>
-    <div class="category-tabs" id="categoryTabs">
-      <button class="category-tab active" data-filter="all">Semua</button>
-      <button class="category-tab" data-filter="personality">Kepribadian</button>
-      <button class="category-tab" data-filter="relationship">Cinta & Hubungan</button>
-      <button class="category-tab" data-filter="family">Keluarga & Pernikahan</button>
-      <button class="category-tab" data-filter="career">Karier</button>
-      <button class="category-tab" data-filter="self">Pengembangan Diri</button>
-      <button class="category-tab" data-filter="emotion">Emosi</button>
-      <button class="category-tab" data-filter="social">Sosial</button>
-      <button class="category-tab" data-filter="habit">Produktivitas</button>
-      <button class="category-tab" data-filter="finance">Keuangan</button>
-      <button class="category-tab" data-filter="fun">Seru-seruan</button>
+    <div class="category-tabs" id="categoryTabs" role="group" aria-label="Filter kategori quiz">
+      <button type="button" class="category-tab active" data-filter="all" aria-pressed="true" style="--cat:#a855f7"><span class="category-icon">✨</span><span class="category-name">Semua Quiz</span><span class="category-meta"><span class="category-example">Lihat semua pilihan</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="personality" aria-pressed="false" style="--cat:#8b5cf6"><span class="category-icon">🧠</span><span class="category-name">Kepribadian</span><span class="category-meta"><span class="category-example">Big Five · MBTI</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="relationship" aria-pressed="false" style="--cat:#ec4899"><span class="category-icon">💞</span><span class="category-name">Cinta &amp; Hubungan</span><span class="category-meta"><span class="category-example">Attachment · Konflik</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="family" aria-pressed="false" style="--cat:#14b8a6"><span class="category-icon">🏡</span><span class="category-name">Keluarga &amp; Pernikahan</span><span class="category-meta"><span class="category-example">Menikah · Parenting</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="career" aria-pressed="false" style="--cat:#3b82f6"><span class="category-icon">💼</span><span class="category-name">Karier</span><span class="category-meta"><span class="category-example">RIASEC · Gaya Kerja</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="self" aria-pressed="false" style="--cat:#f59e0b"><span class="category-icon">🌱</span><span class="category-name">Pengembangan Diri</span><span class="category-meta"><span class="category-example">Growth · Resiliensi</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="emotion" aria-pressed="false" style="--cat:#f97316"><span class="category-icon">🌤️</span><span class="category-name">Emosi</span><span class="category-meta"><span class="category-example">Stres · Regulasi</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="social" aria-pressed="false" style="--cat:#06b6d4"><span class="category-icon">🫂</span><span class="category-name">Sosial</span><span class="category-meta"><span class="category-example">Social Battery · Teman</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="habit" aria-pressed="false" style="--cat:#22c55e"><span class="category-icon">⏱️</span><span class="category-name">Produktivitas</span><span class="category-meta"><span class="category-example">Fokus · Prokrastinasi</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="finance" aria-pressed="false" style="--cat:#eab308"><span class="category-icon">💰</span><span class="category-name">Keuangan</span><span class="category-meta"><span class="category-example">Money Style · Budget</span><span class="category-count">0 aktif</span></span></button>
+      <button type="button" class="category-tab" data-filter="fun" aria-pressed="false" style="--cat:#f43f5e"><span class="category-icon">🎉</span><span class="category-name">Seru-seruan</span><span class="category-meta"><span class="category-example">Vibe · Grup Chat</span><span class="category-count">0 aktif</span></span></button>
     </div>
+    <div class="category-recommendation" id="categoryRecommendation" aria-live="polite"></div>
   </section>
 
   <section>
     <div class="section-title">
       <h2>Quiz Aktif</h2>
-      <p>Empat quiz pertama sudah bisa dipakai sekarang. Hasilnya disimpan di browser supaya profil kamu bisa muncul lagi di beranda.</p>
+      <p>Sebelas quiz sudah bisa dipakai sekarang. Pilih kategori di atas untuk menemukan topik yang paling relevan buatmu.</p>
     </div>
   </section>
 
@@ -452,11 +531,61 @@ footer a{color:var(--muted);}
       </div>
       <div class="card-cta">Mulai Quiz →</div>
     </a>
+
+    <a class="quiz-card card-riasec" href="quiz.html?quiz=riasec" data-category="career">
+      <div class="accent-bar"></div><div class="card-emoji">🧩</div><div class="card-title">Tes Minat Karier RIASEC</div>
+      <p class="card-desc">Temukan kombinasi minat Realistic, Investigative, Artistic, Social, Enterprising, dan Conventional.</p>
+      <div class="card-tags"><span class="tag highlight">6 Minat</span><span class="tag type">Berbasis Riset</span><span class="tag">18 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-growth" href="quiz.html?quiz=growth" data-category="self">
+      <div class="accent-bar"></div><div class="card-emoji">🌱</div><div class="card-title">Quiz Growth Mindset</div>
+      <p class="card-desc">Lihat caramu menghadapi tantangan, masukan, kesalahan, dan proses belajar yang belum selesai.</p>
+      <div class="card-tags"><span class="tag highlight">4 Area</span><span class="tag type">Berbasis Riset</span><span class="tag">16 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-emotion" href="quiz.html?quiz=emotion" data-category="emotion">
+      <div class="accent-bar"></div><div class="card-emoji">🌤️</div><div class="card-title">Quiz Regulasi Emosi</div>
+      <p class="card-desc">Kenali kemampuan menyadari, menenangkan, mengekspresikan, dan memulihkan diri dari emosi kuat.</p>
+      <div class="card-tags"><span class="tag highlight">4 Area</span><span class="tag type">Refleksi Diri</span><span class="tag">16 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-social" href="quiz.html?quiz=social" data-category="social">
+      <div class="accent-bar"></div><div class="card-emoji">🔋</div><div class="card-title">Quiz Social Battery</div>
+      <p class="card-desc">Cari tahu situasi sosial yang mengisi energimu, yang mengurasnya, dan cara pulih yang paling pas.</p>
+      <div class="card-tags"><span class="tag highlight">4 Pola</span><span class="tag type">Refleksi Diri</span><span class="tag">12 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-procrastination" href="quiz.html?quiz=procrastination" data-category="habit">
+      <div class="accent-bar"></div><div class="card-emoji">⏳</div><div class="card-title">Quiz Pola Prokrastinasi</div>
+      <p class="card-desc">Temukan apakah penundaanmu lebih dipicu perfeksionisme, tugas kabur, energi rendah, atau distraksi.</p>
+      <div class="card-tags"><span class="tag highlight">4 Pemicu</span><span class="tag type">Refleksi Diri</span><span class="tag">16 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-money" href="quiz.html?quiz=money" data-category="finance">
+      <div class="accent-bar"></div><div class="card-emoji">💰</div><div class="card-title">Quiz Money Personality</div>
+      <p class="card-desc">Kenali kecenderunganmu saat membelanjakan, menyimpan, merencanakan, dan berbagi uang.</p>
+      <div class="card-tags"><span class="tag highlight">4 Gaya</span><span class="tag type">Refleksi Diri</span><span class="tag">16 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
+
+    <a class="quiz-card card-groupchat" href="quiz.html?quiz=groupchat" data-category="fun">
+      <div class="accent-bar"></div><div class="card-emoji">💬</div><div class="card-title">Quiz Role di Grup Chat</div>
+      <p class="card-desc">Apakah kamu pemantik obrolan, pemasok meme, pembaca senyap, atau penengah andalan?</p>
+      <div class="card-tags"><span class="tag highlight">4 Role</span><span class="tag type">Hiburan</span><span class="tag">12 Soal</span></div><div class="card-cta">Mulai Quiz →</div>
+    </a>
   </div>
   <div class="empty-state" id="emptyState">
-    <strong>Quiz aktifnya belum ada di kategori ini.</strong><br>
-    Tapi idenya sudah masuk roadmap, jadi kategori ini siap diisi saat halaman quiz berikutnya dibuat.
+    <strong id="emptyTitle">Quiz aktifnya belum ada di kategori ini.</strong><br>
+    <span id="emptyText">Lihat rekomendasi quiz di atas untuk menentukan halaman yang paling menarik dibuat berikutnya.</span>
   </div>
+
+  <section class="suggestion-section" id="suggestionSection">
+    <div class="suggestion-heading">
+      <h2 id="suggestionTitle">Rekomendasi Quiz Berikutnya</h2>
+      <p>Tiga konsep yang paling cocok untuk melengkapi kategori ini.</p>
+    </div>
+    <div class="suggestion-grid" id="suggestionGrid"></div>
+  </section>
 
   <section class="type-guide">
     <div class="section-title">
@@ -565,6 +694,13 @@ footer a{color:var(--muted);}
 <script>
 function loadProfile(){
   let mbti = null, attach = null, marriage = null, bigfive = null;
+  const extraDefinitions = [
+    ['riasec','Tes Karier'],['growth','Growth Mindset'],['emotion','Regulasi Emosi'],['social','Social Battery'],
+    ['procrastination','Prokrastinasi'],['money','Money Personality'],['groupchat','Role Grup Chat']
+  ];
+  const extraResults = extraDefinitions.map(([id,label]) => {
+    try{return {id,label,result:JSON.parse(localStorage.getItem(`quizzy_${id}`) || 'null')}}catch(e){return {id,label,result:null}}
+  });
   try{ mbti = JSON.parse(localStorage.getItem('quizzy_mbti') || 'null'); }catch(e){}
   try{ attach = JSON.parse(localStorage.getItem('quizzy_attachment') || 'null'); }catch(e){}
   try{ marriage = JSON.parse(localStorage.getItem('quizzy_marriage') || 'null'); }catch(e){}
@@ -573,7 +709,7 @@ function loadProfile(){
   const section = document.getElementById('profileSection');
   const badges = document.getElementById('profileBadges');
 
-  if(!mbti && !attach && !marriage && !bigfive){
+  if(!mbti && !attach && !marriage && !bigfive && !extraResults.some(item => item.result)){
     section.style.display = 'none';
     return;
   }
@@ -619,6 +755,14 @@ function loadProfile(){
   }else{
     badges.innerHTML += `<a href="big-five-quiz.html" class="profile-badge badge-empty">+ Ambil Tes Big Five</a>`;
   }
+
+  extraResults.filter(item => item.result).forEach(item => {
+    badges.innerHTML += `
+      <a href="quiz.html?quiz=${item.id}" class="profile-badge">
+        <span class="pb-emoji">${item.result.emoji}</span>
+        <span class="pb-text"><strong>${item.result.title}</strong><small>${item.label} · ${item.result.dominant} ${item.result.score}%</small></span>
+      </a>`;
+  });
 }
 
 function resetProfile(){
@@ -626,17 +770,133 @@ function resetProfile(){
   localStorage.removeItem('quizzy_attachment');
   localStorage.removeItem('quizzy_marriage');
   localStorage.removeItem('quizzy_bigfive');
+  ['riasec','growth','emotion','social','procrastination','money','groupchat'].forEach(id => localStorage.removeItem(`quizzy_${id}`));
   loadProfile();
 }
 
 loadProfile();
 
+const categoryInfo = {
+  all:{icon:'✨',title:'Semua kategori',text:'Mulai dari quiz yang sudah aktif atau intip rekomendasi kategori untuk menentukan eksplorasi berikutnya.',ideas:['Big Five','Attachment Style','Kesiapan Menikah']},
+  personality:{icon:'🧠',title:'Kenali pola kepribadianmu',text:'Quiz yang membantu membaca kecenderungan berpikir, nilai, energi, dan cara mengambil keputusan.',ideas:['HEXACO','Character Strengths','Gaya Keputusan']},
+  relationship:{icon:'💞',title:'Pahami cara kamu membangun hubungan',text:'Eksplorasi kebutuhan emosional, batas pribadi, komunikasi, dan cara menghadapi konflik.',ideas:['Love Language','Conflict Style','Relationship Readiness']},
+  family:{icon:'🏡',title:'Siapkan kehidupan bersama dengan lebih sadar',text:'Refleksi tentang peran, keluarga besar, pengasuhan, finansial, dan rencana masa depan.',ideas:['Parenting Readiness','Pembagian Peran','Family Values']},
+  career:{icon:'💼',title:'Temukan arah kerja yang terasa pas',text:'Kenali minat, lingkungan ideal, cara bekerja, dan pola kolaborasi yang mendukungmu.',ideas:['Gaya Kerja','Leadership Style','Remote Work Fit']},
+  self:{icon:'🌱',title:'Lihat bagian diri yang ingin kamu tumbuhkan',text:'Quiz reflektif untuk mengenali kekuatan, hambatan, motivasi, dan kesiapan berubah.',ideas:['Resiliensi','People-Pleasing','Fear of Failure']},
+  emotion:{icon:'🌤️',title:'Beri nama pada apa yang kamu rasakan',text:'Refleksi ringan tentang kesadaran emosi, respons terhadap tekanan, dan kebutuhan istirahat.',ideas:['Stress Response','Overthinking','Emotional Exhaustion']},
+  social:{icon:'🫂',title:'Kenali caramu hadir di sekitar orang lain',text:'Baca social battery, gaya berteman, empati, dan peran yang sering kamu ambil di kelompok.',ideas:['Gaya Berteman','Listening Style','Peran Kelompok']},
+  habit:{icon:'⏱️',title:'Temukan ritme produktif yang cocok',text:'Kenali pola fokus, distraksi, kebiasaan, dan cara mengatur energi saat mengejar target.',ideas:['Focus Style','Chronotype','Deadline Style']},
+  finance:{icon:'💰',title:'Kenali hubunganmu dengan uang',text:'Refleksi kebiasaan belanja, menabung, membuat anggaran, dan memilih gaya hidup.',ideas:['Budget Readiness','Impulse Spending','Financial Compatibility']},
+  fun:{icon:'🎉',title:'Cari hasil yang seru untuk dibagikan',text:'Quiz ringan untuk memancing obrolan, cocok dimainkan bersama teman atau dibagikan ke media sosial.',ideas:['Vibe Utama','Genre Hidup','Karakter Film']}
+};
+
+const quizSuggestions = {
+  personality:[
+    {emoji:'🧬',name:'HEXACO Personality',desc:'Membaca enam dimensi kepribadian, termasuk kejujuran dan kerendahan hati.',type:'Berbasis Riset',time:'30 soal'},
+    {emoji:'💎',name:'Kekuatan Karakter',desc:'Menemukan kekuatan karakter yang paling sering muncul dalam keseharianmu.',type:'Berbasis Riset',time:'24 soal'},
+    {emoji:'🧭',name:'Gaya Mengambil Keputusan',desc:'Kenali apakah kamu lebih intuitif, analitis, cepat, atau penuh pertimbangan.',type:'Refleksi Diri',time:'15 soal'}
+  ],
+  relationship:[
+    {emoji:'🤝',name:'Conflict Style',desc:'Lihat respons utamamu saat berbeda pendapat: menghindar, mengalah, bersaing, atau berkolaborasi.',type:'Berbasis Riset',time:'20 soal'},
+    {emoji:'💗',name:'Kebutuhan Emosional',desc:'Kenali bentuk perhatian dan rasa aman yang paling bermakna bagimu.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'🛡️',name:'Boundaries dalam Hubungan',desc:'Cek seberapa nyaman kamu menetapkan batas, meminta ruang, dan menyampaikan kebutuhan.',type:'Refleksi Diri',time:'18 soal'}
+  ],
+  family:[
+    {emoji:'👶',name:'Parenting Readiness',desc:'Refleksi kesiapan emosi, waktu, kerja sama, dan tanggung jawab sebelum menjadi orang tua.',type:'Berbasis Riset',time:'24 soal'},
+    {emoji:'🏠',name:'Family Values',desc:'Petakan nilai keluarga yang ingin kamu pertahankan, ubah, atau bangun bersama.',type:'Refleksi Diri',time:'18 soal'},
+    {emoji:'⚖️',name:'Pembagian Peran Pasangan',desc:'Buka diskusi tentang pekerjaan rumah, pengasuhan, karier, dan keputusan bersama.',type:'Refleksi Diri',time:'20 soal'}
+  ],
+  career:[
+    {emoji:'🖥️',name:'Gaya Kerja Ideal',desc:'Kenali ritme, struktur, lingkungan, dan pola kolaborasi yang membuatmu berkembang.',type:'Refleksi Diri',time:'18 soal'},
+    {emoji:'🚀',name:'Leadership Style',desc:'Baca caramu memberi arah, mengambil keputusan, dan mendukung anggota tim.',type:'Refleksi Diri',time:'20 soal'},
+    {emoji:'🏠',name:'Remote Work Fit',desc:'Lihat kebutuhan struktur, komunikasi, kemandirian, dan batas kerja saat bekerja jarak jauh.',type:'Refleksi Diri',time:'16 soal'}
+  ],
+  self:[
+    {emoji:'🪨',name:'Resiliensi Diri',desc:'Refleksi kemampuan pulih, beradaptasi, dan mencari dukungan saat keadaan terasa berat.',type:'Refleksi Diri',time:'18 soal'},
+    {emoji:'🙋',name:'People-Pleasing Check',desc:'Kenali kapan keinginan menyenangkan orang lain mulai menggeser kebutuhanmu sendiri.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'🪂',name:'Fear of Failure',desc:'Petakan kekhawatiran gagal dan cara ketakutan itu memengaruhi pilihan serta tindakanmu.',type:'Refleksi Diri',time:'16 soal'}
+  ],
+  emotion:[
+    {emoji:'🌊',name:'Stress Response',desc:'Lihat pola responsmu ketika tertekan dan strategi pemulihan yang paling membantu.',type:'Refleksi Diri',time:'16 soal'},
+    {emoji:'💭',name:'Overthinking Reflection',desc:'Petakan pemicu pikiran berulang dan situasi yang paling sering menguras energimu.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'🪫',name:'Emotional Exhaustion',desc:'Kenali sinyal kelelahan emosional dan bentuk istirahat yang sedang paling dibutuhkan.',type:'Refleksi Diri',time:'16 soal'}
+  ],
+  social:[
+    {emoji:'🫂',name:'Gaya Berteman',desc:'Kenali cara kamu membangun kedekatan, menjaga relasi, dan hadir untuk teman.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'👂',name:'Listening Style',desc:'Kenali apakah kamu cenderung mendengar untuk memahami, memberi solusi, atau merespons cepat.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'🧑‍🤝‍🧑',name:'Peranmu di Kelompok',desc:'Temukan peran alami yang sering kamu ambil: penggerak, penengah, penjaga suasana, atau pengamat.',type:'Hiburan Reflektif',time:'12 soal'}
+  ],
+  habit:[
+    {emoji:'🎯',name:'Focus Style',desc:'Temukan pola fokus yang paling cocok dengan energi, lingkungan, dan jenis tugasmu.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'🌙',name:'Chronotype Ringan',desc:'Lihat kecenderungan waktu produktifmu dan cara menyusun rutinitas yang lebih realistis.',type:'Berbasis Riset',time:'14 soal'},
+    {emoji:'📅',name:'Deadline Style',desc:'Kenali apakah tenggat membuatmu terarah, tertekan, terlalu santai, atau justru terpacu.',type:'Refleksi Diri',time:'14 soal'}
+  ],
+  finance:[
+    {emoji:'📒',name:'Budget Readiness',desc:'Cek kesiapan membangun anggaran yang sesuai tujuan dan kebiasaan sehari-hari.',type:'Refleksi Diri',time:'15 soal'},
+    {emoji:'🛒',name:'Impulse Spending',desc:'Kenali situasi, emosi, dan godaan yang paling sering memicu belanja spontan.',type:'Refleksi Diri',time:'14 soal'},
+    {emoji:'🤝',name:'Financial Compatibility',desc:'Buka diskusi pasangan tentang prioritas, keterbukaan, pembagian tanggung jawab, dan tujuan uang.',type:'Refleksi Diri',time:'20 soal'}
+  ],
+  fun:[
+    {emoji:'✨',name:'Apa Vibe Utamamu?',desc:'Temukan aura yang paling terasa dari cara kamu berpakaian, ngobrol, dan mengisi suasana.',type:'Hiburan',time:'10 soal'},
+    {emoji:'🎬',name:'Genre Hidupmu',desc:'Kalau hidupmu jadi film, apakah genrenya komedi, petualangan, drama hangat, atau misteri?',type:'Hiburan',time:'10 soal'},
+    {emoji:'🦸',name:'Karakter Film Versimu',desc:'Cari tahu peran yang paling cocok dengan caramu menghadapi tantangan dan orang lain.',type:'Hiburan',time:'10 soal'}
+  ]
+};
+
+function countActiveQuizzes(filter){
+  const cards = [...document.querySelectorAll('.quiz-card')];
+  if(filter === 'all') return cards.length;
+  return cards.filter(card => (card.dataset.category || '').split(' ').includes(filter)).length;
+}
+
+function showCategoryRecommendation(filter){
+  const info = categoryInfo[filter];
+  const count = countActiveQuizzes(filter);
+  const status = count ? `${count} quiz sudah bisa dicoba` : 'Rekomendasi untuk quiz berikutnya';
+  document.getElementById('categoryRecommendation').innerHTML = `
+    <span class="recommendation-icon">${info.icon}</span>
+    <div class="recommendation-copy"><strong>${info.title} · ${status}</strong><p>${info.text}</p></div>
+    <div class="recommendation-list">${info.ideas.map(idea => `<span class="recommendation-chip">${idea}</span>`).join('')}</div>`;
+}
+
+function showQuizSuggestions(filter){
+  const section = document.getElementById('suggestionSection');
+  if(filter === 'all'){
+    section.style.display = 'none';
+    return;
+  }
+  const selectedButton = document.querySelector(`.category-tab[data-filter="${filter}"]`);
+  const categoryName = selectedButton.querySelector('.category-name').textContent;
+  const color = selectedButton.style.getPropertyValue('--cat') || '#a855f7';
+  document.getElementById('suggestionTitle').textContent = `Rekomendasi untuk ${categoryName}`;
+  document.getElementById('suggestionGrid').innerHTML = quizSuggestions[filter].map(quiz => `
+    <article class="suggestion-card" style="--suggestion:${color}">
+      <div class="suggestion-top"><span class="suggestion-emoji">${quiz.emoji}</span><span class="suggestion-status">Ide Quiz</span></div>
+      <h3>${quiz.name}</h3>
+      <p>${quiz.desc}</p>
+      <div class="suggestion-foot"><span class="suggestion-type">${quiz.type}</span><span>${quiz.time}</span></div>
+    </article>`).join('');
+  section.style.display = 'block';
+}
+
+document.querySelectorAll('.category-tab').forEach(button => {
+  const count = countActiveQuizzes(button.dataset.filter);
+  button.querySelector('.category-count').textContent = `${count} aktif`;
+});
+showCategoryRecommendation('all');
+
 document.querySelectorAll('.category-tab').forEach(button => {
   button.addEventListener('click', () => {
     const filter = button.dataset.filter;
 
-    document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.classList.remove('active');
+      tab.setAttribute('aria-pressed','false');
+    });
     button.classList.add('active');
+    button.setAttribute('aria-pressed','true');
+    showCategoryRecommendation(filter);
+    showQuizSuggestions(filter);
 
     document.querySelectorAll('.quiz-card').forEach(card => {
       const categories = (card.dataset.category || '').split(' ');
@@ -645,7 +905,13 @@ document.querySelectorAll('.category-tab').forEach(button => {
     });
 
     const visibleCards = [...document.querySelectorAll('.quiz-card')].filter(card => card.style.display !== 'none');
-    document.getElementById('emptyState').style.display = visibleCards.length ? 'none' : 'block';
+    const emptyState = document.getElementById('emptyState');
+    emptyState.style.display = visibleCards.length ? 'none' : 'block';
+    if(!visibleCards.length){
+      const info = categoryInfo[filter];
+      document.getElementById('emptyTitle').textContent = `Belum ada quiz aktif untuk ${info.title.toLowerCase()}.`;
+      document.getElementById('emptyText').textContent = `Kandidat terdekat: ${info.ideas.join(', ')}. Semua idenya sudah tersedia di roadmap kategori di bawah.`;
+    }
 
     document.querySelectorAll('.roadmap-item').forEach(item => {
       item.style.display = filter === 'all' || item.dataset.roadmap === filter ? 'block' : 'none';

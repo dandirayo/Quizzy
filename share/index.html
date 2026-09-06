@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview Share — Tes Kesiapan Menikah</title>
+  <style>
+    :root{color-scheme:dark;--bg:#08111f;--card:#101d30;--line:#263750;--text:#eef5ff;--muted:#a9b8ca;--teal:#2dd4bf;--orange:#fb923c}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top,#15304a 0,#08111f 52%);font-family:Inter,system-ui,sans-serif;color:var(--text)}
+    main{width:min(680px,100%)}
+    .eyebrow{color:var(--teal);font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:.76rem}
+    .card{margin-top:12px;padding:clamp(24px,6vw,42px);border:1px solid var(--line);border-radius:28px;background:rgba(16,29,48,.94);box-shadow:0 28px 70px rgba(0,0,0,.35)}
+    .ring{font-size:3.6rem;line-height:1}
+    h1{font-size:clamp(1.7rem,5vw,2.5rem);margin:18px 0 8px}
+    .subtitle{color:var(--muted);margin:0 0 28px}
+    .score-wrap{display:flex;align-items:center;gap:22px;padding:22px;border-radius:20px;background:#0b1728}
+    .score{font-size:3rem;font-weight:900;color:var(--teal)}
+    .score-copy strong{font-size:1.18rem}.score-copy p{margin:5px 0 0;color:var(--muted);line-height:1.5}
+    .bar{height:10px;margin:22px 0 28px;background:#263750;border-radius:99px;overflow:hidden}.bar span{display:block;width:82%;height:100%;background:linear-gradient(90deg,var(--teal),var(--orange));border-radius:inherit}
+    label{display:block;margin-bottom:8px;font-size:.84rem;font-weight:700;color:var(--muted)}
+    input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:#08111f;color:var(--text);font:inherit}
+    .hint{margin:8px 0 20px;color:var(--muted);font-size:.8rem;line-height:1.45}
+    button{width:100%;border:0;border-radius:14px;padding:15px 20px;background:#25d366;color:#062b16;font:800 1rem inherit;cursor:pointer}
+    button:hover{filter:brightness(1.07)}
+    .preview{margin-top:18px;padding:16px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);white-space:pre-wrap;line-height:1.55;font-size:.92rem}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Halaman uji share</div>
+    <section class="card">
+      <div class="ring">💍</div>
+      <h1>Hasil Tes Kesiapan Menikah</h1>
+      <p class="subtitle">Contoh tampilan hasil sebelum dibagikan.</p>
+
+      <div class="score-wrap">
+        <div class="score">82%</div>
+        <div class="score-copy">
+          <strong>Siap dengan Fondasi Kuat</strong>
+          <p>Kamu sudah memiliki bekal yang baik untuk memasuki pernikahan dan tetap perlu menjaga komunikasi terbuka.</p>
+        </div>
+      </div>
+      <div class="bar"><span></span></div>
+
+      <label for="publicUrl">Link publik Tes Kesiapan Menikah</label>
+      <input id="publicUrl" type="url" placeholder="https://domain-kamu.com/marriage-readiness-quiz.html">
+      <p class="hint">Isi link website yang sudah online. File lokal di komputer tidak dapat dibuka oleh penerima WhatsApp.</p>
+
+      <button id="waButton" type="button">Bagikan ke WhatsApp</button>
+      <div class="preview" id="messagePreview"></div>
+    </section>
+  </main>
+
+  <script>
+    const input = document.getElementById('publicUrl');
+    const preview = document.getElementById('messagePreview');
+    const button = document.getElementById('waButton');
+
+    if (location.protocol === 'http:' || location.protocol === 'https:') {
+      input.value = new URL('../marriage-readiness-quiz.html', location.href).href;
+    }
+
+    function message(){
+      const url = input.value.trim() || 'https://domain-kamu.com/marriage-readiness-quiz.html';
+      return `Aku baru ikut Tes Kesiapan Menikah dan hasilku 82% — Siap dengan Fondasi Kuat 💍\n\nCoba tes kesiapan menikahmu di: ${url}`;
+    }
+
+    function updatePreview(){ preview.textContent = message(); }
+    input.addEventListener('input', updatePreview);
+    button.addEventListener('click', () => {
+      window.open(`https://wa.me/?text=${encodeURIComponent(message())}`, '_blank', 'noopener,noreferrer');
+    });
+    updatePreview();
+  </script>
+</body>
+</html>
