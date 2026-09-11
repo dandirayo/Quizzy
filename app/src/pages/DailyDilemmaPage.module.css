@@ -1,0 +1,172 @@
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.header h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header p {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.dilemmaCard {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.question {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .optionsContainer {
+    flex-direction: row;
+  }
+}
+
+.optionBtn {
+  flex: 1;
+  background: var(--card2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 2rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.optionBtn:hover:not(:disabled) {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.optionBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.optionBtn:disabled {
+  cursor: default;
+}
+
+.optionEmoji {
+  font-size: 3rem;
+  z-index: 1;
+}
+
+.optionText {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  z-index: 1;
+}
+
+.percentageBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 6px;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+}
+
+.answered .percentageBar {
+  opacity: 1;
+}
+
+.percentageText {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.5s ease 0.5s;
+  z-index: 1;
+}
+
+.answered .percentageText {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.insightBox {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  background: rgba(124, 58, 237, 0.1);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.6s forwards 1s;
+}
+
+.insightBox h3 {
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.insightBox p {
+  color: var(--soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.backBtn {
+  margin-top: 2rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.backBtn:hover {
+  color: var(--text);
+}

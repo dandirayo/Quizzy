@@ -26,7 +26,7 @@ const Navbar = () => {
         <div className={styles.container}>
           {/* Brand Logo */}
           <div className={styles.left}>
-            <Link to="/" className={styles.logo} onClick={() => setMobileOpen(false)}>
+            <Link to={isAuthenticated ? "/dashboard" : "/"} className={styles.logo} onClick={() => setMobileOpen(false)}>
               <span className={styles.logoIcon}>🧠</span>
               <span className={styles.logoText}>Quizzy</span>
             </Link>
@@ -35,12 +35,18 @@ const Navbar = () => {
           {/* Desktop Center Navigation Links */}
           <div className={styles.center}>
             <NavLink
-              to="/"
+              to="/dashboard"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
               end
             >
-              Kuis
+              Beranda
             </NavLink>
+            <a
+              href="/dashboard#mini-games"
+              className={styles.navLink}
+            >
+              Mini Games
+            </a>
             <NavLink
               to="/friends"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
@@ -115,12 +121,19 @@ const Navbar = () => {
       <div className={`${styles.mobileDrawer} ${mobileOpen ? styles.open : ''}`}>
         <div className={styles.mobileNavLinks}>
           <NavLink
-            to="/"
+            to="/dashboard"
             className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
             end
           >
-            <span>🧩</span> Jelajahi Kuis
+            <span>🧩</span> Beranda
           </NavLink>
+          <a
+            href="/dashboard#mini-games"
+            className={styles.mobileNavLink}
+            onClick={() => setMobileOpen(false)}
+          >
+            <span>🎮</span> Mini Games
+          </a>
           <NavLink
             to="/friends"
             className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}

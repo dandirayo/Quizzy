@@ -18,7 +18,7 @@ const RegisterPage = () => {
     setErrorMsg('');
     try {
       await register(email, password, username, displayName || username);
-      navigate('/profile');
+      navigate('/dashboard');
     } catch (err) {
       setErrorMsg(err.message || 'Pendaftaran gagal. Silakan coba lagi.');
     }
@@ -27,7 +27,7 @@ const RegisterPage = () => {
   const handleGoogleAuth = async () => {
     try {
       await loginWithGoogle();
-      navigate('/profile');
+      navigate('/dashboard');
     } catch (err) {
       setErrorMsg(err.message || 'Login dengan Google gagal.');
     }

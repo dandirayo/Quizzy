@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './LoginPage.module.css';
 
@@ -9,13 +9,15 @@ const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const { login, loginWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     try {
       await login(emailOrUsername, password);
-      navigate('/profile');
+      navigate(from, { replace: true });
     } catch (err) {
       setErrorMsg(err.message || 'Login gagal. Periksa username/email dan password.');
     }
@@ -24,7 +26,7 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
-      navigate('/profile');
+      navigate(from, { replace: true });
     } catch (err) {
       setErrorMsg(err.message || 'Login dengan Google gagal.');
     }
@@ -35,7 +37,7 @@ const LoginPage = () => {
     setPassword('demo123');
     try {
       await login(username, 'demo123');
-      navigate('/profile');
+      navigate(from, { replace: true });
     } catch (err) {
       setErrorMsg(err.message || 'Login demo gagal.');
     }

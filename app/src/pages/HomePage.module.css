@@ -12,6 +12,40 @@
   align-items: center;
   gap: 0.85rem;
   animation: fadeUp 0.4s ease;
+  position: relative; /* Added for absolute positioning of child */
+}
+
+.miniGamesBtnContainer {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.miniGamesHeroBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(124, 58, 237, 0.15);
+  border: 2px solid var(--accent);
+  padding: 12px 24px;
+  border-radius: 99px;
+  color: var(--text);
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 1.15rem;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.miniGamesHeroBtn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+  background: rgba(124, 58, 237, 0.25);
+}
+
+.miniGamesHeroBtnEmoji {
+  font-size: 1.5rem;
 }
 
 .title {
@@ -240,5 +274,15 @@
 
   .quizCard {
     padding: 1.25rem;
+  }
+  .miniGamesBtnContainer {
+    position: static;
+    transform: none;
+    margin-top: 1rem;
+  }
+
+  .miniGamesHeroBtn {
+    padding: 10px 20px;
+    font-size: 1rem;
   }
 }
