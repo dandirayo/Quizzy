@@ -17,9 +17,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }} # Biasanya 22
           script: |
-            # Arahkan ke folder project di VPS Anda. 
-            # Sesuaikan "/path/to/your/project" dengan path yang benar di VPS.
-            cd /path/to/your/project/Quizzy
+            # Sesuai konvensi VPS, deploy ke /var/www/apps/<project-slug>
+            cd /var/www/apps/Quizzy
             
             # Tarik pembaruan terbaru dari GitHub
             git pull origin main
