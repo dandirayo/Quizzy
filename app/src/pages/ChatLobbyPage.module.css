@@ -1,0 +1,197 @@
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lobbyCard {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.lobbyCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.header p {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.searchSetup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.formGroup {
+  width: 100%;
+  max-width: 350px;
+  text-align: left;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--soft);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--card2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.selectInput:focus {
+  border-color: var(--accent);
+}
+
+.btnSearch {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white;
+  border: none;
+  border-radius: 99px;
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 1rem;
+}
+
+.btnSearch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+}
+
+.onlineCount {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* Searching State & Radar Animation */
+.searchingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.radar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.1);
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  position: relative;
+  margin: 1rem auto 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.radarCenter {
+  font-size: 2rem;
+  z-index: 2;
+}
+
+.radarSweep {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  background: linear-gradient(45deg, rgba(124, 58, 237, 0.8) 0%, transparent 70%);
+  transform-origin: bottom left;
+  animation: sweep 2s linear infinite;
+  z-index: 1;
+}
+
+@keyframes sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.searchingState h2 {
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.btnCancel {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnCancel:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+@media (max-width: 480px) {
+  .lobbyCard {
+    padding: 2.5rem 1.5rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+}

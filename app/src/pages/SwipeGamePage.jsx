@@ -1,64 +1,178 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { SWIPE_CARDS } from '../data/gamesData';
+import { SWIPE_CARDS, VIBE_ARCHETYPES } from '../data/gamesData';
 import styles from './SwipeGamePage.module.css';
 
 export default function SwipeGamePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [swipeDir, setSwipeDir] = useState(null); // 'left' or 'right'
+  const [swipeDir, setSwipeDir] = useState(null);
   const [likes, setLikes] = useState([]);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const startPos = useRef({ x: 0, y: 0 });
+  const cardRef = useRef(null);
 
   const isGameOver = currentIndex >= SWIPE_CARDS.length;
 
+  // ---- TOUCH / DRAG HANDLERS ----
+  const handleDragStart = useCallback((clientX, clientY) => {
+    setIsDragging(true);
+    startPos.current = { x: clientX, y: clientY };
+  }, []);
+
+  const handleDragMove = useCallback((clientX, clientY) => {
+    if (!isDragging) return;
+    const dx = clientX - startPos.current.x;
+    const dy = (clientY - startPos.current.y) * 0.3;
+    setDragOffset({ x: dx, y: dy });
+  }, [isDragging]);
+
+  const handleDragEnd = useCallback(() => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    const threshold = 80;
+
+    if (dragOffset.x > threshold) {
+      handleSwipe('right');
+    } else if (dragOffset.x < -threshold) {
+      handleSwipe('left');
+    }
+    setDragOffset({ x: 0, y: 0 });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDragging, dragOffset]);
+
+  // Mouse events
+  const onMouseDown = (e) => handleDragStart(e.clientX, e.clientY);
+  const onMouseMove = (e) => handleDragMove(e.clientX, e.clientY);
+  const onMouseUp = () => handleDragEnd();
+
+  // Touch events
+  const onTouchStart = (e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+  const onTouchMove = (e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
+  const onTouchEnd = () => handleDragEnd();
+
   const handleSwipe = (direction) => {
-    if (swipeDir) return; // Prevent double click while animating
-    
+    if (swipeDir) return;
     setSwipeDir(direction);
-    
+
     if (direction === 'right') {
-      setLikes([...likes, SWIPE_CARDS[currentIndex].type]);
+      setLikes(prev => [...prev, SWIPE_CARDS[currentIndex].type]);
     }
 
-    // Wait for animation to finish before moving to next card
     setTimeout(() => {
       setCurrentIndex(prev => prev + 1);
       setSwipeDir(null);
+      setDragOffset({ x: 0, y: 0 });
     }, 400);
   };
 
   const getVibeResult = () => {
-    if (likes.length === 0) return { title: 'The Observer', desc: 'Kamu lagi nggak mood ngapa-ngapain ya hari ini? Chill banget.', emoji: '🧊' };
-    
-    const extrovertCount = likes.filter(t => t === 'extrovert' || t === 'feeling' || t === 'sensing').length;
-    const introvertCount = likes.filter(t => t === 'introvert' || t === 'thinking' || t === 'intuitive').length;
+    if (likes.length === 0) return VIBE_ARCHETYPES['observer'];
 
-    if (extrovertCount > introvertCount) {
-      return { title: 'Social Butterfly', desc: 'Vibe kamu lagi ceria, enerjik, dan siap berinteraksi dengan dunia!', emoji: '✨' };
-    } else {
-      return { title: 'Cozy Thinker', desc: 'Vibe kamu lagi pengen tenang, reflektif, dan menikmati waktu sendiri.', emoji: '☕' };
+    // Count all 4 MBTI axes
+    const counts = {
+      extrovert: 0, introvert: 0,
+      intuitive: 0, sensing: 0,
+      thinking: 0, feeling: 0,
+      judging: 0, perceiving: 0
+    };
+    likes.forEach(t => { if (counts[t] !== undefined) counts[t]++; });
+
+    // Determine dominant traits
+    const dominantTraits = [];
+    dominantTraits.push(counts.extrovert >= counts.introvert ? 'extrovert' : 'introvert');
+    dominantTraits.push(counts.intuitive >= counts.sensing ? 'intuitive' : 'sensing');
+    dominantTraits.push(counts.thinking >= counts.feeling ? 'thinking' : 'feeling');
+    dominantTraits.push(counts.judging >= counts.perceiving ? 'judging' : 'perceiving');
+
+    // Find best matching archetype
+    let bestMatch = null;
+    let bestScore = -1;
+    for (const [key, arch] of Object.entries(VIBE_ARCHETYPES)) {
+      if (key === 'observer') continue;
+      const score = arch.traits.filter(t => dominantTraits.includes(t)).length;
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = arch;
+      }
     }
+    return bestMatch || VIBE_ARCHETYPES['observer'];
   };
+
+  const handlePlayAgain = () => {
+    setCurrentIndex(0);
+    setSwipeDir(null);
+    setLikes([]);
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  // Dynamic card style during drag
+  const dragStyle = isDragging && !swipeDir ? {
+    transform: `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${dragOffset.x * 0.08}deg)`,
+    transition: 'none',
+    cursor: 'grabbing'
+  } : {};
+
+  // Drag indicator opacity
+  const likeOpacity = Math.min(Math.max(dragOffset.x / 80, 0), 1);
+  const nopeOpacity = Math.min(Math.max(-dragOffset.x / 80, 0), 1);
 
   return (
     <div className={styles.container}>
       <div className={`${styles.header} fade-up`}>
         <h1>Swipe Vibe</h1>
-        <p>Suka atau lewati? Temukan vibe-mu hari ini.</p>
+        <p>Geser kartu atau tekan tombol. Temukan vibe-mu hari ini.</p>
       </div>
 
       {!isGameOver ? (
         <>
-          <div className={`${styles.cardContainer} fade-up`} style={{ animationDelay: '0.1s' }}>
-            {/* Show only current card */}
+          {/* Progress Bar */}
+          <div className={styles.progressContainer}>
+            <div className={styles.progressBar}>
+              <div 
+                className={styles.progressFill} 
+                style={{ width: `${(currentIndex / SWIPE_CARDS.length) * 100}%` }} 
+              />
+            </div>
+            <span className={styles.progressText}>Kartu {currentIndex + 1} dari {SWIPE_CARDS.length}</span>
+          </div>
+
+          {/* Card Stack */}
+          <div 
+            className={`${styles.cardContainer} fade-up`}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseUp}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* Next card preview (behind current) */}
+            {currentIndex + 1 < SWIPE_CARDS.length && (
+              <div className={`${styles.card} ${styles.cardBehind}`}>
+                <div className={styles.cardEmoji}>{SWIPE_CARDS[currentIndex + 1].emoji}</div>
+                <div className={styles.cardTitle}>{SWIPE_CARDS[currentIndex + 1].title}</div>
+              </div>
+            )}
+
+            {/* Current card */}
             <div 
+              ref={cardRef}
               className={`${styles.card} ${swipeDir === 'left' ? styles.swipeLeft : ''} ${swipeDir === 'right' ? styles.swipeRight : ''}`}
+              style={dragStyle}
             >
+              {/* Drag indicators */}
+              <div className={styles.dragIndicatorLike} style={{ opacity: likeOpacity }}>SUKA ♥</div>
+              <div className={styles.dragIndicatorNope} style={{ opacity: nopeOpacity }}>LEWATI ✕</div>
+
               <div className={styles.cardEmoji}>{SWIPE_CARDS[currentIndex].emoji}</div>
               <div className={styles.cardTitle}>{SWIPE_CARDS[currentIndex].title}</div>
             </div>
           </div>
 
-          <div className={`${styles.controls} fade-up`} style={{ animationDelay: '0.2s' }}>
+          {/* Action Buttons */}
+          <div className={`${styles.controls} fade-up`}>
             <button 
               className={styles.btnNope} 
               onClick={() => handleSwipe('left')}
@@ -82,14 +196,28 @@ export default function SwipeGamePage() {
           <div className={styles.resultEmoji}>{getVibeResult().emoji}</div>
           <h2 className={styles.resultTitle}>{getVibeResult().title}</h2>
           <p className={styles.resultDesc}>{getVibeResult().desc}</p>
-          <Link to="/" className="btn btn-primary" style={{ width: '100%' }}>
-            Kembali ke Beranda
-          </Link>
+          {getVibeResult().tip && (
+            <div className={styles.resultTip}>
+              <span>💡</span> {getVibeResult().tip}
+            </div>
+          )}
+          <div className={styles.resultStats}>
+            <span>❤️ {likes.length} disukai</span>
+            <span>✕ {SWIPE_CARDS.length - likes.length} dilewati</span>
+          </div>
+          <div className={styles.resultActions}>
+            <button onClick={handlePlayAgain} className="btn btn-secondary">
+              🔄 Main Lagi
+            </button>
+            <Link to="/dashboard" className="btn btn-primary">
+              Kembali ke Beranda
+            </Link>
+          </div>
         </div>
       )}
 
       {!isGameOver && (
-        <Link to="/" style={{ marginTop: '2rem', color: 'var(--muted)', fontWeight: 600, textDecoration: 'none' }}>
+        <Link to="/dashboard" className={styles.exitLink}>
           &larr; Keluar Game
         </Link>
       )}

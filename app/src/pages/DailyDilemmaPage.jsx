@@ -1,20 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { DAILY_DILEMMAS } from '../data/gamesData';
 import styles from './DailyDilemmaPage.module.css';
 
+// Get day of year for rotation
+const getDayOfYear = () => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+};
+
 export default function DailyDilemmaPage() {
-  const [hasAnswered, setHasAnswered] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  
-  // Ambil dilema hari ini (mock: ambil yang pertama)
-  const dilemma = DAILY_DILEMMAS[0];
+  const todayIndex = getDayOfYear() % DAILY_DILEMMAS.length;
+  const [dilemmaIndex, setDilemmaIndex] = useState(todayIndex);
+  const [answers, setAnswers] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('quizzy_dilemma_answers') || '{}');
+    } catch { return {}; }
+  });
+
+  const dilemma = DAILY_DILEMMAS[dilemmaIndex];
+  const savedAnswer = answers[dilemma.id];
+  const hasAnswered = !!savedAnswer;
+
+  // Save answers to localStorage
+  useEffect(() => {
+    localStorage.setItem('quizzy_dilemma_answers', JSON.stringify(answers));
+  }, [answers]);
 
   const handleSelect = (option) => {
     if (hasAnswered) return;
-    setSelectedOption(option);
-    setHasAnswered(true);
-    // TODO: Save to DB via db.js if needed
+    setAnswers(prev => ({ ...prev, [dilemma.id]: option }));
+  };
+
+  const goTo = (index) => {
+    const total = DAILY_DILEMMAS.length;
+    setDilemmaIndex(((index % total) + total) % total);
   };
 
   return (
@@ -24,23 +46,41 @@ export default function DailyDilemmaPage() {
         <p>Pilih jalanmu dan lihat bagaimana orang lain merespons.</p>
       </div>
 
+      {/* Navigation */}
+      <div className={styles.navigation}>
+        <button className={styles.navBtn} onClick={() => goTo(dilemmaIndex - 1)} aria-label="Sebelumnya">
+          ←
+        </button>
+        <div className={styles.navInfo}>
+          <span className={styles.navLabel}>
+            {dilemmaIndex === todayIndex ? '🔴 Hari Ini' : `Dilema #${dilemmaIndex + 1}`}
+          </span>
+          <span className={styles.navCount}>{dilemmaIndex + 1} / {DAILY_DILEMMAS.length}</span>
+        </div>
+        <button className={styles.navBtn} onClick={() => goTo(dilemmaIndex + 1)} aria-label="Selanjutnya">
+          →
+        </button>
+      </div>
+
       <div className={`${styles.dilemmaCard} fade-up`} style={{ animationDelay: '0.1s' }}>
         <h2 className={styles.question}>"{dilemma.question}"</h2>
 
         <div className={`${styles.optionsContainer} ${hasAnswered ? styles.answered : ''}`}>
           {/* OPTION A */}
           <button 
-            className={styles.optionBtn}
+            className={`${styles.optionBtn} ${savedAnswer === 'A' ? styles.selectedOption : ''}`}
             onClick={() => handleSelect('A')}
             disabled={hasAnswered}
             style={{
-              borderColor: selectedOption === 'A' ? dilemma.optionA.color : '',
-              background: selectedOption === 'A' ? `${dilemma.optionA.color}15` : ''
+              borderColor: savedAnswer === 'A' ? dilemma.optionA.color : '',
+              background: savedAnswer === 'A' ? `${dilemma.optionA.color}15` : ''
             }}
           >
-            <span className={styles.percentageText} style={{ color: dilemma.optionA.color }}>
-              {dilemma.optionA.mockPercentage}%
-            </span>
+            {hasAnswered && (
+              <span className={styles.percentageText} style={{ color: dilemma.optionA.color }}>
+                {dilemma.optionA.mockPercentage}%
+              </span>
+            )}
             <div className={styles.optionEmoji}>{dilemma.optionA.emoji}</div>
             <div className={styles.optionText}>{dilemma.optionA.text}</div>
             <div 
@@ -52,19 +92,23 @@ export default function DailyDilemmaPage() {
             />
           </button>
 
+          <div className={styles.vsLabel}>VS</div>
+
           {/* OPTION B */}
           <button 
-            className={styles.optionBtn}
+            className={`${styles.optionBtn} ${savedAnswer === 'B' ? styles.selectedOption : ''}`}
             onClick={() => handleSelect('B')}
             disabled={hasAnswered}
             style={{
-              borderColor: selectedOption === 'B' ? dilemma.optionB.color : '',
-              background: selectedOption === 'B' ? `${dilemma.optionB.color}15` : ''
+              borderColor: savedAnswer === 'B' ? dilemma.optionB.color : '',
+              background: savedAnswer === 'B' ? `${dilemma.optionB.color}15` : ''
             }}
           >
-            <span className={styles.percentageText} style={{ color: dilemma.optionB.color }}>
-              {dilemma.optionB.mockPercentage}%
-            </span>
+            {hasAnswered && (
+              <span className={styles.percentageText} style={{ color: dilemma.optionB.color }}>
+                {dilemma.optionB.mockPercentage}%
+              </span>
+            )}
             <div className={styles.optionEmoji}>{dilemma.optionB.emoji}</div>
             <div className={styles.optionText}>{dilemma.optionB.text}</div>
             <div 
@@ -85,7 +129,19 @@ export default function DailyDilemmaPage() {
         )}
       </div>
 
-      <Link to="/" className={`${styles.backBtn} fade-up`} style={{ animationDelay: '0.2s' }}>
+      {/* Progress Dots */}
+      <div className={styles.dots}>
+        {DAILY_DILEMMAS.map((_, i) => (
+          <button
+            key={i}
+            className={`${styles.dot} ${i === dilemmaIndex ? styles.dotActive : ''} ${answers[DAILY_DILEMMAS[i].id] ? styles.dotAnswered : ''}`}
+            onClick={() => setDilemmaIndex(i)}
+            aria-label={`Dilema ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      <Link to="/dashboard" className={`${styles.backBtn} fade-up`} style={{ animationDelay: '0.2s' }}>
         &larr; Kembali ke Beranda
       </Link>
     </div>

@@ -17,7 +17,7 @@ const HomePage = () => {
   return (
     <div className={styles.container}>
       <section className={styles.hero}>
-        <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <div className={styles.heroTitleRow}>
           <h1 className={styles.title}>
             Quizzy &mdash; <span className={styles.gradientText}>Kenali Dirimu</span>
           </h1>
@@ -79,10 +79,10 @@ const HomePage = () => {
           )}
         </div>
       </section>
-      <section id="mini-games" className={styles.exploreSection} style={{ marginTop: '4rem' }}>
+      <section id="mini-games" className={`${styles.exploreSection} ${styles.miniGamesSection}`}>
         <div className={styles.sectionHeader}>
           <h2>Mini Games & Aktivitas</h2>
-          <span className={styles.quizCount}>2 game</span>
+          <span className={styles.quizCount}>4 game</span>
         </div>
         
         <div className={styles.grid}>
@@ -94,7 +94,7 @@ const HomePage = () => {
               <h3 className={styles.quizTitle}>Dilema Harian</h3>
               <p className={styles.quizDesc}>Pilih salah satu dari dua situasi sulit dan lihat pilihan orang lain.</p>
               <div className={styles.cardFooter}>
-                <span className={styles.questionCount}>Diperbarui tiap hari</span>
+                <span className={styles.questionCount}>14 dilema</span>
               </div>
             </div>
           </Link>
@@ -105,9 +105,35 @@ const HomePage = () => {
             <div className={styles.cardContent}>
               <div className={styles.emoji}>🃏</div>
               <h3 className={styles.quizTitle}>Swipe Kartu Karakter</h3>
-              <p className={styles.quizDesc}>Suka atau lewati? Tebak vibe-mu hari ini lewat setumpuk kartu.</p>
+              <p className={styles.quizDesc}>Geser kartu suka atau lewati untuk temukan vibe-mu hari ini!</p>
               <div className={styles.cardFooter}>
-                <span className={styles.questionCount}>Game Cepat</span>
+                <span className={styles.questionCount}>20 kartu</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Would You Rather */}
+          <Link to="/games/would-you-rather" className={styles.quizCard}>
+            <div className={styles.cardGradient} style={{ background: `linear-gradient(135deg, #06b6d422, #22c55e22)` }} />
+            <div className={styles.cardContent}>
+              <div className={styles.emoji}>🤔</div>
+              <h3 className={styles.quizTitle}>Mending Mana?</h3>
+              <p className={styles.quizDesc}>Pilihan absurd dan seru! Lihat apakah pilihanmu sama dengan kebanyakan orang.</p>
+              <div className={styles.cardFooter}>
+                <span className={styles.questionCount}>12 pertanyaan</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Tebak Kepribadian */}
+          <Link to="/games/guess" className={styles.quizCard}>
+            <div className={styles.cardGradient} style={{ background: `linear-gradient(135deg, #f59e0b22, #a855f722)` }} />
+            <div className={styles.cardContent}>
+              <div className={styles.emoji}>🔍</div>
+              <h3 className={styles.quizTitle}>Tebak Kepribadian</h3>
+              <p className={styles.quizDesc}>Baca deskripsi perilaku seseorang lalu tebak tipe MBTI-nya!</p>
+              <div className={styles.cardFooter}>
+                <span className={styles.questionCount}>6 skenario</span>
               </div>
             </div>
           </Link>

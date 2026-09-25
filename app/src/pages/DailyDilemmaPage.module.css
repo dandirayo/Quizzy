@@ -7,16 +7,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .header h1 {
-  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-size: clamp(1.6rem, 5vw, 2.5rem);
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
@@ -26,13 +25,63 @@
 
 .header p {
   color: var(--muted);
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
+/* Navigation */
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.navBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.navBtn:hover {
+  background: var(--card2);
+  border-color: var(--accent);
+}
+
+.navInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.navLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.navCount {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Dilemma Card */
 .dilemmaCard {
   background: var(--card);
-  border-radius: var(--radius-lg);
-  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
   width: 100%;
   border: 1px solid var(--border);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
@@ -40,43 +89,46 @@
 }
 
 .question {
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   font-weight: 700;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   color: var(--text);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
+/* Options */
 .optionsContainer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  align-items: center;
 }
 
-@media (min-width: 600px) {
-  .optionsContainer {
-    flex-direction: row;
-  }
+.vsLabel {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--muted);
+  padding: 0.25rem 0;
 }
 
 .optionBtn {
-  flex: 1;
+  width: 100%;
   background: var(--card2);
   border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 2rem 1.5rem;
+  border-radius: 16px;
+  padding: 1.5rem 1.25rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   position: relative;
   overflow: hidden;
 }
 
 .optionBtn:hover:not(:disabled) {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: var(--accent);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
@@ -89,26 +141,33 @@
   cursor: default;
 }
 
+.selectedOption {
+  transform: scale(1.02);
+}
+
 .optionEmoji {
-  font-size: 3rem;
+  font-size: 2.5rem;
   z-index: 1;
+  line-height: 1;
 }
 
 .optionText {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text);
   z-index: 1;
+  line-height: 1.4;
 }
 
 .percentageBar {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 6px;
+  height: 5px;
   width: 0%;
   transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
   opacity: 0;
+  border-radius: 0 99px 99px 0;
 }
 
 .answered .percentageBar {
@@ -117,13 +176,13 @@
 
 .percentageText {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 1.5rem;
+  top: 0.75rem;
+  right: 0.75rem;
+  font-size: 1.25rem;
   font-weight: 800;
   opacity: 0;
   transform: translateY(10px);
-  transition: all 0.5s ease 0.5s;
+  transition: all 0.5s ease 0.3s;
   z-index: 1;
 }
 
@@ -132,32 +191,76 @@
   transform: translateY(0);
 }
 
+/* Insight Box */
 .insightBox {
-  margin-top: 2.5rem;
-  padding: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.25rem;
   background: rgba(124, 58, 237, 0.1);
   border-left: 4px solid var(--accent);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-radius: 0 12px 12px 0;
   text-align: left;
   opacity: 0;
   transform: translateY(20px);
-  animation: fadeUp 0.6s forwards 1s;
+  animation: fadeUp 0.6s forwards 0.8s;
 }
 
 .insightBox h3 {
   color: var(--accent);
   margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .insightBox p {
   color: var(--soft);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
+/* Progress Dots */
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 300px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.dot:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.dotActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.3);
+}
+
+.dotAnswered {
+  background: var(--accent2);
+  border-color: var(--accent2);
+}
+
+.dotActive.dotAnswered {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Back Button */
 .backBtn {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   color: var(--muted);
   text-decoration: none;
   font-weight: 600;
@@ -169,4 +272,126 @@
 
 .backBtn:hover {
   color: var(--text);
+}
+
+/* ========================
+   DESKTOP — Options side by side
+   ======================== */
+@media (min-width: 600px) {
+  .optionsContainer {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .vsLabel {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+  }
+
+  .optionBtn {
+    flex: 1;
+  }
+}
+
+/* ========================
+   TABLET (max-width: 768px)
+   ======================== */
+@media (max-width: 768px) {
+  .dilemmaCard {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .question {
+    margin-bottom: 1.5rem;
+  }
+
+  .optionEmoji {
+    font-size: 2rem;
+  }
+}
+
+/* ========================
+   MOBILE (max-width: 480px)
+   ======================== */
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem 0.75rem;
+    min-height: calc(100vh - 56px);
+  }
+
+  .header {
+    margin-bottom: 1rem;
+  }
+
+  .header p {
+    font-size: 0.85rem;
+  }
+
+  .navigation {
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .navBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .navLabel {
+    font-size: 0.8rem;
+  }
+
+  .dilemmaCard {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .question {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .optionBtn {
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+    gap: 0.5rem;
+  }
+
+  .optionEmoji {
+    font-size: 1.8rem;
+  }
+
+  .optionText {
+    font-size: 0.9rem;
+  }
+
+  .percentageText {
+    font-size: 1rem;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .insightBox {
+    margin-top: 1.5rem;
+    padding: 1rem;
+  }
+
+  .insightBox h3 {
+    font-size: 0.9rem;
+  }
+
+  .insightBox p {
+    font-size: 0.85rem;
+  }
+
+  .dots {
+    margin-top: 1rem;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+  }
 }

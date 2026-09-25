@@ -10,6 +10,10 @@ import FriendsPage from './pages/FriendsPage';
 import ComparePage from './pages/ComparePage';
 import DailyDilemmaPage from './pages/DailyDilemmaPage';
 import SwipeGamePage from './pages/SwipeGamePage';
+import WouldYouRatherPage from './pages/WouldYouRatherPage';
+import GuessPersonalityPage from './pages/GuessPersonalityPage';
+import ChatLobbyPage from './pages/ChatLobbyPage';
+import ChatRoomPage from './pages/ChatRoomPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
@@ -32,6 +36,12 @@ function App() {
           <Route path="/compare/:username" element={<ProtectedRoute><ComparePage /></ProtectedRoute>} />
           <Route path="/games/dilemma" element={<ProtectedRoute><DailyDilemmaPage /></ProtectedRoute>} />
           <Route path="/games/swipe" element={<ProtectedRoute><SwipeGamePage /></ProtectedRoute>} />
+          <Route path="/games/would-you-rather" element={<ProtectedRoute><WouldYouRatherPage /></ProtectedRoute>} />
+          <Route path="/games/guess" element={<ProtectedRoute><GuessPersonalityPage /></ProtectedRoute>} />
+          
+          {/* Chat Routes */}
+          <Route path="/chat" element={<ProtectedRoute><ChatLobbyPage /></ProtectedRoute>} />
+          <Route path="/chat/:roomId" element={<ProtectedRoute><ChatRoomPage /></ProtectedRoute>} />
         </Routes>
       </main>
     </>

@@ -12,7 +12,19 @@
   align-items: center;
   gap: 0.85rem;
   animation: fadeUp 0.4s ease;
-  position: relative; /* Added for absolute positioning of child */
+  position: relative;
+}
+
+.heroTitleRow {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.miniGamesSection {
+  margin-top: 3rem;
 }
 
 .miniGamesBtnContainer {
@@ -257,6 +269,23 @@
   border: 1px dashed var(--border);
 }
 
+/* Tablet — Mini Games button moves below title */
+@media (max-width: 960px) {
+  .heroTitleRow {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .miniGamesBtnContainer {
+    position: static;
+    transform: none;
+  }
+
+  .miniGamesSection {
+    margin-top: 2rem;
+  }
+}
+
 /* Mobile Screens */
 @media (max-width: 640px) {
   .container {
@@ -275,14 +304,13 @@
   .quizCard {
     padding: 1.25rem;
   }
-  .miniGamesBtnContainer {
-    position: static;
-    transform: none;
-    margin-top: 1rem;
-  }
 
   .miniGamesHeroBtn {
     padding: 10px 20px;
     font-size: 1rem;
+  }
+
+  .miniGamesSection {
+    margin-top: 1.5rem;
   }
 }

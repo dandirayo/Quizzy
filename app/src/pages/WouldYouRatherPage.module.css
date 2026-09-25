@@ -1,0 +1,255 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.backButton {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.main {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.questionCard {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.questionText {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+}
+
+.optionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 1rem;
+  position: relative;
+}
+
+.optionBtn {
+  flex: 1;
+  border: none;
+  border-radius: 1rem;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.optionBtn:hover:not(.answered) {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.optionA {
+  background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+}
+
+.optionB {
+  background: linear-gradient(135deg, var(--accent2) 0%, #db2777 100%);
+}
+
+.emoji {
+  font-size: 4rem;
+}
+
+.optionText {
+  font-size: 1.2rem;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.vsCircle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg);
+  color: var(--text);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: 2px solid var(--border);
+  z-index: 2;
+}
+
+.percentageBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 1rem;
+  transition: width 1s ease-out;
+}
+
+.percentageText {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  animation: bounce 0.5s ease;
+}
+
+.selected {
+  border: 4px solid white;
+}
+
+.answered {
+  cursor: default;
+}
+
+.funFact {
+  margin-top: 2rem;
+  background-color: var(--soft);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  animation: fadeIn 0.5s ease;
+}
+
+.funFact h3 {
+  color: var(--accent2);
+  margin-bottom: 0.5rem;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navBtn {
+  background-color: var(--card2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.navBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--border);
+}
+
+.activeDot {
+  background-color: var(--accent);
+  transform: scale(1.2);
+}
+
+.answeredDot {
+  background-color: var(--accent2);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .optionsContainer {
+    flex-direction: column;
+  }
+  .optionBtn {
+    padding: 3rem 1rem;
+  }
+  .vsCircle {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+  .title {
+    font-size: 2rem;
+  }
+  .backButton {
+    position: static;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .questionText {
+    font-size: 1.4rem;
+  }
+  .emoji {
+    font-size: 3rem;
+  }
+  .dots {
+    display: none;
+  }
+}
