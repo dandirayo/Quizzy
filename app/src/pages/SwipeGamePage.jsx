@@ -1,14 +1,18 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SWIPE_CARDS, VIBE_ARCHETYPES } from '../data/gamesData';
+import { useAuth } from '../contexts/AuthContext';
+import { saveUserQuizResult } from '../services/db';
 import styles from './SwipeGamePage.module.css';
 
 export default function SwipeGamePage() {
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeDir, setSwipeDir] = useState(null);
   const [likes, setLikes] = useState([]);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const startPos = useRef({ x: 0, y: 0 });
   const cardRef = useRef(null);
 
@@ -99,11 +103,43 @@ export default function SwipeGamePage() {
     return bestMatch || VIBE_ARCHETYPES['observer'];
   };
 
+  const hasSavedRef = useRef(false);
+
+  useEffect(() => {
+    if (isGameOver && !hasSavedRef.current) {
+      hasSavedRef.current = true;
+      const vibe = getVibeResult();
+      try {
+        localStorage.setItem('quizzy_swipe', JSON.stringify({
+          title: vibe.title,
+          emoji: vibe.emoji,
+          date: new Date().toISOString()
+        }));
+      } catch (e) {}
+
+      if (user?.id) {
+        saveUserQuizResult(user.id, {
+          quizId: 'swipe',
+          dominantResult: vibe.title,
+          dominantEmoji: vibe.emoji,
+          scores: { likes: likes.length },
+          isPublic: true
+        })
+          .then(() => setIsSaved(true))
+          .catch(err => console.error(err));
+      } else {
+        setIsSaved(true);
+      }
+    }
+  }, [isGameOver, user]);
+
   const handlePlayAgain = () => {
     setCurrentIndex(0);
     setSwipeDir(null);
     setLikes([]);
     setDragOffset({ x: 0, y: 0 });
+    setIsSaved(false);
+    hasSavedRef.current = false;
   };
 
   // Dynamic card style during drag
@@ -205,12 +241,25 @@ export default function SwipeGamePage() {
             <span>❤️ {likes.length} disukai</span>
             <span>✕ {SWIPE_CARDS.length - likes.length} dilewati</span>
           </div>
+          {isSaved && (
+            <div style={{
+              margin: '0.5rem auto 1.25rem',
+              padding: '0.4rem 0.8rem',
+              background: 'rgba(34, 197, 94, 0.15)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: '8px',
+              color: '#4ade80',
+              fontSize: '0.85rem'
+            }}>
+              ✓ Vibe tersimpan di Profil ({user ? `@${user.username}` : 'Browser'})
+            </div>
+          )}
           <div className={styles.resultActions}>
             <button onClick={handlePlayAgain} className="btn btn-secondary">
               🔄 Main Lagi
             </button>
-            <Link to="/dashboard" className="btn btn-primary">
-              Kembali ke Beranda
+            <Link to={user ? "/profile" : "/dashboard"} className="btn btn-primary">
+              {user ? "Lihat di Profil" : "Kembali ke Beranda"}
             </Link>
           </div>
         </div>

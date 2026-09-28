@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import styles from './ChatLobbyPage.module.css';
 
 const MBTI_TYPES = [
@@ -10,12 +11,13 @@ const MBTI_TYPES = [
 ];
 
 export default function ChatLobbyPage() {
+  const { user: currentUser } = useAuth();
   const navigate = useNavigate();
   const [isSearching, setIsSearching] = useState(false);
   const [targetMbti, setTargetMbti] = useState('ANY');
   const [searchTime, setSearchTime] = useState(0);
 
-  // Simulasi Matchmaking (Dummy)
+  // Simulasi Matchmaking (Dummy dengan user contoh dendiz7 & dea33)
   useEffect(() => {
     let timer;
     let matchTimer;
@@ -26,18 +28,28 @@ export default function ChatLobbyPage() {
         setSearchTime(prev => prev + 1);
       }, 1000);
 
-      // Simulasi ketemu jodoh chat setelah 3-5 detik
-      const randomMatchTime = Math.floor(Math.random() * 3000) + 2000;
+      // Simulasi ketemu jodoh chat setelah 2-4 detik
+      const randomMatchTime = Math.floor(Math.random() * 2500) + 1500;
       matchTimer = setTimeout(() => {
         const fakeRoomId = 'room-' + Math.random().toString(36).substr(2, 9);
-        // Simulasi lawan bicara
-        const partnerMbti = targetMbti === 'ANY' 
-          ? MBTI_TYPES[Math.floor(Math.random() * MBTI_TYPES.length)]
-          : targetMbti;
+        const isDendi = currentUser?.username?.toLowerCase() === 'dendiz7';
         
-        // Arahkan ke chat room dengan state dummy
+        // Partner contoh: dendiz7 (cowo) vs dea33 (cewe)
+        const demoPartner = isDendi
+          ? { name: 'Dea Anindita', username: 'dea33', mbti: 'ENFP', avatar: '👩' }
+          : { name: 'Dendi Pratama', username: 'dendiz7', mbti: 'INTJ', avatar: '👨' };
+
+        const partnerMbti = targetMbti === 'ANY' ? demoPartner.mbti : targetMbti;
+        
+        // Arahkan ke chat room dengan data partner
         navigate(`/chat/${fakeRoomId}`, { 
-          state: { partnerMbti, partnerName: 'Anonim' } 
+          state: { 
+            partnerMbti, 
+            partnerName: 'Anonim',
+            revealedName: demoPartner.name,
+            revealedUsername: demoPartner.username,
+            revealedAvatar: demoPartner.avatar
+          } 
         });
       }, randomMatchTime);
     }

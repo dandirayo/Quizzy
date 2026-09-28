@@ -10,6 +10,9 @@ export default function ChatRoomPage() {
   // Data dari halaman lobby (saat dummy match)
   const partnerMbti = location.state?.partnerMbti || '???';
   const partnerName = location.state?.partnerName || 'Anonim';
+  const revealedName = location.state?.revealedName || 'Dea Anindita';
+  const revealedUsername = location.state?.revealedUsername || 'dea33';
+  const revealedAvatar = location.state?.revealedAvatar || '👩';
   
   const [messages, setMessages] = useState([
     { id: 1, sender: 'system', text: `Kamu terhubung dengan seorang ${partnerMbti}! Mulai ngobrol 👋` }
@@ -67,9 +70,9 @@ export default function ChatRoomPage() {
       setMessages(prev => [...prev, { 
         id: Date.now() + 1, 
         sender: 'system', 
-        text: '🎉 Identitas terungkap! Lawan bicaramu adalah "Dandi" (ENFP).' 
+        text: `🎉 Identitas terungkap! Lawan bicaramu adalah "${revealedName}" (@${revealedUsername}) - ${partnerMbti}.` 
       }]);
-    }, 3000);
+    }, 2500);
   };
 
   const handleEndChat = () => {
@@ -78,8 +81,8 @@ export default function ChatRoomPage() {
     }
   };
 
-  const displayPartnerName = partnerRevealed ? 'Dandi' : partnerName;
-  const displayPartnerAvatar = partnerRevealed ? '👨‍💻' : '👻';
+  const displayPartnerName = partnerRevealed ? `${revealedName} (@${revealedUsername})` : partnerName;
+  const displayPartnerAvatar = partnerRevealed ? revealedAvatar : '👻';
 
   return (
     <div className={styles.container}>

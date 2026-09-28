@@ -88,15 +88,47 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <div className={styles.demoBox}>
-          <span>💡 Ingin coba akun demo cepat?</span>
-          <div>
-            <button type="button" onClick={() => handleQuickDemo('maya_infj')}>
-              Login sebagai @maya_infj (INFJ)
+        <div className={styles.demoSection}>
+          <div className={styles.demoHeader}>
+            <span className={styles.demoIcon}>⚡</span>
+            <div>
+              <div className={styles.demoTitle}>Akun Uji Coba Cepat (Demo)</div>
+              <div className={styles.demoSubtitle}>Klik salah satu untuk langsung masuk dan uji coba:</div>
+            </div>
+          </div>
+          <div className={styles.demoGrid}>
+            <button
+              type="button"
+              className={`${styles.demoCard} ${styles.demoMale}`}
+              onClick={() => handleQuickDemo('dendiz7')}
+            >
+              <div className={styles.demoAvatar}>👨‍💻</div>
+              <div className={styles.demoMeta}>
+                <div className={styles.demoName}>Dendi Pratama</div>
+                <div className={styles.demoHandle}>@dendiz7</div>
+                <div className={styles.demoTags}>
+                  <span className={styles.tagGender}>Cowo</span>
+                  <span className={styles.tagMbti}>INTJ</span>
+                </div>
+              </div>
+              <span className={styles.demoArrow}>Masuk →</span>
             </button>
-            {' • '}
-            <button type="button" onClick={() => handleQuickDemo('budi_builder')}>
-              @budi_builder
+
+            <button
+              type="button"
+              className={`${styles.demoCard} ${styles.demoFemale}`}
+              onClick={() => handleQuickDemo('dea33')}
+            >
+              <div className={styles.demoAvatar}>👩‍🎨</div>
+              <div className={styles.demoMeta}>
+                <div className={styles.demoName}>Dea Anindita</div>
+                <div className={styles.demoHandle}>@dea33</div>
+                <div className={styles.demoTags}>
+                  <span className={styles.tagGender}>Cewe</span>
+                  <span className={styles.tagMbti}>ENFP</span>
+                </div>
+              </div>
+              <span className={styles.demoArrow}>Masuk →</span>
             </button>
           </div>
         </div>

@@ -5,33 +5,26 @@ const LS_USERS_KEY = 'quizzy_db_users';
 const LS_RESULTS_KEY = 'quizzy_db_quiz_results';
 const LS_FRIENDSHIPS_KEY = 'quizzy_db_friendships';
 
-// Seed initial users for immediate social testing if empty
+// Seed initial users for immediate social testing if empty (dendiz7 = cowo, dea33 = cewe)
 const SEED_USERS = [
   {
     id: 'seed-user-1',
-    username: 'maya_infj',
-    display_name: 'Maya Putri',
-    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=maya',
-    bio: 'Advocate (INFJ). Suka obrolan mendalam di kedai kopi sunyi. ☕🌿',
+    username: 'dendiz7',
+    display_name: 'Dendi Pratama',
+    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dendiz7',
+    bio: 'Thinker & Strategist. Cowo yang suka logika, teknologi, dan eksplorasi diri ⚡🎮',
+    gender: 'male',
     created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
     updated_at: new Date().toISOString()
   },
   {
     id: 'seed-user-2',
-    username: 'budi_builder',
-    display_name: 'Budi Santoso',
-    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=budi',
-    bio: 'Practical Builder (RIASEC: R). Penggemar teknologi, kopi, dan hal konkret.',
+    username: 'dea33',
+    display_name: 'Dea Anindita',
+    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dea33',
+    bio: 'Creative & Empathetic Soul. Cewe yang suka kopi, journaling, dan ngobrol mendalam 🌸✨',
+    gender: 'female',
     created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'seed-user-3',
-    username: 'dina_creative',
-    display_name: 'Dina Pratiwi',
-    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dina',
-    bio: 'Growth Mindset & Creative Explorer. Selalu ingin belajar hal baru! 🎨✨',
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
     updated_at: new Date().toISOString()
   }
 ];
@@ -41,54 +34,94 @@ const SEED_RESULTS = [
     id: 'res-seed-1',
     user_id: 'seed-user-1',
     quiz_id: 'mbti',
-    dominant_result: 'INFJ',
-    dominant_emoji: '🦉',
-    scores: { EI: -14, SN: 16, TF: 18, JP: 12 },
+    dominant_result: 'INTJ',
+    dominant_emoji: '🏛️',
+    scores: { EI: -18, SN: -14, TF: -20, JP: -16 },
     is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 3).toISOString()
+    taken_at: new Date(Date.now() - 86400000 * 5).toISOString()
   },
   {
     id: 'res-seed-2',
     user_id: 'seed-user-1',
-    quiz_id: 'attachment',
-    dominant_result: 'Secure Attachment',
-    dominant_emoji: '💗',
-    scores: { ANX: 25, AVO: 20 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 2).toISOString()
-  },
-  {
-    id: 'res-seed-3',
-    user_id: 'seed-user-2',
     quiz_id: 'riasec',
     dominant_result: 'Practical Builder',
     dominant_emoji: '🛠️',
-    scores: { R: 92, I: 75, A: 40, S: 45, E: 60, C: 80 },
+    scores: { R: 92, I: 85, A: 40, S: 45, E: 65, C: 80 },
     is_public: true,
     taken_at: new Date(Date.now() - 86400000 * 4).toISOString()
   },
   {
+    id: 'res-seed-3',
+    user_id: 'seed-user-1',
+    quiz_id: 'guess',
+    dominant_result: 'Master Psikologi 🧠 (6/6)',
+    dominant_emoji: '🧠',
+    scores: { score: 6, total: 6 },
+    is_public: true,
+    taken_at: new Date(Date.now() - 86400000 * 3).toISOString()
+  },
+  {
     id: 'res-seed-4',
-    user_id: 'seed-user-3',
-    quiz_id: 'growth',
-    dominant_result: 'Brave Beginner',
-    dominant_emoji: '🧗',
-    scores: { CH: 95, FB: 85, ER: 88, PR: 90 },
+    user_id: 'seed-user-2',
+    quiz_id: 'mbti',
+    dominant_result: 'ENFP',
+    dominant_emoji: '✨',
+    scores: { EI: 18, SN: -16, TF: 18, JP: 16 },
+    is_public: true,
+    taken_at: new Date(Date.now() - 86400000 * 4).toISOString()
+  },
+  {
+    id: 'res-seed-5',
+    user_id: 'seed-user-2',
+    quiz_id: 'attachment',
+    dominant_result: 'Secure Attachment',
+    dominant_emoji: '💗',
+    scores: { ANX: 20, AVO: 15 },
+    is_public: true,
+    taken_at: new Date(Date.now() - 86400000 * 2).toISOString()
+  },
+  {
+    id: 'res-seed-6',
+    user_id: 'seed-user-2',
+    quiz_id: 'guess',
+    dominant_result: 'Detektif Kepribadian 🕵️ (5/6)',
+    dominant_emoji: '🕵️',
+    scores: { score: 5, total: 6 },
     is_public: true,
     taken_at: new Date(Date.now() - 86400000 * 1).toISOString()
   }
 ];
 
-// Helper to initialize local storage
+const SEED_FRIENDSHIPS = [
+  {
+    id: 'friendship-seed-1',
+    requester_id: 'seed-user-1',
+    addressee_id: 'seed-user-2',
+    status: 'accepted',
+    created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+
+// Helper to initialize local storage & auto-migrate to dendiz7 and dea33
 function initLocalDb() {
-  if (!localStorage.getItem(LS_USERS_KEY)) {
-    localStorage.setItem(LS_USERS_KEY, JSON.stringify(SEED_USERS));
+  const currentUsers = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
+  const hasDendiz7 = currentUsers.some(u => u.username === 'dendiz7');
+
+  if (!localStorage.getItem(LS_USERS_KEY) || !hasDendiz7) {
+    const cleanedUsers = currentUsers.filter(u => u.username !== 'maya_infj' && u.username !== 'budi_builder' && u.username !== 'dina_creative');
+    localStorage.setItem(LS_USERS_KEY, JSON.stringify([...SEED_USERS, ...cleanedUsers]));
   }
-  if (!localStorage.getItem(LS_RESULTS_KEY)) {
-    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify(SEED_RESULTS));
+
+  const currentResults = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
+  const hasDendizResults = currentResults.some(r => r.user_id === 'seed-user-1' || r.user_id === 'seed-user-2');
+  if (!localStorage.getItem(LS_RESULTS_KEY) || !hasDendizResults) {
+    const otherResults = currentResults.filter(r => r.user_id !== 'seed-user-1' && r.user_id !== 'seed-user-2' && r.user_id !== 'seed-user-3');
+    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify([...SEED_RESULTS, ...otherResults]));
   }
-  if (!localStorage.getItem(LS_FRIENDSHIPS_KEY)) {
-    localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify([]));
+
+  if (!localStorage.getItem(LS_FRIENDSHIPS_KEY) || JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]').length === 0) {
+    localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(SEED_FRIENDSHIPS));
   }
 }
 
@@ -171,12 +204,39 @@ export async function getUserQuizResults(userId) {
       .eq('user_id', userId)
       .order('taken_at', { ascending: false });
     if (error) return [];
-    return data || [];
+    
+    // Deduplicate by quiz_id
+    const seen = new Set();
+    return (data || []).filter(r => {
+      if (seen.has(r.quiz_id)) return false;
+      seen.add(r.quiz_id);
+      return true;
+    });
   }
 
   initLocalDb();
-  const results = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
-  return results.filter(r => r.user_id === userId).sort((a, b) => new Date(b.taken_at) - new Date(a.taken_at));
+  const allResults = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
+  const userResults = allResults
+    .filter(r => r.user_id === userId)
+    .sort((a, b) => new Date(b.taken_at) - new Date(a.taken_at));
+
+  // Deduplicate by quiz_id (keep latest)
+  const seen = new Set();
+  const uniqueUserResults = [];
+  for (const r of userResults) {
+    if (!seen.has(r.quiz_id)) {
+      seen.add(r.quiz_id);
+      uniqueUserResults.push(r);
+    }
+  }
+
+  // Auto-clean storage if duplicates existed
+  if (uniqueUserResults.length < userResults.length) {
+    const otherUsersResults = allResults.filter(r => r.user_id !== userId);
+    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify([...uniqueUserResults, ...otherUsersResults]));
+  }
+
+  return uniqueUserResults;
 }
 
 export async function saveUserQuizResult(userId, resultData) {
@@ -202,10 +262,25 @@ export async function saveUserQuizResult(userId, resultData) {
   }
 
   initLocalDb();
-  const results = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
-  results.unshift(newRecord);
-  localStorage.setItem(LS_RESULTS_KEY, JSON.stringify(results));
-  return newRecord;
+  let results = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
+
+  // Check if user already has a result for this quiz_id -> UPDATE (upsert) to prevent doubles
+  const existingIdx = results.findIndex(r => r.user_id === userId && r.quiz_id === resultData.quizId);
+  if (existingIdx !== -1) {
+    results[existingIdx] = {
+      ...results[existingIdx],
+      dominant_result: newRecord.dominant_result,
+      dominant_emoji: newRecord.dominant_emoji,
+      scores: newRecord.scores,
+      taken_at: newRecord.taken_at
+    };
+    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify(results));
+    return results[existingIdx];
+  } else {
+    results.unshift(newRecord);
+    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify(results));
+    return newRecord;
+  }
 }
 
 // ----------------------------------------------------

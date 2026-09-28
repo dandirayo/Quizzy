@@ -405,19 +405,29 @@ const ProfilePage = () => {
           <div className={styles.badgesGrid}>
             {quizResults.map((item) => {
               const quizDef = QUIZ_CATALOG[item.quiz_id];
+              const gameMeta = {
+                guess: { title: 'Tebak Kepribadian', url: '/games/guess' },
+                swipe: { title: 'Swipe Kartu Karakter', url: '/games/swipe' },
+                dilemma: { title: 'Dilema Harian', url: '/games/dilemma' },
+                'would-you-rather': { title: 'Mending Mana?', url: '/games/would-you-rather' }
+              }[item.quiz_id];
+
+              const title = quizDef?.title || gameMeta?.title || item.quiz_id;
+              const retakeUrl = gameMeta ? gameMeta.url : `/quiz/${item.quiz_id}`;
+
               return (
                 <div key={item.id} className={styles.quizHistoryCard}>
                   <div className={styles.historyTop}>
                     <span className={styles.historyEmoji}>{item.dominant_emoji || '✨'}</span>
                     <div>
-                      <h4 className={styles.historyTitle}>{quizDef?.title || item.quiz_id}</h4>
+                      <h4 className={styles.historyTitle}>{title}</h4>
                       <span className={styles.historyResult}>{item.dominant_result}</span>
                     </div>
                   </div>
                   <div className={styles.historyFooter}>
                     <span>{new Date(item.taken_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                    <Link to={`/quiz/${item.quiz_id}`} className={styles.retakeLink}>
-                      Ulangi Kuis ↗
+                    <Link to={retakeUrl} className={styles.retakeLink}>
+                      {gameMeta ? 'Main Lagi ↗' : 'Ulangi Kuis ↗'}
                     </Link>
                   </div>
                 </div>

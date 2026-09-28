@@ -22,26 +22,22 @@ function App() {
       <Navbar />
       <main>
         <Routes>
-          {/* Public Routes */}
+          {/* Public & Explore Routes (Bisa di-peek sebelum login) */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-
-          {/* Protected Routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-          <Route path="/quiz/:quizId" element={<ProtectedRoute><QuizPlayPage /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/friends" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
-          <Route path="/compare/:username" element={<ProtectedRoute><ComparePage /></ProtectedRoute>} />
-          <Route path="/games/dilemma" element={<ProtectedRoute><DailyDilemmaPage /></ProtectedRoute>} />
-          <Route path="/games/swipe" element={<ProtectedRoute><SwipeGamePage /></ProtectedRoute>} />
-          <Route path="/games/would-you-rather" element={<ProtectedRoute><WouldYouRatherPage /></ProtectedRoute>} />
-          <Route path="/games/guess" element={<ProtectedRoute><GuessPersonalityPage /></ProtectedRoute>} />
-          
-          {/* Chat Routes */}
-          <Route path="/chat" element={<ProtectedRoute><ChatLobbyPage /></ProtectedRoute>} />
-          <Route path="/chat/:roomId" element={<ProtectedRoute><ChatRoomPage /></ProtectedRoute>} />
+          <Route path="/quiz/:quizId" element={<QuizPlayPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/:username" element={<ProfilePage />} />
+          <Route path="/friends" element={<FriendsPage />} />
+          <Route path="/compare/:username" element={<ComparePage />} />
+          <Route path="/games/dilemma" element={<DailyDilemmaPage />} />
+          <Route path="/games/swipe" element={<SwipeGamePage />} />
+          <Route path="/games/would-you-rather" element={<WouldYouRatherPage />} />
+          <Route path="/games/guess" element={<GuessPersonalityPage />} />
+          <Route path="/chat" element={<ChatLobbyPage />} />
+          <Route path="/chat/:roomId" element={<ChatRoomPage />} />
         </Routes>
       </main>
     </>

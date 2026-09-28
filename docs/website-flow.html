@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quizzy — Visual Blueprint & Website Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0b14;
+      --bg-alt: #101222;
+      --card: #15172c;
+      --card-hover: #1c1f3c;
+      --card-active: #23274d;
+      --border: #252849;
+      --border-bright: #3c4172;
+      --accent: #8b5cf6;
+      --accent-glow: rgba(139, 92, 246, 0.35);
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --text: #f3f4f6;
+      --text-muted: #94a3b8;
+      --text-soft: #cbd5e1;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* Top Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 11, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px var(--accent-glow));
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(139, 92, 246, 0.2);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-bright);
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(135deg, var(--accent), #7033ea);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 6rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      padding: 2.5rem 1.5rem;
+      background: linear-gradient(180deg, rgba(21, 23, 44, 0.7) 0%, rgba(15, 17, 33, 0.4) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent-pink), transparent);
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-soft);
+      max-width: 750px;
+      margin: 0 auto 1.5rem;
+      font-size: 1.05rem;
+    }
+
+    .live-pills {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .live-pill {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .live-pill b {
+      color: #38bdf8;
+    }
+
+    .live-pill.success b {
+      color: #34d399;
+    }
+
+    /* Sections */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      font-size: 0.95rem;
+    }
+
+    .content-panel {
+      display: none;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .content-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Flow Graph (Visual Nodes) */
+    .flow-wrapper {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .flow-lanes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .lane {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .lane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lane-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lane-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+
+    /* Node Cards */
+    .node-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      transition: all 0.25s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .node-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+    }
+
+    .node-card.primary {
+      border-left: 4px solid var(--accent);
+    }
+
+    .node-card.pink {
+      border-left: 4px solid var(--accent-pink);
+    }
+
+    .node-card.cyan {
+      border-left: 4px solid var(--accent-cyan);
+    }
+
+    .node-card.green {
+      border-left: 4px solid var(--accent-green);
+    }
+
+    .node-card.yellow {
+      border-left: 4px solid var(--accent-yellow);
+    }
+
+    .node-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .node-route {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      background: rgba(0, 0, 0, 0.4);
+      color: #38bdf8;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .node-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .node-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .node-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 0.75rem;
+    }
+
+    .node-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .feature-tag {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--bg-alt);
+      color: var(--text-soft);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .node-link-btn {
+      margin-top: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      transition: gap 0.2s ease;
+    }
+
+    .node-link-btn:hover {
+      gap: 0.5rem;
+      color: #c4b5fd;
+    }
+
+    /* Grid for Features / Quizzes / Games */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .spec-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .spec-card:hover {
+      border-color: var(--border-bright);
+      background: var(--card-hover);
+    }
+
+    .spec-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .spec-icon {
+      font-size: 2rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .spec-title-group h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .spec-title-group span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .spec-detail-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+    }
+
+    .spec-detail-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .spec-detail-list li::before {
+      content: '▹';
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* Interactive User Journey Timeline */
+    .journey-stepper {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+      padding-left: 2rem;
+      margin: 2rem 0;
+    }
+
+    .journey-stepper::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-pink), var(--accent-cyan));
+    }
+
+    .step-item {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .step-item:hover {
+      border-color: var(--border-bright);
+    }
+
+    .step-dot {
+      position: absolute;
+      left: -2rem;
+      top: 1.35rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 3px solid var(--accent);
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .step-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(139, 92, 246, 0.15);
+      color: #c4b5fd;
+    }
+
+    .step-content {
+      font-size: 0.88rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .step-tip {
+      margin-top: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      font-size: 0.8rem;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Table for DB Schema */
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--card);
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: var(--bg-alt);
+      padding: 0.85rem 1rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-soft);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace;
+      color: #a78bfa;
+      background: rgba(167, 139, 250, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    /* Comparison Preview Box */
+    .versus-box {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-alt);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      font-size: 2.2rem;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card2);
+      border-radius: 50%;
+    }
+
+    .vs-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-pink));
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+      .versus-box {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .user-pill {
+        flex-direction: column;
+        text-align: center;
+      }
+      .vs-circle {
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span class="brand-icon">🧠</span>
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="brand-title">Quizzy Blueprint</span>
+          <span class="brand-badge">Interactive Map</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('map')">🗺️ Sitemap & Halaman</button>
+      <button class="nav-tab" onclick="switchTab('journeys')">🔄 Alur Pengguna (Journeys)</button>
+      <button class="nav-tab" onclick="switchTab('quizzes')">🧩 11 Kuis & Engine</button>
+      <button class="nav-tab" onclick="switchTab('minigames')">🎮 4 Mini Games</button>
+      <button class="nav-tab" onclick="switchTab('chat')">💬 Blind Chat</button>
+      <button class="nav-tab" onclick="switchTab('db')">🗄️ Database & Sync</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Hero Overview -->
+    <div class="hero">
+      <h1>Peta Lengkap Arsitektur <span>Quizzy</span></h1>
+      <p>
+        Halaman visual interaktif ini dibuat khusus sebagai patokan resmi struktur halaman, alur perpindahan user (Guest vs Login), katalog kuis, mekanik mini games, dan skema sinkronisasi data.
+      </p>
+
+      <div class="live-pills">
+        <span class="live-pill">🚀 Port Lokal: <b>http://localhost:7766/</b></span>
+        <span class="live-pill">🌐 VPS Server: <b>http://202.10.47.56/</b></span>
+        <span class="live-pill success">👨 Demo Cowo: <b>@dendiz7 (INTJ)</b></span>
+        <span class="live-pill success">👩 Demo Cewe: <b>@dea33 (ENFP)</b></span>
+      </div>
+    </div>
+
+    <!-- TAB 1: SITEMAP & HALAMAN -->
+    <div id="panel-map" class="content-panel active">
+      <h2 class="section-title">🗺️ Struktur Pohon Halaman (Sitemap)</h2>
+      <p class="section-desc">
+        Setiap halaman di Quizzy sekarang mendukung <b>Mode Peek (Intip Tanpa Login)</b> sehingga calon pengguna dapat melihat kuis dan profil sebelum mendaftar.
+      </p>
+
+      <div class="flow-lanes">
+        
+        <!-- Lane 1: Entry & Auth -->
+        <div class="lane">
+          <div class="lane-header">
+            <span class="lane-title">🚪 1. Entry & Autentikasi</span>
+            <span class="lane-tag">Publik</span>
+          </div>
+
+          <div class="node-card primary">
+            <div class="node-top">
+              <span class="node-route">/</span>
+              <span class="node-badge">Landing Page</span>
+            </div>
+            <div class="node-title">Landing Page Utama</div>
+            <div class="node-desc">
+              Pintu masuk awal pengunjung. Berisi value proposition "DNA Psikologismu", fitur utama, dan 3 tombol CTA.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">CTA Daftar</span>
+              <span class="feature-tag">Peek Kuis 🧭</span>
+              <span class="feature-tag">CTA Masuk</span>
+            </div>
+            <a href="http://localhost:7766/" target="_blank" class="node-link-btn">Buka Halaman Live ↗</a>
+          </div>
+
+          <div class="node-card pink">
+            <div class="node-top">
+              <span class="node-route">/login</span>
+              <span class="node-badge">Form + Demo</span>
+            </div>
+            <div class="node-title">Halaman Masuk (Login)</div>
+            <div class="node-desc">
+              Form login email/username + <b>Kartu Akses Cepat Demo</b> (Dendi Pratama @dendiz7 & Dea Anindita @dea33).
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Kartu @dendiz7 (Cowo)</span>
+              <span class="feature-tag">Kartu @dea33 (Cewe)</span>
+              <span class="feature-tag">Google Auth</span>
+            </div>
+            <a href="http://localhost:7766/login" target="_blank" class="node-link-btn">Buka Halaman Live ↗</a>
+          </div>
+
+          <div class="node-card">
+            <div class="node-top">
+              <span class="node-route">/register</span>
+              <span class="node-badge">Form</span>
+            </div>
+            <div class="node-title">Pendaftaran Akun Baru</div>
+            <div class="node-desc">
+              Pendaftaran dengan username unik (@), email, nama tampilan, dan password. Otomatis menyinkronkan kuis tamu.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Sanitasi Username</span>
+              <span class="feature-tag">Auto Avatar Seed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lane 2: Main Hub & Kuis -->
+        <div class="lane">
+          <div class="lane-header">
+            <span class="lane-title">🧭 2. Hub Kuis & Mini Games</span>
+            <span class="lane-tag">Bisa Diintip Tamu</span>
+          </div>
+
+          <div class="node-card cyan">
+            <div class="node-top">
+              <span class="node-route">/dashboard</span>
+              <span class="node-badge">Main Hub</span>
+            </div>
+            <div class="node-title">Beranda Eksplorasi</div>
+            <div class="node-desc">
+              Etalase 11 kuis kepribadian yang terbagi dalam 8 filter kategori, plus seksi sorotan 4 Mini Games.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Filter Kategori</span>
+              <span class="feature-tag">Anchor #mini-games</span>
+              <span class="feature-tag">Kartu Gradien</span>
+            </div>
+            <a href="http://localhost:7766/dashboard" target="_blank" class="node-link-btn">Buka Halaman Live ↗</a>
+          </div>
+
+          <div class="node-card yellow">
+            <div class="node-top">
+              <span class="node-route">/quiz/:quizId</span>
+              <span class="node-badge">Quiz Engine</span>
+            </div>
+            <div class="node-title">Layar Pengerjaan Kuis</div>
+            <div class="node-desc">
+              Layar kuis dengan 3 tahap (Intro → Pertanyaan Likert / 4-Point → Layar Hasil Analisis & Tips).
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Likert 1-5 Point</span>
+              <span class="feature-tag">MBTI 4-Axis</span>
+              <span class="feature-tag">Guest Banner</span>
+            </div>
+            <a href="http://localhost:7766/quiz/mbti" target="_blank" class="node-link-btn">Coba Tes MBTI ↗</a>
+          </div>
+
+          <div class="node-card green">
+            <div class="node-top">
+              <span class="node-route">/games/*</span>
+              <span class="node-badge">4 Permainan</span>
+            </div>
+            <div class="node-title">Ruang Mini Games</div>
+            <div class="node-desc">
+              4 game interaktif seru untuk cek vibe harian dan mengumpulkan lencana pencapaian.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">/games/dilemma</span>
+              <span class="feature-tag">/games/swipe</span>
+              <span class="feature-tag">/games/guess</span>
+              <span class="feature-tag">/games/would-you-rather</span>
+            </div>
+            <a href="http://localhost:7766/games/guess" target="_blank" class="node-link-btn">Coba Tebak MBTI ↗</a>
+          </div>
+        </div>
+
+        <!-- Lane 3: Social & Profile -->
+        <div class="lane">
+          <div class="lane-header">
+            <span class="lane-title">👥 3. Komunitas, Profil & Chat</span>
+            <span class="lane-tag">Sosial</span>
+          </div>
+
+          <div class="node-card primary">
+            <div class="node-top">
+              <span class="node-route">/profile & /:username</span>
+              <span class="node-badge">Kartu DNA</span>
+            </div>
+            <div class="node-title">Kartu Identitas Psikologis</div>
+            <div class="node-desc">
+              Menampilkan DNA 4 kuis utama (MBTI, Attachment, Big Five, RIASEC) dan daftar seluruh lencana kuis yang pernah diselesaikan.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Edit Bio & Avatar</span>
+              <span class="feature-tag">Public Peek</span>
+              <span class="feature-tag">Deduplikasi Otomatis</span>
+            </div>
+            <a href="http://localhost:7766/profile/dendiz7" target="_blank" class="node-link-btn">Intip Profil @dendiz7 ↗</a>
+          </div>
+
+          <div class="node-card cyan">
+            <div class="node-top">
+              <span class="node-route">/friends</span>
+              <span class="node-badge">Jejaring</span>
+            </div>
+            <div class="node-title">Teman & Komunitas</div>
+            <div class="node-desc">
+              Cari username, kirim permintaan pertemanan, terima/tolak, serta intip profil rekomendasi anggota komunitas.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Daftar Teman</span>
+              <span class="feature-tag">Tab Masuk / Keluar</span>
+              <span class="feature-tag">Sneak Peek Guest</span>
+            </div>
+            <a href="http://localhost:7766/friends" target="_blank" class="node-link-btn">Buka Halaman Live ↗</a>
+          </div>
+
+          <div class="node-card pink">
+            <div class="node-top">
+              <span class="node-route">/compare/:username</span>
+              <span class="node-badge">Sinergi</span>
+            </div>
+            <div class="node-title">Bandingkan Kepribadian (VS)</div>
+            <div class="node-desc">
+              Menghitung skor kecocokan komunikasi (%), perbandingan MBTI huruf per huruf, attachment synergy, dan tips kolaborasi.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Kalkulator Skor %</span>
+              <span class="feature-tag">Kolom Head-to-Head</span>
+            </div>
+          </div>
+
+          <div class="node-card yellow">
+            <div class="node-top">
+              <span class="node-route">/chat & /chat/:roomId</span>
+              <span class="node-badge">Fitur Baru 💬</span>
+            </div>
+            <div class="node-title">Blind Chat Berbasis MBTI</div>
+            <div class="node-desc">
+              Pencarian lawan bicara acak difilter tipe kepribadian, radar CSS berputar, chat anonim, dan tombol konsensual Reveal Identitas.
+            </div>
+            <div class="node-features">
+              <span class="feature-tag">Filter 16 MBTI</span>
+              <span class="feature-tag">Simulasi Matchmaking</span>
+              <span class="feature-tag">Tombol 🎭 Reveal</span>
+            </div>
+            <a href="http://localhost:7766/chat" target="_blank" class="node-link-btn">Coba Blind Chat ↗</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: USER JOURNEYS -->
+    <div id="panel-journeys" class="content-panel">
+      <h2 class="section-title">🔄 Alur Pengguna (User Journeys)</h2>
+      <p class="section-desc">Perbandingan perjalanan user: Tamu (Guest) vs User Terdaftar (Member).</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem;">
+        
+        <!-- Journey 1: Guest Journey -->
+        <div>
+          <h3 style="color: #60a5fa; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>👤</span> Skenario 1: Pengunjung Tamu (Guest / Peek Mode)
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+            Pengguna baru yang belum memiliki akun ingin mencoba kuis dan melihat isi platform tanpa hambatan.
+          </p>
+
+          <div class="journey-stepper">
+            <div class="step-item">
+              <div class="step-dot">1</div>
+              <div class="step-header">
+                <span class="step-title">Mendarat di Landing Page (/)</span>
+                <span class="step-badge">Publik</span>
+              </div>
+              <div class="step-content">
+                Pengunjung membaca banner pengenalan. Mengklik tombol <b>"Lihat Kuis & Games 🧭"</b> untuk langsung mengintip katalog tanpa perlu mendaftar.
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-dot">2</div>
+              <div class="step-header">
+                <span class="step-title">Eksplorasi Katalog (/dashboard)</span>
+                <span class="step-badge">Bebas Akses</span>
+              </div>
+              <div class="step-content">
+                Melihat 11 jenis kuis dan 4 mini games. Mengklik salah satu kuis, misalnya <b>"Tes Attachment Style"</b>.
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-dot">3</div>
+              <div class="step-header">
+                <span class="step-title">Mengerjakan Kuis (/quiz/attachment)</span>
+                <span class="step-badge">Interaktif</span>
+              </div>
+              <div class="step-content">
+                Menjawab 24 pertanyaan. Hasil dihitung: <i>Fearful-Avoidant</i>. Data disimpan sementara di <code>localStorage.quizzy_attachment</code>.
+              </div>
+              <div class="step-tip">
+                💡 Muncul banner: "Ingin menyimpan hasil ini? Masuk / Daftar Akun".
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-dot">4</div>
+              <div class="step-header">
+                <span class="step-title">Konversi Akun (/register atau /login)</span>
+                <span class="step-badge">Otomatisasi Sync</span>
+              </div>
+              <div class="step-content">
+                User membuat akun atau login cepat demo. Fungsi <code>syncGuestResults()</code> otomatis memindahkan hasil kuis tamu ke database profil user!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Journey 2: Member Journey -->
+        <div>
+          <h3 style="color: #ec4899; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚡</span> Skenario 2: Anggota Terdaftar (Member Mode)
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+            Pengguna yang sudah login memanfaatkan fitur sosial, adu kepribadian, mini games, dan chat.
+          </p>
+
+          <div class="journey-stepper">
+            <div class="step-item">
+              <div class="step-dot">1</div>
+              <div class="step-header">
+                <span class="step-title">Login Cepat Demo (@dendiz7)</span>
+                <span class="step-badge">1-Klik</span>
+              </div>
+              <div class="step-content">
+                Mengklik kartu <b>@dendiz7 (INTJ)</b> di halaman login. Langsung dialihkan ke Dashboard dengan sesi aktif.
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-dot">2</div>
+              <div class="step-header">
+                <span class="step-title">Bermain Game Tebak Kepribadian</span>
+                <span class="step-badge">Mini Game</span>
+              </div>
+              <div class="step-content">
+                Menebak skenario MBTI dengan skor 6/6. Memperoleh pencapaian <b>Master Psikologi 🧠</b> yang otomatis disimpan ke database profil (tanpa dobel).
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-dot">3</div>
+              <div class="step-header">
+                <span class="step-title">Mengecek Komunitas & Adu Sinergi</span>
+                <span class="step-badge">Fitur Sosial</span>
+              </div>
+              <div class="step-content">
+                Buka tab Teman (/friends), melihat Dea Anindita (@dea33). Mengklik <b>"Bandingkan ⚡"</b> menuju <code>/compare/dea33</code> untuk melihat skor kecocokan 85%.
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-dot">4</div>
+              <div class="step-header">
+                <span class="step-title">Blind Chat Anonim (/chat)</span>
+                <span class="step-badge">Realtime</span>
+              </div>
+              <div class="step-content">
+                Mencari obrolan dengan filter "ENFP". Sistem mencocokkan dengan @dea33. Ngobrol anonim, saling klik <b>🎭 Reveal</b>, dan identitas asli terbuka.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: KATALOG 11 KUIS -->
+    <div id="panel-quizzes" class="content-panel">
+      <h2 class="section-title">🧩 Katalog 11 Kuis Kepribadian & Metode Scoring</h2>
+      <p class="section-desc">Kuis berstandar edukasi psikologi dengan sistem penilaian otomatis.</p>
+
+      <div class="grid-cards">
+        
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">🦉</div>
+            <div class="spec-title-group">
+              <h3>Tes MBTI (16 Tipe)</h3>
+              <span>Tipe: 4 Sumbu Dikotomi</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>28 Pertanyaan:</b> 7 butir per sumbu polaritas.</li>
+            <li><b>Sumbu:</b> E vs I, S vs N, T vs F, J vs P.</li>
+            <li><b>Metode:</b> Skala 4-Poin (Sangat Setuju s/d Sangat Tidak Setuju).</li>
+            <li><b>Output:</b> Kode 4 huruf (contoh: INTJ, ENFP) + Profil Karakter.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">💗</div>
+            <div class="spec-title-group">
+              <h3>Tes Attachment Style</h3>
+              <span>Tipe: Hubungan & Asmara</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>24 Pertanyaan:</b> 12 Anxiety + 12 Avoidance.</li>
+            <li><b>Hasil:</b> Secure, Anxious, Avoidant, atau Fearful-Avoidant.</li>
+            <li><b>Manfaat:</b> Memetakan rasa aman dalam hubungan interpersonal.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">🧭</div>
+            <div class="spec-title-group">
+              <h3>Big Five OCEAN</h3>
+              <span>Tipe: Spektrum Sifat Universal</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>25 Pertanyaan:</b> 5 aspek universal kepribadian modern.</li>
+            <li><b>Dimensi:</b> Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism.</li>
+            <li><b>Skala:</b> Likert 1-5 poin dengan butir reverse-scored.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">🧩</div>
+            <div class="spec-title-group">
+              <h3>Minat Karier RIASEC</h3>
+              <span>Tipe: Holland Career Codes</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>18 Pertanyaan:</b> Realistic, Investigative, Artistic, Social, Enterprising, Conventional.</li>
+            <li><b>Output:</b> 3 kombinasi minat dominan untuk eksplorasi profesi.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">🌱</div>
+            <div class="spec-title-group">
+              <h3>Growth Mindset</h3>
+              <span>Tipe: Pola Pikir & Belajar</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>16 Pertanyaan:</b> Tantangan, Masukan, Kesalahan, dan Proses.</li>
+            <li><b>Teori:</b> Berdasarkan riset Dr. Carol Dweck.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">🌤️</div>
+            <div class="spec-title-group">
+              <h3>Regulasi Emosi</h3>
+              <span>Tipe: Kesejahteraan Mental</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>16 Pertanyaan:</b> Kesadaran, Menenangkan Diri, Ekspresi Sehat, Pemulihan.</li>
+            <li><b>Manfaat:</b> Refleksi respon terhadap stres dan tekanan.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">💍</div>
+            <div class="spec-title-group">
+              <h3>Kesiapan Menikah</h3>
+              <span>Tipe: Hubungan Serius</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>10 Pertanyaan:</b> Komitmen, Komunikasi, Finansial, Peran Rumah Tangga.</li>
+            <li><b>Tujuan:</b> Bahan dialog reflektif pra-nikah bersama pasangan.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">🔋</div>
+            <div class="spec-title-group">
+              <h3>Social Battery</h3>
+              <span>Tipe: Energi Sosial</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>12 Pertanyaan:</b> Kelompok Kecil, Keramaian, Ruang Pribadi, Koneksi Baru.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">⏳</div>
+            <div class="spec-title-group">
+              <h3>Pola Prokrastinasi</h3>
+              <span>Tipe: Produktivitas</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>16 Pertanyaan:</b> Perfeksionis, Tugas Kabur, Energi Rendah, Distraksi.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">💰</div>
+            <div class="spec-title-group">
+              <h3>Money Personality</h3>
+              <span>Tipe: Finansial</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>16 Pertanyaan:</b> Penjaga Dana, Penikmat Momen, Perencana, Pemberi.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <div class="spec-header">
+            <div class="spec-icon">💬</div>
+            <div class="spec-title-group">
+              <h3>Role di Grup Chat</h3>
+              <span>Tipe: Fun & Entertainment</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>12 Pertanyaan:</b> Pemantik Obrolan, Pemasok Meme, Pembaca Senyap, Penengah.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 4: 4 MINI GAMES -->
+    <div id="panel-minigames" class="content-panel">
+      <h2 class="section-title">🎮 4 Mini Games Interaktif</h2>
+      <p class="section-desc">Mini games santai berbobot psikologis untuk rotasi harian dan koleksi achievement.</p>
+
+      <div class="grid-cards">
+        
+        <div class="spec-card" style="border-top: 4px solid var(--accent);">
+          <div class="spec-header">
+            <div class="spec-icon">⚖️</div>
+            <div class="spec-title-group">
+              <h3>Dilema Harian</h3>
+              <span>Rute: /games/dilemma</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>14 Skenario Moral & Keputusan:</b> Berotasi otomatis setiap hari sesuai kalender tahunan.</li>
+            <li><b>Mekanik:</b> Memilih Opsi A atau Opsi B.</li>
+            <li><b>Fitur:</b> Menampilkan persentase perbandingan suara komunitas dan insight psikologis pilihanmu.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card" style="border-top: 4px solid var(--accent-pink);">
+          <div class="spec-header">
+            <div class="spec-icon">🏄</div>
+            <div class="spec-title-group">
+              <h3>Swipe Vibe</h3>
+              <span>Rute: /games/swipe</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>20 Kartu Karakter Swipe:</b> Gestur sentuh drag kanan (Suka) & kiri (Lewati).</li>
+            <li><b>8 Vibe Archetypes:</b> The Peaceful Dreamer, Bold Strategist, Creative Rebel, dll.</li>
+            <li><b>Auto-Save:</b> Hasil Vibe langsung tersimpan sebagai lencana di profil tanpa dobel.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card" style="border-top: 4px solid var(--accent-yellow);">
+          <div class="spec-header">
+            <div class="spec-icon">🤔</div>
+            <div class="spec-title-group">
+              <h3>Mending Mana? (Would You Rather)</h3>
+              <span>Rute: /games/would-you-rather</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>12 Pertanyaan Dilema Unik:</b> Pilihan absurd tapi mencerminkan prioritas hidup.</li>
+            <li><b>Fitur Menarik:</b> Fun Fact edukatif muncul setelah menjawab.</li>
+            <li><b>Navigasi:</b> Tombol Prev/Next dan indikator dots kemajuan.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card" style="border-top: 4px solid var(--accent-cyan);">
+          <div class="spec-header">
+            <div class="spec-icon">🕵️</div>
+            <div class="spec-title-group">
+              <h3>Tebak Kepribadian (MBTI Guess)</h3>
+              <span>Rute: /games/guess</span>
+            </div>
+          </div>
+          <ul class="spec-detail-list">
+            <li><b>6 Kasus Studi Perilaku:</b> Analisis 3 ciri kebiasaan seseorang dan tebak MBTI-nya.</li>
+            <li><b>Tier Pencapaian:</b>
+              <br>• Skor 6/6: <b>Master Psikologi 🧠</b>
+              <br>• Skor 3-5: <b>Detektif Kepribadian 🕵️</b>
+              <br>• Skor 0-2: <b>Pengamat Pemula 🌱</b>
+            </li>
+            <li><b>Auto-Save Terverifikasi:</b> Dilindungi guard ref agar tidak double saat disimpan.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 5: BLIND CHAT -->
+    <div id="panel-chat" class="content-panel">
+      <h2 class="section-title">💬 Fitur Blind Chat Berbasis Kepribadian</h2>
+      <p class="section-desc">Mekanik obrolan anonim real-time yang dicocokkan menurut tipe MBTI.</p>
+
+      <div class="versus-box">
+        <div class="user-pill">
+          <div class="user-avatar">👨‍💻</div>
+          <div>
+            <div style="font-weight: 800; font-size: 1.1rem;">Dendi Pratama</div>
+            <div style="color: var(--accent); font-size: 0.85rem; font-weight: 600;">@dendiz7 • INTJ</div>
+            <div style="color: var(--text-muted); font-size: 0.75rem;">Mencari lawan ngobrol: ENFP</div>
+          </div>
+        </div>
+
+        <div class="vs-circle">CHAT</div>
+
+        <div class="user-pill">
+          <div class="user-avatar">👩‍🎨</div>
+          <div>
+            <div style="font-weight: 800; font-size: 1.1rem;">Dea Anindita</div>
+            <div style="color: var(--accent-pink); font-size: 0.85rem; font-weight: 600;">@dea33 • ENFP</div>
+            <div style="color: var(--text-muted); font-size: 0.75rem;">Mencari lawan ngobrol: Bebas / INTJ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-lanes">
+        <div class="lane">
+          <div class="lane-header"><span class="lane-title">1. Tahap Filter Lobby</span></div>
+          <p style="font-size: 0.85rem; color: var(--text-soft);">
+            User memilih preferensi tipe MBTI dari dropdown 16 kepribadian (atau Bebas/Acak). Mengklik "Mulai Pencarian".
+          </p>
+        </div>
+
+        <div class="lane">
+          <div class="lane-header"><span class="lane-title">2. Radar Matchmaking</span></div>
+          <p style="font-size: 0.85rem; color: var(--text-soft);">
+            Animasi radar CSS memindai antrean. Sistem mencocokkan user dan mengalihkan ke ruang obrolan <code>/chat/:roomId</code>.
+          </p>
+        </div>
+
+        <div class="lane">
+          <div class="lane-header"><span class="lane-title">3. Blind Chat Anonim</span></div>
+          <p style="font-size: 0.85rem; color: var(--text-soft);">
+            Nama disamarkan "Anonim" dengan avatar 👻. Masing-masing hanya tahu tipe MBTI lawannya (misal: "Seorang ENFP").
+          </p>
+        </div>
+
+        <div class="lane">
+          <div class="lane-header"><span class="lane-title">4. Tombol 🎭 Reveal</span></div>
+          <p style="font-size: 0.85rem; color: var(--text-soft);">
+            Jika kedua belah pihak menekan tombol Reveal, identitas asli terbuka (Nama, Avatar, Username). Room bisa ditutup kapan saja.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: DATABASE & SYNC -->
+    <div id="panel-db" class="content-panel">
+      <h2 class="section-title">🗄️ Arsitektur Data & Mekanisme Anti-Double</h2>
+      <p class="section-desc">Penyimpanan ganda (Hybrid LocalStorage + Supabase Backend) dengan perlindungan deduplikasi.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Tabel / Key Storage</th>
+              <th>Fungsi Utama</th>
+              <th>Mekanisme Pencegahan Double</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="code-tag">quizzy_db_users</span></td>
+              <td>Menyimpan profil akun lokal (@dendiz7, @dea33, user baru)</td>
+              <td>Pengecekan username unik saat registrasi.</td>
+            </tr>
+            <tr>
+              <td><span class="code-tag">quizzy_db_quiz_results</span></td>
+              <td>Koleksi riwayat kuis & pencapaian mini game</td>
+              <td><b>Upsert Mode:</b> Jika <code>quiz_id</code> sudah ada pada user, skor diperbarui, bukan digandakan.</td>
+            </tr>
+            <tr>
+              <td><span class="code-tag">quizzy_db_friendships</span></td>
+              <td>Relasi pertemanan (pending, accepted)</td>
+              <td>Validasi pasangan <code>requester_id</code> & <code>addressee_id</code> tidak boleh duplikat.</td>
+            </tr>
+            <tr>
+              <td><span class="code-tag">quizzy_{quizId}</span> (Guest)</td>
+              <td>Penyimpanan sementara kuis saat belum login</td>
+              <td>Dihapus otomatis (<code>removeItem</code>) begitu disinkronkan ke profil akun setelah login.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem;">
+        <h3 style="margin-bottom: 0.5rem; font-size: 1.05rem;">🛡️ Cara Kerja Fitur Anti-Double di Halaman Profil</h3>
+        <p style="font-size: 0.88rem; color: var(--text-soft); line-height: 1.6;">
+          Ketika fungsi <code>getUserQuizResults(userId)</code> dipanggil di <code>ProfilePage.jsx</code>:
+          <br>1. Mengambil seluruh riwayat hasil dari user.
+          <br>2. Menggunakan struktur <code>Set</code> untuk hanya mengambil 1 entri paling baru dari setiap jenis kuis/game.
+          <br>3. Jika terdeteksi ada sisa data ganda di browser, fungsi langsung otomatis membersihkan <code>localStorage</code> di balik layar tanpa perlu campur tangan pengguna.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      // Update buttons
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Update panels
+      document.querySelectorAll('.content-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      const activePanel = document.getElementById('panel-' + tabId);
+      if (activePanel) {
+        activePanel.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>

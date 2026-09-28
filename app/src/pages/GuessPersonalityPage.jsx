@@ -2,15 +2,63 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './GuessPersonalityPage.module.css';
 import { GUESS_SCENARIOS } from '../data/gamesData';
+import { useAuth } from '../contexts/AuthContext';
+import { saveUserQuizResult } from '../services/db';
 
 export default function GuessPersonalityPage() {
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResultScreen, setShowResultScreen] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const hasSavedRef = React.useRef(false);
 
   const currentScenario = GUESS_SCENARIOS?.[currentIndex];
+
+  useEffect(() => {
+    if (showResultScreen && !hasSavedRef.current) {
+      hasSavedRef.current = true;
+      let title = "Pengamat Pemula";
+      let emoji = "🌱";
+      if (score === GUESS_SCENARIOS.length) {
+        title = "Master Psikologi 🧠";
+        emoji = "🧠";
+      } else if (score >= GUESS_SCENARIOS.length / 2) {
+        title = "Detektif Kepribadian 🕵️";
+        emoji = "🕵️";
+      }
+
+      // Save to localStorage
+      try {
+        localStorage.setItem('quizzy_guess', JSON.stringify({
+          title,
+          emoji,
+          score,
+          total: GUESS_SCENARIOS.length,
+          date: new Date().toISOString()
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+
+      // Save to database / profile if logged in
+      if (user?.id) {
+        saveUserQuizResult(user.id, {
+          quizId: 'guess',
+          dominantResult: `${title} (${score}/${GUESS_SCENARIOS.length})`,
+          dominantEmoji: emoji,
+          scores: { score, total: GUESS_SCENARIOS.length },
+          isPublic: true
+        })
+          .then(() => setIsSaved(true))
+          .catch(err => console.error('Save result failed', err));
+      } else {
+        setIsSaved(true);
+      }
+    }
+  }, [showResultScreen, score, user]);
 
   const handleOptionClick = (option) => {
     if (answered || !currentScenario) return;
@@ -40,6 +88,8 @@ export default function GuessPersonalityPage() {
     setAnswered(false);
     setSelectedOption(null);
     setShowResultScreen(false);
+    setIsSaved(false);
+    hasSavedRef.current = false;
   };
 
   if (!GUESS_SCENARIOS || GUESS_SCENARIOS.length === 0) {
@@ -59,10 +109,26 @@ export default function GuessPersonalityPage() {
             {score} / {GUESS_SCENARIOS.length}
           </div>
           <h3>Pencapaian: {title}</h3>
+          {isSaved && (
+            <div style={{
+              margin: '0.75rem auto 1rem',
+              padding: '0.5rem 1rem',
+              background: 'rgba(34, 197, 94, 0.15)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: '8px',
+              color: '#4ade80',
+              fontSize: '0.85rem',
+              maxWidth: '320px'
+            }}>
+              ✓ Pencapaian tersimpan di Profil ({user ? `@${user.username}` : 'Browser'})
+            </div>
+          )}
           <p>Terima kasih sudah bermain Tebak Kepribadian.</p>
           <div className={styles.resultActions}>
             <button className={styles.playAgainBtn} onClick={resetGame}>Main Lagi</button>
-            <Link to="/dashboard" className={styles.backBtn}>Ke Dashboard</Link>
+            <Link to={user ? "/profile" : "/dashboard"} className={styles.backBtn}>
+              {user ? "Lihat di Profil" : "Ke Dashboard"}
+            </Link>
           </div>
         </div>
       </div>

@@ -103,15 +103,61 @@ const FriendsPage = () => {
       <div className={styles.container}>
         <div className={`card ${styles.authPrompt} fade-up`}>
           <div className={styles.promptIcon}>🤝</div>
-          <h2 className={styles.promptTitle}>Teman di Quizzy</h2>
+          <h2 className={styles.promptTitle}>Teman & Komunitas di Quizzy</h2>
           <p className={styles.promptDesc}>
             Masuk atau daftar untuk mencari teman, saling terhubung, melihat hasil kuis mereka, dan membandingkan kecocokan kepribadian kalian!
           </p>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
             <Link to="/login" className="btn btn-primary">Masuk Sekarang</Link>
             <Link to="/register" className="btn btn-secondary">Daftar Akun</Link>
           </div>
         </div>
+
+        {/* Sneak peek of community members */}
+        <section className={styles.suggestionsSection} style={{ marginTop: '2.5rem', width: '100%', maxWidth: '720px' }}>
+          <h3 className={styles.suggestionsTitle}>👀 Intip Profil Anggota Komunitas</h3>
+          <div className={styles.friendsGrid}>
+            <div className={styles.friendCard}>
+              <div className={styles.friendCardHeader}>
+                <img
+                  src="https://api.dicebear.com/7.x/bottts/svg?seed=dendiz7"
+                  alt="Dendi Pratama"
+                  className={styles.friendAvatar}
+                />
+                <div>
+                  <h3 className={styles.displayName}>Dendi Pratama</h3>
+                  <span className={styles.username}>@dendiz7 • Cowo (INTJ)</span>
+                </div>
+              </div>
+              <p className={styles.friendBio}>Thinker & Strategist. Cowo yang suka logika, teknologi, dan eksplorasi diri ⚡🎮</p>
+              <div className={styles.friendActions}>
+                <Link to="/profile/dendiz7" className="btn btn-secondary" style={{ flex: 1 }}>
+                  Lihat Profil 📇
+                </Link>
+              </div>
+            </div>
+
+            <div className={styles.friendCard}>
+              <div className={styles.friendCardHeader}>
+                <img
+                  src="https://api.dicebear.com/7.x/bottts/svg?seed=dea33"
+                  alt="Dea Anindita"
+                  className={styles.friendAvatar}
+                />
+                <div>
+                  <h3 className={styles.displayName}>Dea Anindita</h3>
+                  <span className={styles.username}>@dea33 • Cewe (ENFP)</span>
+                </div>
+              </div>
+              <p className={styles.friendBio}>Creative & Empathetic Soul. Cewe yang suka kopi, journaling, dan ngobrol mendalam 🌸✨</p>
+              <div className={styles.friendActions}>
+                <Link to="/profile/dea33" className="btn btn-secondary" style={{ flex: 1 }}>
+                  Lihat Profil 📇
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }

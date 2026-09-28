@@ -100,30 +100,166 @@
   cursor: not-allowed;
 }
 
-.demoBox {
-  margin-top: 0.25rem;
-  padding: 0.85rem;
-  background: var(--card2);
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  text-align: center;
+.demoSection {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: rgba(32, 32, 58, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
-.demoBox button {
-  background: none;
-  border: none;
-  color: var(--accent2);
+.demoHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.demoIcon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.demoTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.demoSubtitle {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.demoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.demoCard {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.demoCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  transition: background 0.25s ease;
+}
+
+.demoMale:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
+}
+
+.demoMale:hover::before {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+}
+
+.demoFemale:hover {
+  border-color: #ec4899;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.2);
+}
+
+.demoFemale:hover::before {
+  background: linear-gradient(90deg, #ec4899, #a855f7);
+}
+
+.demoAvatar {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.demoMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 100%;
+}
+
+.demoName {
   font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.demoHandle {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.demoTags {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+}
+
+.tagGender, .tagMbti {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 99px;
   font-weight: 600;
-  text-decoration: underline;
-  padding: 4px 6px;
-  min-height: 32px;
+}
+
+.demoMale .tagGender {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.demoMale .tagMbti {
+  background: rgba(124, 58, 237, 0.15);
+  color: #c084fc;
+}
+
+.demoFemale .tagGender {
+  background: rgba(236, 72, 153, 0.15);
+  color: #f472b6;
+}
+
+.demoFemale .tagMbti {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.demoArrow {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--soft);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.demoCard:hover .demoArrow {
+  transform: translateX(3px);
+  color: var(--accent2);
 }
 
 .divider {

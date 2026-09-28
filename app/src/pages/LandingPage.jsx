@@ -29,8 +29,11 @@ export default function LandingPage() {
             <Link to="/register" className={`btn btn-primary ${styles.ctaBtn}`}>
               Mulai Petualangan &rarr;
             </Link>
+            <Link to="/dashboard" className={`btn btn-secondary ${styles.ctaBtn}`}>
+              Lihat Kuis & Games 🧭
+            </Link>
             <Link to="/login" className={`btn btn-secondary ${styles.ctaBtn}`}>
-              Sudah Punya Akun
+              Masuk
             </Link>
           </div>
         </div>

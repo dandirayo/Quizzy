@@ -48,6 +48,12 @@ const Navbar = () => {
               Mini Games
             </a>
             <NavLink
+              to="/chat"
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              Blind Chat 💬
+            </NavLink>
+            <NavLink
               to="/friends"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
             >
@@ -134,6 +140,12 @@ const Navbar = () => {
           >
             <span>🎮</span> Mini Games
           </a>
+          <NavLink
+            to="/chat"
+            className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
+          >
+            <span>💬</span> Blind Chat
+          </NavLink>
           <NavLink
             to="/friends"
             className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}

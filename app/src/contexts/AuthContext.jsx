@@ -31,6 +31,8 @@ export const AuthProvider = ({ children }) => {
                 scores: parsed.percentages || parsed.result?.percentages || {},
                 isPublic: true
               });
+              // Remove temporary guest key so it does not sync repeatedly
+              localStorage.removeItem(key);
             } catch (e) {
               console.warn('Could not sync quiz result for key:', key);
             }
