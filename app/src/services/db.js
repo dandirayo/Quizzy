@@ -14,6 +14,7 @@ const SEED_USERS = [
     avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dendiz7',
     bio: 'Thinker & Strategist. Cowo yang suka logika, teknologi, dan eksplorasi diri ⚡🎮',
     gender: 'male',
+    password: 'demo123',
     created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -24,6 +25,7 @@ const SEED_USERS = [
     avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dea33',
     bio: 'Creative & Empathetic Soul. Cewe yang suka kopi, journaling, dan ngobrol mendalam 🌸✨',
     gender: 'female',
+    password: 'demo123',
     created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
     updated_at: new Date().toISOString()
   }
@@ -104,13 +106,25 @@ const SEED_FRIENDSHIPS = [
 ];
 
 // Helper to initialize local storage & auto-migrate to dendiz7 and dea33
-function initLocalDb() {
+export function initLocalDb() {
   const currentUsers = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
   const hasDendiz7 = currentUsers.some(u => u.username === 'dendiz7');
 
   if (!localStorage.getItem(LS_USERS_KEY) || !hasDendiz7) {
     const cleanedUsers = currentUsers.filter(u => u.username !== 'maya_infj' && u.username !== 'budi_builder' && u.username !== 'dina_creative');
     localStorage.setItem(LS_USERS_KEY, JSON.stringify([...SEED_USERS, ...cleanedUsers]));
+  } else {
+    // Ensure seed users have password defined if updated in place
+    let updated = false;
+    currentUsers.forEach(u => {
+      if ((u.username === 'dendiz7' || u.username === 'dea33') && !u.password) {
+        u.password = 'demo123';
+        updated = true;
+      }
+    });
+    if (updated) {
+      localStorage.setItem(LS_USERS_KEY, JSON.stringify(currentUsers));
+    }
   }
 
   const currentResults = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');

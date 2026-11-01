@@ -89,13 +89,20 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <div className={styles.desktopOnly}>
+              <div className={styles.desktopOnly} style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
                 <Link
                   to="/login"
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                   style={{ padding: '6px 14px', fontSize: '0.85rem', minHeight: '34px' }}
                 >
                   Masuk
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn btn-primary"
+                  style={{ padding: '6px 14px', fontSize: '0.85rem', minHeight: '34px' }}
+                >
+                  Daftar ✨
                 </Link>
               </div>
             )}
@@ -191,11 +198,11 @@ const Navbar = () => {
             </>
           ) : (
             <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <Link to="/login" className="btn btn-primary" style={{ flex: 1 }}>
+              <Link to="/login" className="btn btn-secondary" style={{ flex: 1, textAlign: 'center' }}>
                 Masuk
               </Link>
-              <Link to="/register" className="btn btn-secondary" style={{ flex: 1 }}>
-                Daftar
+              <Link to="/register" className="btn btn-primary" style={{ flex: 1, textAlign: 'center' }}>
+                Daftar ✨
               </Link>
             </div>
           )}

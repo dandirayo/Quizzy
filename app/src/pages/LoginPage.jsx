@@ -6,6 +6,7 @@ import styles from './LoginPage.module.css';
 const LoginPage = () => {
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const { login, loginWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="email">Email atau Username</label>
+            <label htmlFor="email">Email atau Username (@)</label>
             <input
               type="text"
               id="email"
@@ -72,19 +73,30 @@ const LoginPage = () => {
 
           <div className={styles.formGroup}>
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              className={styles.input}
-            />
+            <div className={styles.passwordWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Masukkan password akunmu"
+                required
+                className={`${styles.input} ${styles.passwordInput}`}
+              />
+              <button
+                type="button"
+                className={styles.passwordToggleBtn}
+                onClick={() => setShowPassword(prev => !prev)}
+                aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={loading}>
-            {loading ? 'Memproses...' : 'Masuk 🚀'}
+            {loading ? 'Memproses Masuk...' : 'Masuk ke Akun 🚀'}
           </button>
         </form>
 
@@ -93,7 +105,7 @@ const LoginPage = () => {
             <span className={styles.demoIcon}>⚡</span>
             <div>
               <div className={styles.demoTitle}>Akun Uji Coba Cepat (Demo)</div>
-              <div className={styles.demoSubtitle}>Klik salah satu untuk langsung masuk dan uji coba:</div>
+              <div className={styles.demoSubtitle}>Klik salah satu untuk langsung masuk tanpa register:</div>
             </div>
           </div>
           <div className={styles.demoGrid}>
@@ -143,7 +155,10 @@ const LoginPage = () => {
         </button>
 
         <p className={styles.registerPrompt}>
-          Belum punya akun? <Link to="/register" className={styles.registerLink}>Daftar di sini</Link>
+          Belum punya akun?{' '}
+          <Link to="/register" className={styles.registerLink}>
+            Daftar Akun Baru di sini ✨
+          </Link>
         </p>
       </div>
     </div>

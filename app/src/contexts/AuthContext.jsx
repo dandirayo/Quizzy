@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
-import { getUserProfile, saveUserQuizResult } from '../services/db';
+import { getUserProfile, saveUserQuizResult, initLocalDb } from '../services/db';
 
 const AuthContext = createContext();
 
@@ -48,6 +48,9 @@ export const AuthProvider = ({ children }) => {
     let mounted = true;
 
     async function initializeAuth() {
+      // Initialize seed database first if needed
+      initLocalDb();
+
       if (isSupabaseConfigured) {
         try {
           const { data: { session } } = await supabase.auth.getSession();
@@ -103,10 +106,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // REGISTER
-  const register = async (email, password, username, displayName) => {
+  const register = async (email, password, username, displayName, gender = 'male', avatarUrl = null) => {
     setLoading(true);
     try {
-      const cleanUsername = username.toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const cleanUsername = (username || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+
+      if (!cleanUsername || cleanUsername.length < 3) {
+        throw new Error('Username minimal 3 karakter (hanya huruf kecil, angka, atau underscore).');
+      }
+
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        throw new Error('Format email tidak valid. Masukkan email yang benar.');
+      }
+
+      if (!password || password.length < 6) {
+        throw new Error('Password minimal 6 karakter demi keamanan akun.');
+      }
 
       if (isSupabaseConfigured) {
         const { data, error } = await supabase.auth.signUp({
@@ -115,32 +130,53 @@ export const AuthProvider = ({ children }) => {
           options: {
             data: {
               username: cleanUsername,
-              display_name: displayName || cleanUsername
+              display_name: displayName?.trim() || cleanUsername,
+              gender: gender,
+              avatar_url: avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`
             }
           }
         });
         if (error) throw error;
         if (data?.user) {
           const profile = await getUserProfile(data.user.id);
-          setUser(profile || { id: data.user.id, email, username: cleanUsername, display_name: displayName });
+          const registeredUser = profile || {
+            id: data.user.id,
+            email,
+            username: cleanUsername,
+            display_name: displayName?.trim() || cleanUsername,
+            gender: gender,
+            avatar_url: avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`
+          };
+          setUser(registeredUser);
           await syncGuestResults(data.user.id);
         }
         return { success: true };
       }
 
       // Local fallback mode
+      initLocalDb();
       const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
-      const exists = users.some(u => u.username.toLowerCase() === cleanUsername.toLowerCase() || u.email === email);
-      if (exists) {
-        throw new Error('Username atau email sudah digunakan.');
+      
+      const usernameExists = users.some(u => u.username && u.username.toLowerCase() === cleanUsername.toLowerCase());
+      if (usernameExists) {
+        throw new Error(`Username @${cleanUsername} sudah digunakan. Silakan pilih username lain.`);
       }
+
+      const emailExists = users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase().trim());
+      if (emailExists) {
+        throw new Error(`Email ${email} sudah terdaftar. Silakan gunakan email lain atau masuk.`);
+      }
+
+      const defaultAvatar = avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`;
 
       const newUser = {
         id: `user-${Date.now()}`,
-        email,
+        email: email.toLowerCase().trim(),
         username: cleanUsername,
-        display_name: displayName || cleanUsername,
-        avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`,
+        display_name: (displayName && displayName.trim()) || cleanUsername,
+        gender: gender || 'male',
+        password: password,
+        avatar_url: defaultAvatar,
         bio: 'Penggemar refleksi diri di Quizzy 🌱',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -151,7 +187,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(newUser));
       setUser(newUser);
       await syncGuestResults(newUser.id);
-      return { success: true };
+      return { success: true, user: newUser };
     } finally {
       setLoading(false);
     }
@@ -161,10 +197,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (emailOrUsername, password) => {
     setLoading(true);
     try {
+      if (!emailOrUsername || !emailOrUsername.trim()) {
+        throw new Error('Silakan masukkan username atau email.');
+      }
+      if (!password) {
+        throw new Error('Silakan masukkan password.');
+      }
+
       if (isSupabaseConfigured) {
-        // If email is supplied
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: emailOrUsername,
+          email: emailOrUsername.trim(),
           password
         });
         if (error) throw error;
@@ -177,38 +219,38 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Local fallback mode
+      initLocalDb();
       const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
-      const target = emailOrUsername.toLowerCase().trim();
+      const target = emailOrUsername.toLowerCase().trim().replace(/^@/, '');
       const matched = users.find(u => 
         (u.email && u.email.toLowerCase() === target) || 
         (u.username && u.username.toLowerCase() === target)
       );
 
       if (!matched) {
-        // If demo credentials or new user not in list, auto-create demo profile
-        const cleanName = target.includes('@') ? target.split('@')[0] : target;
-        const demoUser = {
-          id: `user-${Date.now()}`,
-          email: target.includes('@') ? target : `${target}@example.com`,
-          username: cleanName,
-          display_name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
-          avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanName}`,
-          bio: 'Penjelajah psikologi Quizzy ✨',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        users.push(demoUser);
-        localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-        localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(demoUser));
-        setUser(demoUser);
-        await syncGuestResults(demoUser.id);
-        return { success: true };
+        throw new Error('Akun tidak ditemukan. Silakan periksa kembali username/email atau daftar akun baru.');
+      }
+
+      // Password verification
+      if (matched.password) {
+        const isDemo = (matched.username === 'dendiz7' || matched.username === 'dea33');
+        if (matched.password !== password && !(isDemo && password === 'demo123')) {
+          throw new Error('Password salah. Silakan coba lagi.');
+        }
+      } else {
+        // Upgrade legacy user record with entered password
+        matched.password = password;
+        const idx = users.findIndex(u => u.id === matched.id);
+        if (idx !== -1) {
+          users[idx].password = password;
+          localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+        }
       }
 
       localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(matched));
       setUser(matched);
       await syncGuestResults(matched.id);
-      return { success: true };
+      return { success: true, user: matched };
     } finally {
       setLoading(false);
     }
@@ -226,19 +268,30 @@ export const AuthProvider = ({ children }) => {
     }
 
     // Local fallback demo
-    const googleDemoUser = {
-      id: `google-user-${Date.now()}`,
-      email: 'google.user@gmail.com',
-      username: 'user_google',
-      display_name: 'Google User',
-      avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=google',
-      bio: 'Masuk melalui Google Sign-in 🌐',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(googleDemoUser));
-    setUser(googleDemoUser);
-    await syncGuestResults(googleDemoUser.id);
+    initLocalDb();
+    const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
+    let googleUser = users.find(u => u.email === 'google.user@gmail.com');
+
+    if (!googleUser) {
+      googleUser = {
+        id: `google-user-${Date.now()}`,
+        email: 'google.user@gmail.com',
+        username: 'google_user',
+        display_name: 'Google User',
+        gender: 'other',
+        password: 'google_oauth_user',
+        avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=google_user',
+        bio: 'Masuk melalui Google Sign-in 🌐',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      users.push(googleUser);
+      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+    }
+
+    localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(googleUser));
+    setUser(googleUser);
+    await syncGuestResults(googleUser.id);
   };
 
   // LOGOUT

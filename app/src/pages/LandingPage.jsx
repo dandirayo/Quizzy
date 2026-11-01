@@ -27,13 +27,13 @@ export default function LandingPage() {
           </p>
           <div className={styles.ctaGroup}>
             <Link to="/register" className={`btn btn-primary ${styles.ctaBtn}`}>
-              Mulai Petualangan &rarr;
-            </Link>
-            <Link to="/dashboard" className={`btn btn-secondary ${styles.ctaBtn}`}>
-              Lihat Kuis & Games 🧭
+              Buat Akun Baru ✨
             </Link>
             <Link to="/login" className={`btn btn-secondary ${styles.ctaBtn}`}>
-              Masuk
+              Masuk / Coba Demo ⚡
+            </Link>
+            <Link to="/dashboard" className={`btn btn-secondary ${styles.ctaBtn}`}>
+              Eksplor Kuis (Mode Tamu) 🧭
             </Link>
           </div>
         </div>

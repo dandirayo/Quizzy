@@ -107,7 +107,7 @@ Tidak ada kalibrasi statistik, validasi psikometrik, atau penyimpanan versi inst
 | `quizzy_dilemma_answers` | Jawaban Dilema Harian |
 | `quizzy_wyr_answers` | Jawaban Mending Mana? |
 
-Login lokal tidak memeriksa password. Identitas yang belum ada bahkan dibuat otomatis. Karena itu, label yang tepat adalah **demo session**, bukan autentikasi lokal.
+Registrasi dan login lokal kini memvalidasi username (@ unik), email, password (minimal 6 karakter), serta konfirmasi password. Pengguna yang mendaftar disimpan ke `quizzy_db_users` dan dapat login kembali menggunakan kredensial mereka. Untuk kemudahan uji coba dan demonstrasi, tombol masuk cepat (demo) untuk `@dendiz7` dan `@dea33` tetap disediakan.
 
 ### Supabase
 
