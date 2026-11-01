@@ -1,9 +1,7 @@
 name: Deploy to VPS
 
 on:
-  push:
-    branches:
-      - main # Ubah ini jika branch utama Anda bukan 'main'
+  workflow_dispatch: # Jalankan secara manual saat ingin deploy ke VPS
 
 jobs:
   deploy:
