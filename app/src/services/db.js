@@ -108,24 +108,28 @@ const SEED_FRIENDSHIPS = [
 // Helper to initialize local storage & auto-migrate to dendiz7 and dea33
 export function initLocalDb() {
   const currentUsers = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
-  const hasDendiz7 = currentUsers.some(u => u.username === 'dendiz7');
+  
+  // Clean up any invalid or legacy users (including phantom 'user')
+  const cleanedUsers = currentUsers.filter(u => 
+    u && 
+    u.username && 
+    u.username !== 'user' && 
+    u.username !== 'maya_infj' && 
+    u.username !== 'budi_builder' && 
+    u.username !== 'dina_creative'
+  );
 
-  if (!localStorage.getItem(LS_USERS_KEY) || !hasDendiz7) {
-    const cleanedUsers = currentUsers.filter(u => u.username !== 'maya_infj' && u.username !== 'budi_builder' && u.username !== 'dina_creative');
-    localStorage.setItem(LS_USERS_KEY, JSON.stringify([...SEED_USERS, ...cleanedUsers]));
-  } else {
-    // Ensure seed users have password defined if updated in place
-    let updated = false;
-    currentUsers.forEach(u => {
-      if ((u.username === 'dendiz7' || u.username === 'dea33') && !u.password) {
-        u.password = 'demo123';
-        updated = true;
-      }
-    });
-    if (updated) {
-      localStorage.setItem(LS_USERS_KEY, JSON.stringify(currentUsers));
+  const hasDendiz7 = cleanedUsers.some(u => u.username === 'dendiz7');
+  const finalUsers = hasDendiz7 ? cleanedUsers : [...SEED_USERS, ...cleanedUsers];
+
+  // Ensure seed users have password defined
+  finalUsers.forEach(u => {
+    if ((u.username === 'dendiz7' || u.username === 'dea33') && !u.password) {
+      u.password = 'demo123';
     }
-  }
+  });
+
+  localStorage.setItem(LS_USERS_KEY, JSON.stringify(finalUsers));
 
   const currentResults = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
   const hasDendizResults = currentResults.some(r => r.user_id === 'seed-user-1' || r.user_id === 'seed-user-2');
@@ -134,8 +138,21 @@ export function initLocalDb() {
     localStorage.setItem(LS_RESULTS_KEY, JSON.stringify([...SEED_RESULTS, ...otherResults]));
   }
 
-  if (!localStorage.getItem(LS_FRIENDSHIPS_KEY) || JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]').length === 0) {
+  // Cleanup friendships: remove any record with invalid IDs or ghost references
+  const validUserIds = new Set(finalUsers.map(u => u.id));
+  const rawFriendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
+  const validFriendships = rawFriendships.filter(f => 
+    f && 
+    f.requester_id && 
+    f.addressee_id && 
+    validUserIds.has(f.requester_id) && 
+    validUserIds.has(f.addressee_id)
+  );
+
+  if (validFriendships.length === 0 && !localStorage.getItem(LS_FRIENDSHIPS_KEY)) {
     localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(SEED_FRIENDSHIPS));
+  } else {
+    localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(validFriendships));
   }
 }
 
@@ -183,17 +200,13 @@ export async function updateUserProfile(userId, updates) {
   return null;
 }
 
-export async function searchUsers(queryStr, currentUserId) {
-  if (!queryStr || queryStr.trim().length === 0) return [];
-  const q = queryStr.trim().toLowerCase().replace('@', '');
-
+export async function getAllUsers(currentUserId) {
   if (isSupabaseConfigured) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, display_name, avatar_url, bio')
+      .select('id, username, display_name, avatar_url, bio, gender')
       .neq('id', currentUserId)
-      .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
-      .limit(15);
+      .limit(50);
     if (error) return [];
     return data || [];
   }
@@ -201,8 +214,42 @@ export async function searchUsers(queryStr, currentUserId) {
   initLocalDb();
   const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
   return users.filter(u => 
+    u && 
     u.id !== currentUserId && 
-    (u.username.toLowerCase().includes(q) || u.display_name.toLowerCase().includes(q))
+    u.username && 
+    u.username !== 'user'
+  );
+}
+
+export async function searchUsers(queryStr, currentUserId) {
+  if (!queryStr || queryStr.trim().length === 0) {
+    return getAllUsers(currentUserId);
+  }
+  const q = queryStr.trim().toLowerCase().replace('@', '');
+
+  if (isSupabaseConfigured) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, display_name, avatar_url, bio, gender')
+      .neq('id', currentUserId)
+      .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+      .limit(25);
+    if (error) return [];
+    return data || [];
+  }
+
+  initLocalDb();
+  const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
+  return users.filter(u => 
+    u && 
+    u.id !== currentUserId && 
+    u.username && 
+    u.username !== 'user' && 
+    (
+      (u.username && u.username.toLowerCase().includes(q)) || 
+      (u.display_name && u.display_name.toLowerCase().includes(q)) ||
+      (u.email && u.email.toLowerCase().includes(q))
+    )
   );
 }
 
@@ -322,11 +369,19 @@ export async function getFriendships(userId) {
   const rawFriendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
   const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
 
-  const populated = rawFriendships.map(f => ({
-    ...f,
-    requester: users.find(u => u.id === f.requester_id) || { id: f.requester_id, username: 'user' },
-    addressee: users.find(u => u.id === f.addressee_id) || { id: f.addressee_id, username: 'user' }
-  }));
+  // Only keep friendships where both requester and addressee exist and are not ghost users
+  const populated = [];
+  rawFriendships.forEach(f => {
+    const requester = users.find(u => u.id === f.requester_id);
+    const addressee = users.find(u => u.id === f.addressee_id);
+    if (requester && addressee && requester.username !== 'user' && addressee.username !== 'user') {
+      populated.push({
+        ...f,
+        requester,
+        addressee
+      });
+    }
+  });
 
   return formatFriendships(populated, userId);
 }
@@ -338,7 +393,13 @@ function formatFriendships(list, currentUserId) {
 
   list.forEach(f => {
     const isRequester = (f.requester?.id || f.requester_id) === currentUserId;
+    const isAddressee = (f.addressee?.id || f.addressee_id) === currentUserId;
+
+    // Must be either requester or addressee of this friendship
+    if (!isRequester && !isAddressee) return;
+
     const friend = isRequester ? f.addressee : f.requester;
+    if (!friend || !friend.id || !friend.username || friend.username === 'user') return;
 
     if (f.status === 'accepted') {
       friends.push({ friendshipId: f.id, ...friend });

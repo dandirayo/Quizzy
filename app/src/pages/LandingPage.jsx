@@ -30,7 +30,7 @@ export default function LandingPage() {
               Buat Akun Baru ✨
             </Link>
             <Link to="/login" className={`btn btn-secondary ${styles.ctaBtn}`}>
-              Masuk / Coba Demo ⚡
+              Masuk ke Akun 🔑
             </Link>
             <Link to="/dashboard" className={`btn btn-secondary ${styles.ctaBtn}`}>
               Eksplor Kuis (Mode Tamu) 🧭

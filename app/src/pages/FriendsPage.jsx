@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getFriendships, sendFriendRequest, respondFriendRequest, removeFriend, searchUsers } from '../services/db';
+import { getFriendships, sendFriendRequest, respondFriendRequest, removeFriend, searchUsers, getAllUsers } from '../services/db';
 import styles from './FriendsPage.module.css';
 
 const FriendsPage = () => {
@@ -11,6 +11,7 @@ const FriendsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const [friendships, setFriendships] = useState({ friends: [], incoming: [], outgoing: [] });
   const [loading, setLoading] = useState(true);
@@ -25,14 +26,14 @@ const FriendsPage = () => {
       const data = await getFriendships(user.id);
       setFriendships(data);
 
-      // Load sample users for community suggestions
-      const allFound = await searchUsers('a', user.id);
-      const notFriends = allFound.filter(u => 
+      // Load all other registered community members
+      const allCommunity = await getAllUsers(user.id);
+      const notConnected = allCommunity.filter(u => 
         !data.friends.some(f => f.id === u.id) &&
         !data.incoming.some(f => f.id === u.id) &&
         !data.outgoing.some(f => f.id === u.id)
       );
-      setSuggestions(notFriends.slice(0, 4));
+      setSuggestions(notConnected);
     } catch (err) {
       console.error('Failed to load friendships', err);
     } finally {
@@ -49,9 +50,14 @@ const FriendsPage = () => {
   }, [isAuthenticated, user]);
 
   const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (e) e.preventDefault();
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setHasSearched(false);
+      return;
+    }
     setIsSearching(true);
+    setHasSearched(true);
     try {
       const results = await searchUsers(searchQuery, user.id);
       setSearchResults(results);
@@ -190,8 +196,14 @@ const FriendsPage = () => {
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Cari username (contoh: maya, budi)..."
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            if (!e.target.value.trim()) {
+              setSearchResults([]);
+              setHasSearched(false);
+            }
+          }}
+          placeholder="Cari username atau nama teman (contoh: nendra17, dendiz7, dea33)..."
           className={styles.searchInput}
         />
         <button type="submit" className={`btn btn-primary ${styles.searchBtn}`} disabled={isSearching}>
@@ -200,6 +212,14 @@ const FriendsPage = () => {
       </form>
 
       {/* Search Results Display */}
+      {hasSearched && searchResults.length === 0 && (
+        <div className={`${styles.searchResultsBox} fade-up`} style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--muted)' }}>
+          <div style={{ fontSize: '1.5rem', marginBottom: '0.35rem' }}>🔍</div>
+          <div>Tidak ditemukan pengguna dengan kata kunci "<strong>{searchQuery}</strong>".</div>
+          <div style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>Coba cari nama tampilan atau username yang sesuai.</div>
+        </div>
+      )}
+
       {searchResults.length > 0 && (
         <div className={`${styles.searchResultsBox} fade-up`}>
           <div className={styles.resultsTitle}>Hasil Pencarian ({searchResults.length})</div>
@@ -433,13 +453,16 @@ const FriendsPage = () => {
       {/* Community Recommendations / Suggestions */}
       {suggestions.length > 0 && (
         <section className={styles.suggestionsSection}>
-          <h2 className={styles.suggestionsTitle}>✨ Anggota Komunitas yang Mungkin Kamu Kenal</h2>
+          <h2 className={styles.suggestionsTitle}>✨ Pengguna Terdaftar Lain di Quizzy ({suggestions.length})</h2>
+          <p style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: '-0.5rem', marginBottom: '1.25rem' }}>
+            Temukan sesama penjelajah Quizzy, cek profil kartu kepribadian mereka, dan saling terhubung!
+          </p>
           <div className={styles.friendsGrid}>
             {suggestions.map((member) => (
               <div key={member.id} className={styles.friendCard}>
                 <div className={styles.friendCardHeader}>
                   <img
-                    src={member.avatar_url}
+                    src={member.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${member.username}`}
                     alt={member.display_name}
                     className={styles.friendAvatar}
                   />
@@ -448,17 +471,18 @@ const FriendsPage = () => {
                     <span className={styles.username}>@{member.username}</span>
                   </div>
                 </div>
-                <p className={styles.friendBio}>{member.bio}</p>
+                <p className={styles.friendBio}>{member.bio || 'Penggemar refleksi diri Quizzy 🌱'}</p>
                 <div className={styles.friendActions}>
-                  <Link to={`/profile/${member.username}`} className="btn btn-secondary">
-                    Lihat Profil
+                  <Link to={`/profile/${member.username}`} className="btn btn-secondary" style={{ flex: 1 }}>
+                    Profil 📇
                   </Link>
                   <button
                     type="button"
                     onClick={() => handleSendRequest(member.id)}
                     className="btn btn-primary"
+                    style={{ flex: 1 }}
                   >
-                    ➕ Tambah Teman
+                    ➕ Tambah
                   </button>
                 </div>
               </div>
