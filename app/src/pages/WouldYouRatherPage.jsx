@@ -71,7 +71,7 @@ export default function WouldYouRatherPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <Link to="/dashboard" className={styles.backButton}>&larr; Kembali</Link>
+        <Link to="/games" className={styles.backButton}>&larr; Mini Games</Link>
         <h1 className={styles.title}>Mending Mana?</h1>
         <p className={styles.subtitle}>Pilih yang menurutmu paling menarik!</p>
       </header>

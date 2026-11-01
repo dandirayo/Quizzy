@@ -41,6 +41,12 @@ export default function DailyDilemmaPage() {
 
   return (
     <div className={styles.container}>
+      <div style={{ width: '100%', maxWidth: '800px', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-start' }}>
+        <Link to="/games" className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', padding: '6px 14px' }}>
+          ← Mini Games
+        </Link>
+      </div>
+
       <div className={`${styles.header} fade-up`}>
         <h1>Dilema Harian</h1>
         <p>Pilih jalanmu dan lihat bagaimana orang lain merespons.</p>

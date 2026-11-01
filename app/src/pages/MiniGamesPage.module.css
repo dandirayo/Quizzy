@@ -1,0 +1,222 @@
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 4rem;
+}
+
+.backRow {
+  margin-bottom: 1.25rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.backLink:hover {
+  color: var(--text);
+  transform: translateX(-3px);
+  background: var(--card2);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  color: var(--accent);
+  padding: 5px 14px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.title {
+  font-size: clamp(1.8rem, 4vw + 0.5rem, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+  color: var(--text);
+}
+
+.gradientText {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: clamp(0.95rem, 1.5vw + 0.3rem, 1.1rem);
+  color: var(--muted);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.gamesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.gameCard {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s, box-shadow 0.25s;
+}
+
+.gameCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cardGradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  opacity: 0.8;
+  pointer-events: none;
+  border-radius: 20px 20px 0 0;
+}
+
+.cardTop {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.gameEmoji {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+}
+
+.gameTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  color: var(--soft);
+}
+
+.cardBody {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gameTitle {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.gameDesc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.cardFooter {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gameStat {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--soft);
+}
+
+.playAction {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent2);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: transform 0.2s;
+}
+
+.gameCard:hover .playAction {
+  transform: translateX(4px);
+  color: #fff;
+}
+
+/* Mobile Screens (< 640px) */
+@media (max-width: 640px) {
+  .container {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .header {
+    margin-bottom: 1.75rem;
+  }
+
+  .gamesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .gameCard {
+    padding: 1.4rem;
+    border-radius: 16px;
+  }
+
+  .gameEmoji {
+    font-size: 2.5rem;
+  }
+
+  .gameTitle {
+    font-size: 1.15rem;
+  }
+
+  .gameDesc {
+    font-size: 0.85rem;
+  }
+}

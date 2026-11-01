@@ -140,7 +140,7 @@ export default function GuessPersonalityPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <Link to="/dashboard" className={styles.headerBack}>&larr; Dashboard</Link>
+        <Link to="/games" className={styles.headerBack}>&larr; Mini Games</Link>
         <div className={styles.headerInfo}>
           <h2>Tebak Kepribadian</h2>
           <span className={styles.scoreBadge}>Skor: {score}/{GUESS_SCENARIOS.length}</span>

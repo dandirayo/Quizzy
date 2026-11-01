@@ -155,6 +155,12 @@ export default function SwipeGamePage() {
 
   return (
     <div className={styles.container}>
+      <div style={{ width: '100%', maxWidth: '600px', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-start' }}>
+        <Link to="/games" className="btn btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', padding: '6px 14px' }}>
+          ← Mini Games
+        </Link>
+      </div>
+
       <div className={`${styles.header} fade-up`}>
         <h1>Swipe Vibe</h1>
         <p>Geser kartu atau tekan tombol. Temukan vibe-mu hari ini.</p>
@@ -266,8 +272,8 @@ export default function SwipeGamePage() {
       )}
 
       {!isGameOver && (
-        <Link to="/dashboard" className={styles.exitLink}>
-          &larr; Keluar Game
+        <Link to="/games" className={styles.exitLink}>
+          &larr; Keluar ke Mini Games
         </Link>
       )}
     </div>

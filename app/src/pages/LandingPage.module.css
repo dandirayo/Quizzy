@@ -126,3 +126,79 @@
   color: var(--muted);
   font-size: 0.9rem;
 }
+
+/* Mobile Screens (< 640px) */
+@media (max-width: 640px) {
+  .hero {
+    padding: 2.5rem 1rem 3rem;
+    min-height: auto;
+  }
+
+  .badge {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    margin-bottom: 1rem;
+  }
+
+  .title {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 1.75rem;
+  }
+
+  .ctaGroup {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.65rem;
+  }
+
+  .ctaBtn {
+    width: 100%;
+    font-size: 0.95rem !important;
+    padding: 0.85rem 1.25rem !important;
+  }
+
+  .features {
+    padding: 3rem 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.65rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .featureCard {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .featureIcon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .featureTitle {
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .featureDesc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .footer {
+    padding: 2rem 1rem;
+  }
+}

@@ -23,9 +23,9 @@ const HomePage = () => {
           </h1>
           
           <div className={styles.miniGamesBtnContainer}>
-            <a href="#mini-games" className={styles.miniGamesHeroBtn}>
+            <Link to="/games" className={styles.miniGamesHeroBtn}>
               <span className={styles.miniGamesHeroBtnEmoji}>🎮</span> Mini Games
-            </a>
+            </Link>
           </div>
         </div>
         

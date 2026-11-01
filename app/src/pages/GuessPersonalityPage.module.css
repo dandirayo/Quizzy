@@ -228,7 +228,7 @@
 
 @media (max-width: 480px) {
   .container {
-    padding: 1rem;
+    padding: 1rem 1rem 3rem;
   }
   .headerInfo {
     flex-direction: column;
@@ -236,10 +236,18 @@
     gap: 0.5rem;
   }
   .scenarioCard {
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
   }
   .scenarioTitle {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+  }
+  .behaviorItem {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.88rem;
+  }
+  .optionBtn {
+    padding: 1rem 0.75rem;
+    font-size: 1.05rem;
   }
   .resultActions {
     flex-direction: column;

@@ -41,12 +41,12 @@ const Navbar = () => {
             >
               Beranda
             </NavLink>
-            <a
-              href="/dashboard#mini-games"
-              className={styles.navLink}
+            <NavLink
+              to="/games"
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
             >
-              Mini Games
-            </a>
+              Mini Games 🎮
+            </NavLink>
             <NavLink
               to="/chat"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
@@ -140,13 +140,13 @@ const Navbar = () => {
           >
             <span>🧩</span> Beranda
           </NavLink>
-          <a
-            href="/dashboard#mini-games"
-            className={styles.mobileNavLink}
+          <NavLink
+            to="/games"
+            className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
             onClick={() => setMobileOpen(false)}
           >
             <span>🎮</span> Mini Games
-          </a>
+          </NavLink>
           <NavLink
             to="/chat"
             className={({ isActive }) => isActive ? `${styles.mobileNavLink} ${styles.active}` : styles.mobileNavLink}
