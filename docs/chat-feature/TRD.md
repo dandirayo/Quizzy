@@ -1,25 +1,83 @@
-# Technical Requirements Document (TRD): Blind Chat Quizzy 🛠️
+# Blind Chat: technical design
 
-## 1. Teknologi Tambahan (Tech Stack)
-Saat ini Quizzy menggunakan React 19 + Vite. Untuk fitur chat, aplikasi harus naik level dengan menambahkan:
-- **Backend & Realtime Database:** Supabase atau Appwrite Cloud. Keduanya memiliki fitur *WebSockets* (Realtime) bawaan yang wajib untuk fitur chat.
-- **State Management:** React Context (untuk menyimpan status *room* aktif dan daftar pesan, sehingga data tidak ter-reset jika pengguna berpindah tab/halaman sementara).
+Status: target arsitektur. Source saat ini masih simulasi di `ChatLobbyPage.jsx` dan `ChatRoomPage.jsx`.
 
-## 2. Arsitektur Real-time (WebSockets)
-- Tidak menggunakan teknik *polling* (menarik data tiap beberapa detik) karena membebani server dan tidak instan.
-- Backend (Supabase/Appwrite) akan membuka jalur komunikasi WebSocket.
-- Aplikasi klien (React) akan melakukan *subscribe* ke tabel `chat_messages` (mendengarkan event INSERT) dan tabel `chat_rooms` (mendengarkan event UPDATE).
+## Keputusan utama
 
-## 3. Sistem Pencarian (Matchmaking)
-- Klien melakukan INSERT ke tabel `chat_queue`.
-- Klien mendengarkan perubahan pada tabel `chat_rooms` di mana ID mereka menjadi `user1_id` atau `user2_id`.
-- **Matchmaking Engine:** Idealnya menggunakan *Database Trigger* atau *Edge Function* di server yang berjalan setiap ada user baru masuk antrean. Jika tidak memungkinkan (terlalu rumit), kita akan menggunakan *Optimistic Client-side Matchmaking* (klien yang mencari kecocokannya sendiri lalu membuat room).
+- Gunakan Supabase agar konsisten dengan dependency dan migrasi yang sudah ada.
+- Matchmaking dijalankan di server melalui database function atau Edge Function. Klien tidak boleh memilih lawan atau membuat room sendiri.
+- PostgreSQL menyimpan state yang perlu diaudit; Supabase Realtime mendistribusikan perubahan.
+- React state menyimpan tampilan sementara. State room yang penting harus dapat dipulihkan setelah reload.
 
-## 4. Keamanan & Performa (Constraints)
-- **Privasi:** Terapkan Row Level Security (RLS) di database. User hanya bisa membaca pesan di `room_id` tempat mereka berada. Tidak boleh sembarang query *select all messages*.
-- **Kapasitas Penyimpanan:** Database gratis memiliki batas (Supabase free tier: 500MB). Kita tidak boleh menyimpan history chat selamanya.
-- **Auto-Cleanup:** Akan dibuat *Cron Job* (jadwal otomatis) di backend untuk menghapus data `chat_rooms` dan `chat_messages` yang sudah lebih dari 24 jam ditutup.
+## Alur matchmaking
 
-## 5. Fallback & Edge Cases
-- **User Disconnect:** Jika pengguna menutup browser (disconnect), sistem akan menandai *room* menjadi status "closed", dan memberi tahu lawan bicaranya "Lawan bicara telah keluar".
-- **Empty Queue:** Jika tidak ada orang di antrean, UI akan terus menampilkan radar pencarian. Klien dapat membatalkan pencarian kapan saja.
+1. Klien memanggil fungsi `join_chat_queue(target_mbti, request_id)`.
+2. Fungsi memvalidasi autentikasi, profil MBTI, block list, dan room aktif.
+3. Dalam transaksi yang sama, fungsi mengunci kandidat antrean tertua yang kompatibel dengan `FOR UPDATE SKIP LOCKED`.
+4. Jika ada kandidat, fungsi menghapus kedua row antrean dan membuat room beserta dua participant.
+5. Jika belum ada kandidat, fungsi menyimpan atau memperbarui row antrean user.
+6. Klien subscribe pada row antreannya atau event room yang hanya dapat dibaca user tersebut.
+
+`request_id` membuat operasi idempotent ketika klien retry. Constraint database tetap menjadi pertahanan utama terhadap match ganda.
+
+## Pesan
+
+- Klien melakukan insert ke `chat_messages`; database mengambil `sender_id` dari `auth.uid()` melalui function atau RLS yang ketat.
+- Payload awal hanya teks UTF-8 dengan batas panjang yang eksplisit.
+- Urutan memakai `created_at` dan ID monotonic/sequence; timestamp klien tidak dipercaya.
+- Realtime event dipakai untuk kecepatan, tetapi reload selalu mengambil histori room dari database.
+- Optimistic UI harus menandai status `sending`, `sent`, dan `failed` dengan `client_message_id` untuk deduplikasi retry.
+
+## Reveal
+
+Setiap participant memiliki `reveal_consented_at`. Profil baru ditampilkan jika dua timestamp terisi. Klien tidak boleh menerima nama/avatar lawan sebelum kondisi ini terpenuhi; menyembunyikan data yang sudah dikirim ke browser bukan kontrol keamanan.
+
+View atau RPC `get_chat_room` sebaiknya hanya mengembalikan identitas penuh ketika persetujuan kedua pihak sudah tercatat.
+
+## Presence dan disconnect
+
+WebSocket putus tidak selalu berarti pengguna sengaja keluar. Gunakan heartbeat/presence dan grace period, misalnya 30–60 detik. Aksi “Keluar” menutup room segera; koneksi putus baru menutup room setelah grace period lewat.
+
+## Kontrol akses
+
+- Semua tabel mengaktifkan RLS.
+- Queue hanya dapat dibaca pemilik row; pencarian kandidat hanya dilakukan function `SECURITY DEFINER` yang dibatasi.
+- Room dan message hanya dapat dibaca participant.
+- User hanya dapat mengirim sebagai dirinya sendiri ke room aktif yang diikutinya.
+- Persetujuan reveal hanya dapat diperbarui pada row participant milik sendiri.
+- Report dapat dibuat pelapor, tetapi hanya role moderator/service yang dapat membaca isi laporan.
+
+Setiap policy harus diuji dengan user A, user B, user C, dan anonymous role.
+
+## Abuse prevention
+
+- batas pesan per user dan per room;
+- cooldown join/leave untuk mencegah queue churn;
+- batas panjang dan frekuensi pesan;
+- block list diperiksa saat matchmaking;
+- report menyimpan alasan, message reference, dan snapshot minimum;
+- log moderasi terpisah dari data analitik umum.
+
+## Observability
+
+Catat event terstruktur tanpa isi pesan mentah jika tidak diperlukan:
+
+- queue joined/cancelled/expired;
+- match created;
+- room closed beserta alasan;
+- send failure dan reconnect;
+- block/report;
+- latency matchmaking dan delivery.
+
+Jangan mencatat token, email, atau isi percakapan ke log aplikasi.
+
+## Kegagalan yang harus ditangani
+
+- retry request yang sama;
+- dua tab dari user yang sama;
+- kandidat keluar saat transaksi berjalan;
+- reload langsung pada `/chat/:roomId`;
+- event realtime terlambat atau terduplikasi;
+- token kedaluwarsa saat chat aktif;
+- room sudah ditutup ketika pesan dikirim;
+- partner disconnect lalu reconnect dalam grace period.

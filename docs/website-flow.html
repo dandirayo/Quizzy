@@ -703,12 +703,12 @@
     </div>
 
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('map')">🗺️ Sitemap & Halaman</button>
-      <button class="nav-tab" onclick="switchTab('journeys')">🔄 Alur Pengguna (Journeys)</button>
-      <button class="nav-tab" onclick="switchTab('quizzes')">🧩 11 Kuis & Engine</button>
-      <button class="nav-tab" onclick="switchTab('minigames')">🎮 4 Mini Games</button>
-      <button class="nav-tab" onclick="switchTab('chat')">💬 Blind Chat</button>
-      <button class="nav-tab" onclick="switchTab('db')">🗄️ Database & Sync</button>
+      <button class="nav-tab active" onclick="switchTab('map', this)">🗺️ Sitemap & Halaman</button>
+      <button class="nav-tab" onclick="switchTab('journeys', this)">🔄 Alur Pengguna (Journeys)</button>
+      <button class="nav-tab" onclick="switchTab('quizzes', this)">🧩 11 Kuis & Engine</button>
+      <button class="nav-tab" onclick="switchTab('minigames', this)">🎮 4 Mini Games</button>
+      <button class="nav-tab" onclick="switchTab('chat', this)">💬 Blind Chat</button>
+      <button class="nav-tab" onclick="switchTab('db', this)">🗄️ Database & Sync</button>
     </div>
   </header>
 
@@ -716,14 +716,14 @@
 
     <!-- Hero Overview -->
     <div class="hero">
-      <h1>Peta Lengkap Arsitektur <span>Quizzy</span></h1>
+      <h1>Peta Produk <span>Quizzy</span></h1>
       <p>
-        Halaman visual interaktif ini dibuat khusus sebagai patokan resmi struktur halaman, alur perpindahan user (Guest vs Login), katalog kuis, mekanik mini games, dan skema sinkronisasi data.
+        Referensi visual untuk struktur halaman, alur tamu dan member, katalog kuis, mini-game, serta prototipe Blind Chat. Kondisi teknis terbaru tetap mengacu pada <code>docs/CORE.md</code>.
       </p>
 
       <div class="live-pills">
-        <span class="live-pill">🚀 Port Lokal: <b>http://localhost:7766/</b></span>
-        <span class="live-pill">🌐 VPS Server: <b>http://202.10.47.56/</b></span>
+        <span class="live-pill">Port lokal: <b>http://localhost:7766/</b></span>
+        <span class="live-pill">Docker host: <b>http://localhost:5051/</b></span>
         <span class="live-pill success">👨 Demo Cowo: <b>@dendiz7 (INTJ)</b></span>
         <span class="live-pill success">👩 Demo Cewe: <b>@dea33 (ENFP)</b></span>
       </div>
@@ -1045,10 +1045,10 @@
               <div class="step-dot">4</div>
               <div class="step-header">
                 <span class="step-title">Blind Chat Anonim (/chat)</span>
-                <span class="step-badge">Realtime</span>
+                <span class="step-badge">Demo</span>
               </div>
               <div class="step-content">
-                Mencari obrolan dengan filter "ENFP". Sistem mencocokkan dengan @dea33. Ngobrol anonim, saling klik <b>🎭 Reveal</b>, dan identitas asli terbuka.
+                Mencoba alur pencarian, balasan bot, dan reveal otomatis. Belum ada koneksi ke pengguna lain.
               </div>
             </div>
           </div>
@@ -1297,8 +1297,8 @@
 
     <!-- TAB 5: BLIND CHAT -->
     <div id="panel-chat" class="content-panel">
-      <h2 class="section-title">💬 Fitur Blind Chat Berbasis Kepribadian</h2>
-      <p class="section-desc">Mekanik obrolan anonim real-time yang dicocokkan menurut tipe MBTI.</p>
+      <h2 class="section-title">💬 Prototipe Blind Chat</h2>
+      <p class="section-desc">UI demo untuk percakapan anonim berbasis filter MBTI. Match, pesan, jumlah online, dan reveal masih disimulasikan di browser.</p>
 
       <div class="versus-box">
         <div class="user-pill">
@@ -1333,21 +1333,21 @@
         <div class="lane">
           <div class="lane-header"><span class="lane-title">2. Radar Matchmaking</span></div>
           <p style="font-size: 0.85rem; color: var(--text-soft);">
-            Animasi radar CSS memindai antrean. Sistem mencocokkan user dan mengalihkan ke ruang obrolan <code>/chat/:roomId</code>.
+            Animasi radar berjalan selama timer demo. Browser membuat room ID acak lalu membuka <code>/chat/:roomId</code>; belum ada antrean atau user kedua.
           </p>
         </div>
 
         <div class="lane">
           <div class="lane-header"><span class="lane-title">3. Blind Chat Anonim</span></div>
           <p style="font-size: 0.85rem; color: var(--text-soft);">
-            Nama disamarkan "Anonim" dengan avatar 👻. Masing-masing hanya tahu tipe MBTI lawannya (misal: "Seorang ENFP").
+            Nama disamarkan "Anonim" dengan avatar 👻. Pesan lawan berasal dari balasan bot dan hilang setelah reload.
           </p>
         </div>
 
         <div class="lane">
           <div class="lane-header"><span class="lane-title">4. Tombol 🎭 Reveal</span></div>
           <p style="font-size: 0.85rem; color: var(--text-soft);">
-            Jika kedua belah pihak menekan tombol Reveal, identitas asli terbuka (Nama, Avatar, Username). Room bisa ditutup kapan saja.
+            Demo menyetujui reveal secara otomatis setelah 2,5 detik. Double-consent antaruser belum diimplementasikan.
           </p>
         </div>
       </div>
@@ -1355,8 +1355,8 @@
 
     <!-- TAB 6: DATABASE & SYNC -->
     <div id="panel-db" class="content-panel">
-      <h2 class="section-title">🗄️ Arsitektur Data & Mekanisme Anti-Double</h2>
-      <p class="section-desc">Penyimpanan ganda (Hybrid LocalStorage + Supabase Backend) dengan perlindungan deduplikasi.</p>
+      <h2 class="section-title">🗄️ Penyimpanan dan Deduplikasi</h2>
+      <p class="section-desc">Aplikasi memilih mode localStorage atau Supabase. Deduplikasi hasil saat ini lengkap di mode lokal, belum di jalur Supabase.</p>
 
       <div class="table-container">
         <table>
@@ -1376,7 +1376,7 @@
             <tr>
               <td><span class="code-tag">quizzy_db_quiz_results</span></td>
               <td>Koleksi riwayat kuis & pencapaian mini game</td>
-              <td><b>Upsert Mode:</b> Jika <code>quiz_id</code> sudah ada pada user, skor diperbarui, bukan digandakan.</td>
+              <td>Mode lokal memperbarui hasil dengan <code>quiz_id</code> yang sama. Supabase masih melakukan insert dan memerlukan constraint serta upsert.</td>
             </tr>
             <tr>
               <td><span class="code-tag">quizzy_db_friendships</span></td>
@@ -1393,12 +1393,12 @@
       </div>
 
       <div style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem;">
-        <h3 style="margin-bottom: 0.5rem; font-size: 1.05rem;">🛡️ Cara Kerja Fitur Anti-Double di Halaman Profil</h3>
+        <h3 style="margin-bottom: 0.5rem; font-size: 1.05rem;">Deduplikasi saat membaca profil</h3>
         <p style="font-size: 0.88rem; color: var(--text-soft); line-height: 1.6;">
           Ketika fungsi <code>getUserQuizResults(userId)</code> dipanggil di <code>ProfilePage.jsx</code>:
           <br>1. Mengambil seluruh riwayat hasil dari user.
           <br>2. Menggunakan struktur <code>Set</code> untuk hanya mengambil 1 entri paling baru dari setiap jenis kuis/game.
-          <br>3. Jika terdeteksi ada sisa data ganda di browser, fungsi langsung otomatis membersihkan <code>localStorage</code> di balik layar tanpa perlu campur tangan pengguna.
+          <br>3. Pada mode lokal, data ganda di browser dibersihkan. Pada Supabase, hasil query hanya difilter di klien dan row ganda tetap tersimpan.
         </p>
       </div>
     </div>
@@ -1406,12 +1406,12 @@
   </div>
 
   <script>
-    function switchTab(tabId) {
+    function switchTab(tabId, trigger) {
       // Update buttons
       document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.remove('active');
       });
-      event.target.classList.add('active');
+      (trigger || window.event?.currentTarget)?.classList.add('active');
 
       // Update panels
       document.querySelectorAll('.content-panel').forEach(panel => {

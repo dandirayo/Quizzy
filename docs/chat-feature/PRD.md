@@ -1,29 +1,74 @@
-# Product Requirements Document (PRD): Blind Chat Quizzy 💬
+# Blind Chat: product requirements
 
-## 1. Latar Belakang & Tujuan (Goal)
-Quizzy saat ini memiliki banyak kuis kepribadian (MBTI, Big Five, dll), namun belum ada ruang untuk interaksi sosial antar pengguna. 
-Tujuan dari fitur **Blind Chat** ini adalah meningkatkan retensi dan keterlibatan pengguna (*user engagement*) dengan memungkinkan mereka berinteraksi secara anonim dengan pengguna lain berdasarkan kecocokan tipe kepribadian (MBTI).
+Status: **prototipe antarmuka**. Belum ada matchmaking, pesan realtime, atau reveal antarpengguna.
 
-## 2. Target Pengguna
-- Pengguna yang ingin bereksperimen mengobrol dengan tipe kepribadian yang berbeda (contoh: ekstrovert penasaran ngobrol dengan introvert).
-- Pengguna yang mencari teman ngobrol (*casual chat*) dengan minat psikologi yang sama.
-- Pengguna yang kesepian dan butuh teman cerita secara anonim tanpa penghakiman.
+## Masalah yang ingin diselesaikan
 
-## 3. Fitur Utama (Core Features)
-- **Filter Pencarian:** Pengguna dapat mencari teman ngobrol secara "Acak (Bebas)" atau memilih "Tipe Kepribadian Spesifik" (misal: mencari INFJ).
-- **Matchmaking Otomatis:** Sistem memasangkan dua pengguna yang sedang berada di antrean (*queue*) dengan preferensi yang cocok.
-- **Blind Chat (Anonim):** Obrolan bersifat anonim di awal. Hanya menampilkan avatar monster/emoji dan tipe MBTI.
-- **Reveal Profile:** Tombol persetujuan bersama (konsensual). Jika *kedua* belah pihak menekan tombol ini, nama asli dan profil lengkap mereka akan terbuka.
-- **Akhiri Obrolan (Skip):** Pengguna dapat meninggalkan obrolan kapan saja dan langsung kembali ke antrean untuk mencari orang baru.
+Hasil kuis Quizzy saat ini berhenti pada profil pribadi. Blind Chat memberi pengguna cara singkat untuk berbicara dengan orang lain berdasarkan preferensi tipe MBTI, tanpa membuka identitas sejak awal.
 
-## 4. Metrik Kesuksesan (Success Metrics)
-- **Daily Active Users (DAU):** Meningkat karena alasan sosial.
-- **Average Session Length:** Pengguna menghabiskan waktu lebih lama di web (bertahan > 5 menit per sesi chat).
-- **Match Rate:** Berapa banyak persentase pengguna di antrean yang berhasil menemukan pasangan chat dalam waktu kurang dari 1 menit.
+MBTI hanya dipakai sebagai filter percakapan dan pemantik obrolan. Sistem tidak boleh menyebut hasilnya sebagai prediksi kecocokan ilmiah.
 
-## 5. Non-Goals (Yang Tidak Dibangun Saat Ini)
-Demi menjaga fitur tetap ringan dan cepat rilis (MVP):
-- Chat grup (hanya 1v1).
-- Pengiriman file, gambar, atau *voice note* (hanya teks dan emoji).
-- Chat persisten selamanya (riwayat chat otomatis terhapus saat room ditutup demi privasi dan menghemat kapasitas database).
-- Sistem "Add Friend" langsung dari chat (akan dipertimbangkan di fase berikutnya).
+## Pengguna sasaran
+
+- Pengguna terdaftar yang ingin mencoba percakapan satu lawan satu.
+- Pengguna yang bersedia mengikuti aturan komunitas dan batas umur layanan.
+- Pengguna yang memahami bahwa anonimitas awal bukan jaminan keamanan atau kerahasiaan mutlak.
+
+## Lingkup MVP
+
+1. Pengguna memilih satu tipe MBTI atau opsi bebas.
+2. Sistem memasukkan pengguna ke antrean dan membuat satu match secara atomik.
+3. Hanya dua anggota room yang dapat membaca atau mengirim pesan.
+4. Identitas awal dibatasi pada tipe MBTI dan avatar anonim.
+5. Identitas profil baru terlihat setelah kedua anggota memberi persetujuan.
+6. Pengguna dapat keluar, memblokir, dan melaporkan lawan bicara.
+7. Sistem membatasi spam dan menghapus data sesuai kebijakan retensi.
+
+## Di luar MVP
+
+- Group chat, file, gambar, audio, dan panggilan.
+- Riwayat lintas room atau inbox permanen.
+- Rekomendasi pasangan berbasis “kecocokan psikologis”.
+- Add friend langsung dari room.
+- Enkripsi end-to-end.
+
+## Aturan produk
+
+- Satu user hanya boleh berada pada satu antrean atau satu room aktif.
+- Match harus memenuhi preferensi kedua pihak, bukan hanya pencari pertama.
+- Reveal bersifat per-room, dapat dibatalkan sebelum persetujuan kedua, dan tidak boleh membuka email atau data privat.
+- Keluar dari room menutup kemampuan mengirim pesan. Reconnect singkat boleh memakai grace period.
+- Block mencegah kedua akun dipasangkan lagi.
+- Report menyimpan bukti minimum yang diperlukan untuk moderasi; retensinya harus dijelaskan kepada pengguna.
+
+## Keamanan minimum
+
+Fitur tidak boleh dirilis publik sebelum tersedia:
+
+- autentikasi nyata;
+- RLS dan pengujian akses silang;
+- block, report, rate limit, dan spam throttling;
+- batas panjang pesan dan validasi payload;
+- aturan komunitas, kebijakan retensi, dan jalur moderasi;
+- keputusan eksplisit mengenai umur minimum pengguna.
+
+## Metrik awal
+
+| Metrik | Definisi |
+| --- | --- |
+| Match rate | Persentase pencarian yang memperoleh room dalam batas waktu yang ditentukan |
+| Median wait time | Median waktu dari masuk antrean sampai room dibuat |
+| Conversation start rate | Persentase room dengan pesan dari kedua anggota |
+| Report rate | Jumlah report per 1.000 room; dipantau bersama hasil review, bukan ditekan tanpa konteks |
+| Reveal rate | Persentase room dengan persetujuan reveal dari kedua pihak |
+
+Target numerik ditetapkan setelah baseline nyata tersedia. Angka simulasi tidak dihitung sebagai metrik produk.
+
+## Acceptance criteria MVP
+
+- Dua akun berbeda dapat match, bertukar pesan, reload, dan melanjutkan room yang sama.
+- Akun ketiga tidak dapat membaca room melalui REST maupun realtime subscription.
+- Dua request matchmaking bersamaan tidak menghasilkan room ganda.
+- Reveal satu pihak tidak membuka identitas siapa pun.
+- Block dan report tetap tercatat setelah room ditutup.
+- Pengguna yang disconnect menerima perilaku yang konsisten sesuai grace period.
