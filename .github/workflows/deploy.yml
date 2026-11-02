@@ -15,6 +15,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }} # Biasanya 22
           script: |
+            set -e
             # Sesuai konvensi VPS, deploy ke /var/www/apps/<project-slug>
             cd /var/www/apps/Quizzy
             
@@ -23,4 +24,4 @@ jobs:
             
             # Masuk ke folder app dan jalankan Docker Compose
             cd app
-            docker-compose up -d --build
+            docker compose up -d --build --remove-orphans

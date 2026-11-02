@@ -374,6 +374,13 @@
 
   .userInfo {
     width: 100%;
+    min-width: 0;
+  }
+
+  .userMeta {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .headerActions {

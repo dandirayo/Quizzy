@@ -1,54 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import styles from './ChatLobbyPage.module.css';
 
-const MBTI_TYPES = [
-  'INTJ', 'INTP', 'ENTJ', 'ENTP',
-  'INFJ', 'INFP', 'ENFJ', 'ENFP',
-  'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ',
-  'ISTP', 'ISFP', 'ESTP', 'ESFP'
-];
-
 export default function ChatLobbyPage() {
-  const { user: currentUser } = useAuth();
   const navigate = useNavigate();
   const [isSearching, setIsSearching] = useState(false);
   const [targetMbti, setTargetMbti] = useState('ANY');
   const [searchTime, setSearchTime] = useState(0);
 
-  // Simulasi Matchmaking (Dummy dengan user contoh dendiz7 & dea33)
+  // Simulasi Matchmaking dengan AI Bot interaktif
   useEffect(() => {
     let timer;
     let matchTimer;
 
     if (isSearching) {
-      // Counter waktu pencarian
       timer = setInterval(() => {
         setSearchTime(prev => prev + 1);
       }, 1000);
 
-      // Simulasi ketemu jodoh chat setelah 2-4 detik
-      const randomMatchTime = Math.floor(Math.random() * 2500) + 1500;
+      const randomMatchTime = Math.floor(Math.random() * 2000) + 1200;
       matchTimer = setTimeout(() => {
-        const fakeRoomId = 'room-' + Math.random().toString(36).substr(2, 9);
-        const isDendi = currentUser?.username?.toLowerCase() === 'dendiz7';
+        const fakeRoomId = 'sim-' + Math.random().toString(36).substring(2, 9);
+        const randomMbti = ['INTJ', 'ENFP', 'INFJ', 'ENTP', 'INFP', 'ISFJ'][Math.floor(Math.random() * 6)];
+        const partnerMbti = targetMbti === 'ANY' ? randomMbti : targetMbti;
         
-        // Partner contoh: dendiz7 (cowo) vs dea33 (cewe)
-        const demoPartner = isDendi
-          ? { name: 'Dea Anindita', username: 'dea33', mbti: 'ENFP', avatar: '👩' }
-          : { name: 'Dendi Pratama', username: 'dendiz7', mbti: 'INTJ', avatar: '👨' };
-
-        const partnerMbti = targetMbti === 'ANY' ? demoPartner.mbti : targetMbti;
-        
-        // Arahkan ke chat room dengan data partner
         navigate(`/chat/${fakeRoomId}`, { 
           state: { 
             partnerMbti, 
-            partnerName: 'Anonim',
-            revealedName: demoPartner.name,
-            revealedUsername: demoPartner.username,
-            revealedAvatar: demoPartner.avatar
+            partnerName: 'Anonim (' + partnerMbti + ')',
+            revealedName: `Quizzy Bot ${partnerMbti}`,
+            revealedUsername: `quizzy_bot_${partnerMbti.toLowerCase()}`,
+            revealedAvatar: '🤖',
+            isSimulation: true
           } 
         });
       }, randomMatchTime);
@@ -75,14 +58,30 @@ export default function ChatLobbyPage() {
       <div className={styles.lobbyCard}>
         <div className={styles.header}>
           <h1>Blind Chat 💬</h1>
-          <p>Temukan teman ngobrol baru berdasarkan kepribadian!</p>
+          <p>Temukan teman ngobrol baru berdasarkan kecocokan kepribadian!</p>
+        </div>
+
+        {/* Notice of Experimental / Simulation Mode */}
+        <div style={{
+          background: 'rgba(124, 58, 237, 0.1)',
+          border: '1px solid rgba(124, 58, 237, 0.25)',
+          borderRadius: '10px',
+          padding: '0.75rem 1rem',
+          fontSize: '0.85rem',
+          color: '#c4b5fd',
+          marginBottom: '1.25rem',
+          textAlign: 'center',
+          lineHeight: '1.4'
+        }}>
+          💡 <strong>Mode Simulasi AI Bot:</strong> Fitur obrolan saat ini menjalankan simulasi interaktif untuk menguji alur percakapan sebelum server real-time multiplayer diluncurkan.
         </div>
 
         {!isSearching ? (
           <div className={`${styles.searchSetup} fade-up`}>
             <div className={styles.formGroup}>
-              <label>Pilih target kepribadian:</label>
+              <label htmlFor="targetMbti">Pilih target kepribadian:</label>
               <select 
+                id="targetMbti"
                 value={targetMbti} 
                 onChange={(e) => setTargetMbti(e.target.value)}
                 className={styles.selectInput}
@@ -116,12 +115,13 @@ export default function ChatLobbyPage() {
             </div>
 
             <button 
+              type="button"
               className={styles.btnSearch} 
               onClick={handleStartSearch}
             >
               🔍 Mulai Pencarian
             </button>
-            <p className={styles.onlineCount}>🟢 24 orang sedang online</p>
+            <p className={styles.onlineCount}>🤖 AI Bot Simulator Aktif</p>
           </div>
         ) : (
           <div className={`${styles.searchingState} fade-up`}>
@@ -132,15 +132,24 @@ export default function ChatLobbyPage() {
             <h2>Mencari Kecocokan...</h2>
             <p>Target: {targetMbti === 'ANY' ? 'Siapa Saja' : targetMbti}</p>
             <p className={styles.timer}>Waktu mencari: {searchTime} detik</p>
-            
             <button 
+              type="button"
               className={styles.btnCancel} 
               onClick={handleCancelSearch}
             >
-              Batalkan Pencarian
+              Batal
             </button>
           </div>
         )}
+
+        <div className={styles.rules}>
+          <h3>Aturan Main Blind Chat 🎭</h3>
+          <ul>
+            <li>Identitasmu dirahasiakan di awal obrolan.</li>
+            <li>Hanya tipe MBTI yang terlihat oleh lawan bicara.</li>
+            <li>Setelah nyaman mengobrol, klik tombol "Buka Kartu" untuk saling mengungkap profil!</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

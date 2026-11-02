@@ -1,7 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px); /* Mengurangi tinggi navbar */
+  height: calc(100vh - 64px);
+  height: calc(100dvh - 64px); /* Safari iOS dynamic viewport support */
   max-width: 800px;
   margin: 0 auto;
   background: var(--bg);

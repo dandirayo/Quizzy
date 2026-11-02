@@ -1,159 +1,69 @@
 import { supabase, isSupabaseConfigured } from './supabase';
+import { safeJsonParse, sanitizeUser, sanitizeSearchQuery } from '../utils/helpers';
 
 // Local storage keys for fallback/standalone mode
 const LS_USERS_KEY = 'quizzy_db_users';
 const LS_RESULTS_KEY = 'quizzy_db_quiz_results';
 const LS_FRIENDSHIPS_KEY = 'quizzy_db_friendships';
 
-// Seed initial users for immediate social testing if empty (dendiz7 = cowo, dea33 = cewe)
-const SEED_USERS = [
-  {
-    id: 'seed-user-1',
-    username: 'dendiz7',
-    display_name: 'Dendi Pratama',
-    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dendiz7',
-    bio: 'Thinker & Strategist. Cowo yang suka logika, teknologi, dan eksplorasi diri ⚡🎮',
-    gender: 'male',
-    password: 'demo123',
-    created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'seed-user-2',
-    username: 'dea33',
-    display_name: 'Dea Anindita',
-    avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=dea33',
-    bio: 'Creative & Empathetic Soul. Cewe yang suka kopi, journaling, dan ngobrol mendalam 🌸✨',
-    gender: 'female',
-    password: 'demo123',
-    created_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
+/**
+ * Returns current storage mode info
+ */
+export function getStorageMode() {
+  return {
+    isCloud: isSupabaseConfigured,
+    label: isSupabaseConfigured ? 'Supabase Cloud' : 'Mode Lokal (Browser)',
+    description: isSupabaseConfigured
+      ? 'Terhubung dengan database cloud Supabase.'
+      : 'Tersimpan lokal di browser perangkat ini.'
+  };
+}
 
-const SEED_RESULTS = [
-  {
-    id: 'res-seed-1',
-    user_id: 'seed-user-1',
-    quiz_id: 'mbti',
-    dominant_result: 'INTJ',
-    dominant_emoji: '🏛️',
-    scores: { EI: -18, SN: -14, TF: -20, JP: -16 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 5).toISOString()
-  },
-  {
-    id: 'res-seed-2',
-    user_id: 'seed-user-1',
-    quiz_id: 'riasec',
-    dominant_result: 'Practical Builder',
-    dominant_emoji: '🛠️',
-    scores: { R: 92, I: 85, A: 40, S: 45, E: 65, C: 80 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 4).toISOString()
-  },
-  {
-    id: 'res-seed-3',
-    user_id: 'seed-user-1',
-    quiz_id: 'guess',
-    dominant_result: 'Master Psikologi 🧠 (6/6)',
-    dominant_emoji: '🧠',
-    scores: { score: 6, total: 6 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 3).toISOString()
-  },
-  {
-    id: 'res-seed-4',
-    user_id: 'seed-user-2',
-    quiz_id: 'mbti',
-    dominant_result: 'ENFP',
-    dominant_emoji: '✨',
-    scores: { EI: 18, SN: -16, TF: 18, JP: 16 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 4).toISOString()
-  },
-  {
-    id: 'res-seed-5',
-    user_id: 'seed-user-2',
-    quiz_id: 'attachment',
-    dominant_result: 'Secure Attachment',
-    dominant_emoji: '💗',
-    scores: { ANX: 20, AVO: 15 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 2).toISOString()
-  },
-  {
-    id: 'res-seed-6',
-    user_id: 'seed-user-2',
-    quiz_id: 'guess',
-    dominant_result: 'Detektif Kepribadian 🕵️ (5/6)',
-    dominant_emoji: '🕵️',
-    scores: { score: 5, total: 6 },
-    is_public: true,
-    taken_at: new Date(Date.now() - 86400000 * 1).toISOString()
-  }
-];
-
-const SEED_FRIENDSHIPS = [
-  {
-    id: 'friendship-seed-1',
-    requester_id: 'seed-user-1',
-    addressee_id: 'seed-user-2',
-    status: 'accepted',
-    created_at: new Date(Date.now() - 86400000 * 6).toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
-
-// Helper to initialize local storage & auto-migrate to dendiz7 and dea33
+/**
+ * Helper to clean corrupted entries and initialize local storage
+ */
 export function initLocalDb() {
-  const currentUsers = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
+  const currentUsers = safeJsonParse(localStorage.getItem(LS_USERS_KEY), []);
   
-  // Clean up any invalid or legacy users (including phantom 'user')
+  // Clean up any invalid, ghost, or legacy seed users
   const cleanedUsers = currentUsers.filter(u => 
     u && 
+    u.id &&
     u.username && 
     u.username !== 'user' && 
+    u.username !== 'dendiz7' && 
+    u.username !== 'dea33' && 
     u.username !== 'maya_infj' && 
     u.username !== 'budi_builder' && 
-    u.username !== 'dina_creative'
+    u.username !== 'dina_creative' &&
+    !String(u.id).startsWith('seed-')
   );
 
-  const hasDendiz7 = cleanedUsers.some(u => u.username === 'dendiz7');
-  const finalUsers = hasDendiz7 ? cleanedUsers : [...SEED_USERS, ...cleanedUsers];
+  localStorage.setItem(LS_USERS_KEY, JSON.stringify(cleanedUsers));
 
-  // Ensure seed users have password defined
-  finalUsers.forEach(u => {
-    if ((u.username === 'dendiz7' || u.username === 'dea33') && !u.password) {
-      u.password = 'demo123';
-    }
-  });
+  // Clean corrupted quiz results
+  const currentResults = safeJsonParse(localStorage.getItem(LS_RESULTS_KEY), []);
+  const validUserIds = new Set(cleanedUsers.map(u => u.id));
+  const validResults = currentResults.filter(r => 
+    r && 
+    r.user_id && 
+    !String(r.user_id).startsWith('seed-') &&
+    validUserIds.has(r.user_id)
+  );
+  localStorage.setItem(LS_RESULTS_KEY, JSON.stringify(validResults));
 
-  localStorage.setItem(LS_USERS_KEY, JSON.stringify(finalUsers));
-
-  const currentResults = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
-  const hasDendizResults = currentResults.some(r => r.user_id === 'seed-user-1' || r.user_id === 'seed-user-2');
-  if (!localStorage.getItem(LS_RESULTS_KEY) || !hasDendizResults) {
-    const otherResults = currentResults.filter(r => r.user_id !== 'seed-user-1' && r.user_id !== 'seed-user-2' && r.user_id !== 'seed-user-3');
-    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify([...SEED_RESULTS, ...otherResults]));
-  }
-
-  // Cleanup friendships: remove any record with invalid IDs or ghost references
-  const validUserIds = new Set(finalUsers.map(u => u.id));
-  const rawFriendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
+  // Clean friendships: remove any record with invalid IDs, ghost references, or seeds
+  const rawFriendships = safeJsonParse(localStorage.getItem(LS_FRIENDSHIPS_KEY), []);
   const validFriendships = rawFriendships.filter(f => 
     f && 
     f.requester_id && 
     f.addressee_id && 
+    !String(f.requester_id).startsWith('seed-') &&
+    !String(f.addressee_id).startsWith('seed-') &&
     validUserIds.has(f.requester_id) && 
     validUserIds.has(f.addressee_id)
   );
-
-  if (validFriendships.length === 0 && !localStorage.getItem(LS_FRIENDSHIPS_KEY)) {
-    localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(SEED_FRIENDSHIPS));
-  } else {
-    localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(validFriendships));
-  }
+  localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(validFriendships));
 }
 
 // ----------------------------------------------------
@@ -161,41 +71,54 @@ export function initLocalDb() {
 // ----------------------------------------------------
 
 export async function getUserProfile(identifier) {
+  if (!identifier) return null;
+
   if (isSupabaseConfigured) {
-    const query = identifier.includes('-') && identifier.length > 20
-      ? supabase.from('profiles').select('*').eq('id', identifier).single()
-      : supabase.from('profiles').select('*').eq('username', identifier).single();
+    const isUuid = identifier.includes('-') && identifier.length >= 32;
+    const query = isUuid
+      ? supabase.from('profiles').select('id, username, display_name, avatar_url, bio, gender, created_at').eq('id', identifier).single()
+      : supabase.from('profiles').select('id, username, display_name, avatar_url, bio, gender, created_at').eq('username', identifier.toLowerCase()).single();
     
     const { data, error } = await query;
     if (error) return null;
-    return data;
+    return sanitizeUser(data);
   }
 
   // Local fallback
   initLocalDb();
-  const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
-  return users.find(u => u.id === identifier || u.username.toLowerCase() === identifier.toLowerCase()) || null;
+  const users = safeJsonParse(localStorage.getItem(LS_USERS_KEY), []);
+  const target = identifier.toLowerCase().replace(/^@/, '');
+  const found = users.find(u => 
+    u.id === identifier || 
+    (u.username && u.username.toLowerCase() === target)
+  );
+  return sanitizeUser(found);
 }
 
 export async function updateUserProfile(userId, updates) {
+  if (!userId) return null;
+
+  // Filter out forbidden fields from direct client updates
+  const { password, id, ...allowedUpdates } = updates;
+
   if (isSupabaseConfigured) {
     const { data, error } = await supabase
       .from('profiles')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update({ ...allowedUpdates, updated_at: new Date().toISOString() })
       .eq('id', userId)
-      .select()
+      .select('id, username, display_name, avatar_url, bio, gender, created_at')
       .single();
     if (error) throw error;
-    return data;
+    return sanitizeUser(data);
   }
 
   initLocalDb();
-  const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
+  const users = safeJsonParse(localStorage.getItem(LS_USERS_KEY), []);
   const idx = users.findIndex(u => u.id === userId);
   if (idx !== -1) {
-    users[idx] = { ...users[idx], ...updates, updated_at: new Date().toISOString() };
+    users[idx] = { ...users[idx], ...allowedUpdates, updated_at: new Date().toISOString() };
     localStorage.setItem(LS_USERS_KEY, JSON.stringify(users));
-    return users[idx];
+    return sanitizeUser(users[idx]);
   }
   return null;
 }
@@ -205,65 +128,79 @@ export async function getAllUsers(currentUserId) {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, username, display_name, avatar_url, bio, gender')
-      .neq('id', currentUserId)
+      .neq('id', currentUserId || '00000000-0000-0000-0000-000000000000')
       .limit(50);
     if (error) return [];
-    return data || [];
+    return (data || []).map(u => sanitizeUser(u));
   }
 
   initLocalDb();
-  const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
-  return users.filter(u => 
-    u && 
-    u.id !== currentUserId && 
-    u.username && 
-    u.username !== 'user'
-  );
+  const users = safeJsonParse(localStorage.getItem(LS_USERS_KEY), []);
+  return users
+    .filter(u => 
+      u && 
+      u.id !== currentUserId && 
+      u.username && 
+      u.username !== 'user'
+    )
+    .map(u => sanitizeUser(u));
 }
 
 export async function searchUsers(queryStr, currentUserId) {
-  if (!queryStr || queryStr.trim().length === 0) {
+  const cleanQ = sanitizeSearchQuery(queryStr).toLowerCase();
+  if (!cleanQ) {
     return getAllUsers(currentUserId);
   }
-  const q = queryStr.trim().toLowerCase().replace('@', '');
 
   if (isSupabaseConfigured) {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, username, display_name, avatar_url, bio, gender')
-      .neq('id', currentUserId)
-      .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+      .neq('id', currentUserId || '00000000-0000-0000-0000-000000000000')
+      .or(`username.ilike.%${cleanQ}%,display_name.ilike.%${cleanQ}%`)
       .limit(25);
     if (error) return [];
-    return data || [];
+    return (data || []).map(u => sanitizeUser(u));
   }
 
   initLocalDb();
-  const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
-  return users.filter(u => 
-    u && 
-    u.id !== currentUserId && 
-    u.username && 
-    u.username !== 'user' && 
-    (
-      (u.username && u.username.toLowerCase().includes(q)) || 
-      (u.display_name && u.display_name.toLowerCase().includes(q)) ||
-      (u.email && u.email.toLowerCase().includes(q))
+  const users = safeJsonParse(localStorage.getItem(LS_USERS_KEY), []);
+  return users
+    .filter(u => 
+      u && 
+      u.id !== currentUserId && 
+      u.username && 
+      u.username !== 'user' && 
+      (
+        (u.username && u.username.toLowerCase().includes(cleanQ)) || 
+        (u.display_name && u.display_name.toLowerCase().includes(cleanQ)) ||
+        (u.email && u.email.toLowerCase().includes(cleanQ))
+      )
     )
-  );
+    .map(u => sanitizeUser(u));
 }
 
 // ----------------------------------------------------
 // QUIZ RESULTS METHODS
 // ----------------------------------------------------
 
-export async function getUserQuizResults(userId) {
+export async function getUserQuizResults(userId, viewerUserId = null) {
+  if (!userId) return [];
+
+  const isOwner = !viewerUserId || viewerUserId === userId;
+
   if (isSupabaseConfigured) {
-    const { data, error } = await supabase
+    let query = supabase
       .from('quiz_results')
       .select('*')
       .eq('user_id', userId)
       .order('taken_at', { ascending: false });
+
+    if (!isOwner) {
+      query = query.eq('is_public', true);
+    }
+
+    const { data, error } = await query;
     if (error) return [];
     
     // Deduplicate by quiz_id
@@ -276,9 +213,13 @@ export async function getUserQuizResults(userId) {
   }
 
   initLocalDb();
-  const allResults = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
+  const allResults = safeJsonParse(localStorage.getItem(LS_RESULTS_KEY), []);
   const userResults = allResults
-    .filter(r => r.user_id === userId)
+    .filter(r => {
+      if (r.user_id !== userId) return false;
+      if (!isOwner && r.is_public === false) return false;
+      return true;
+    })
     .sort((a, b) => new Date(b.taken_at) - new Date(a.taken_at));
 
   // Deduplicate by quiz_id (keep latest)
@@ -291,18 +232,21 @@ export async function getUserQuizResults(userId) {
     }
   }
 
-  // Auto-clean storage if duplicates existed
-  if (uniqueUserResults.length < userResults.length) {
-    const otherUsersResults = allResults.filter(r => r.user_id !== userId);
-    localStorage.setItem(LS_RESULTS_KEY, JSON.stringify([...uniqueUserResults, ...otherUsersResults]));
-  }
-
   return uniqueUserResults;
 }
 
 export async function saveUserQuizResult(userId, resultData) {
+  if (!userId || !resultData?.quizId) {
+    throw new Error('User ID and Quiz ID are required to save results.');
+  }
+
+  // Generate valid UUID for database compatibility
+  const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+    ? crypto.randomUUID() 
+    : `res-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
   const newRecord = {
-    id: `res-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+    id: newId,
     user_id: userId,
     quiz_id: resultData.quizId,
     dominant_result: resultData.dominantResult || resultData.title || '',
@@ -315,7 +259,18 @@ export async function saveUserQuizResult(userId, resultData) {
   if (isSupabaseConfigured) {
     const { data, error } = await supabase
       .from('quiz_results')
-      .insert([newRecord])
+      .upsert(
+        {
+          user_id: userId,
+          quiz_id: resultData.quizId,
+          dominant_result: newRecord.dominant_result,
+          dominant_emoji: newRecord.dominant_emoji,
+          scores: newRecord.scores,
+          is_public: newRecord.is_public,
+          taken_at: newRecord.taken_at
+        },
+        { onConflict: 'user_id, quiz_id' }
+      )
       .select()
       .single();
     if (error) throw error;
@@ -323,9 +278,9 @@ export async function saveUserQuizResult(userId, resultData) {
   }
 
   initLocalDb();
-  let results = JSON.parse(localStorage.getItem(LS_RESULTS_KEY) || '[]');
+  let results = safeJsonParse(localStorage.getItem(LS_RESULTS_KEY), []);
 
-  // Check if user already has a result for this quiz_id -> UPDATE (upsert) to prevent doubles
+  // Upsert in local storage
   const existingIdx = results.findIndex(r => r.user_id === userId && r.quiz_id === resultData.quizId);
   if (existingIdx !== -1) {
     results[existingIdx] = {
@@ -333,6 +288,7 @@ export async function saveUserQuizResult(userId, resultData) {
       dominant_result: newRecord.dominant_result,
       dominant_emoji: newRecord.dominant_emoji,
       scores: newRecord.scores,
+      is_public: newRecord.is_public,
       taken_at: newRecord.taken_at
     };
     localStorage.setItem(LS_RESULTS_KEY, JSON.stringify(results));
@@ -349,6 +305,8 @@ export async function saveUserQuizResult(userId, resultData) {
 // ----------------------------------------------------
 
 export async function getFriendships(userId) {
+  if (!userId) return { friends: [], incoming: [], outgoing: [] };
+
   if (isSupabaseConfigured) {
     const { data, error } = await supabase
       .from('friendships')
@@ -356,8 +314,8 @@ export async function getFriendships(userId) {
         id,
         status,
         created_at,
-        requester:requester_id (id, username, display_name, avatar_url, bio),
-        addressee:addressee_id (id, username, display_name, avatar_url, bio)
+        requester:requester_id (id, username, display_name, avatar_url, bio, gender),
+        addressee:addressee_id (id, username, display_name, avatar_url, bio, gender)
       `)
       .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
     if (error) return { friends: [], incoming: [], outgoing: [] };
@@ -366,19 +324,25 @@ export async function getFriendships(userId) {
   }
 
   initLocalDb();
-  const rawFriendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
-  const users = JSON.parse(localStorage.getItem(LS_USERS_KEY) || '[]');
+  const rawFriendships = safeJsonParse(localStorage.getItem(LS_FRIENDSHIPS_KEY), []);
+  const users = safeJsonParse(localStorage.getItem(LS_USERS_KEY), []);
 
-  // Only keep friendships where both requester and addressee exist and are not ghost users
   const populated = [];
   rawFriendships.forEach(f => {
     const requester = users.find(u => u.id === f.requester_id);
     const addressee = users.find(u => u.id === f.addressee_id);
-    if (requester && addressee && requester.username !== 'user' && addressee.username !== 'user') {
+    if (
+      requester && 
+      addressee && 
+      requester.username && 
+      addressee.username && 
+      requester.username !== 'user' && 
+      addressee.username !== 'user'
+    ) {
       populated.push({
         ...f,
-        requester,
-        addressee
+        requester: sanitizeUser(requester),
+        addressee: sanitizeUser(addressee)
       });
     }
   });
@@ -395,19 +359,20 @@ function formatFriendships(list, currentUserId) {
     const isRequester = (f.requester?.id || f.requester_id) === currentUserId;
     const isAddressee = (f.addressee?.id || f.addressee_id) === currentUserId;
 
-    // Must be either requester or addressee of this friendship
     if (!isRequester && !isAddressee) return;
 
     const friend = isRequester ? f.addressee : f.requester;
     if (!friend || !friend.id || !friend.username || friend.username === 'user') return;
 
+    const sanitizedFriend = sanitizeUser(friend);
+
     if (f.status === 'accepted') {
-      friends.push({ friendshipId: f.id, ...friend });
+      friends.push({ friendshipId: f.id, ...sanitizedFriend });
     } else if (f.status === 'pending') {
       if (isRequester) {
-        outgoing.push({ friendshipId: f.id, ...friend });
+        outgoing.push({ friendshipId: f.id, ...sanitizedFriend });
       } else {
-        incoming.push({ friendshipId: f.id, ...friend });
+        incoming.push({ friendshipId: f.id, ...sanitizedFriend });
       }
     }
   });
@@ -429,7 +394,7 @@ export async function sendFriendRequest(requesterId, addresseeId) {
   }
 
   initLocalDb();
-  const friendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
+  const friendships = safeJsonParse(localStorage.getItem(LS_FRIENDSHIPS_KEY), []);
   
   // Check if exists
   const existing = friendships.find(f => 
@@ -442,7 +407,7 @@ export async function sendFriendRequest(requesterId, addresseeId) {
   }
 
   const newFriendship = {
-    id: `friendship-${Date.now()}`,
+    id: `friendship-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     requester_id: requesterId,
     addressee_id: addresseeId,
     status: 'pending',
@@ -456,7 +421,6 @@ export async function sendFriendRequest(requesterId, addresseeId) {
 }
 
 export async function respondFriendRequest(friendshipId, status) {
-  // status: 'accepted' | 'declined'
   if (isSupabaseConfigured) {
     if (status === 'declined') {
       const { error } = await supabase.from('friendships').delete().eq('id', friendshipId);
@@ -474,7 +438,7 @@ export async function respondFriendRequest(friendshipId, status) {
   }
 
   initLocalDb();
-  let friendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
+  let friendships = safeJsonParse(localStorage.getItem(LS_FRIENDSHIPS_KEY), []);
   const idx = friendships.findIndex(f => f.id === friendshipId);
   if (idx !== -1) {
     if (status === 'declined') {
@@ -497,7 +461,7 @@ export async function removeFriend(friendshipId) {
   }
 
   initLocalDb();
-  let friendships = JSON.parse(localStorage.getItem(LS_FRIENDSHIPS_KEY) || '[]');
+  let friendships = safeJsonParse(localStorage.getItem(LS_FRIENDSHIPS_KEY), []);
   friendships = friendships.filter(f => f.id !== friendshipId);
   localStorage.setItem(LS_FRIENDSHIPS_KEY, JSON.stringify(friendships));
   return true;

@@ -27,8 +27,8 @@ const ComparePage = () => {
         if (active && friend) {
           setFriendUser(friend);
           const [myRes, friendRes] = await Promise.all([
-            getUserQuizResults(currentUser.id),
-            getUserQuizResults(friend.id)
+            getUserQuizResults(currentUser.id, currentUser.id),
+            getUserQuizResults(friend.id, currentUser.id)
           ]);
           if (active) {
             setMyResults(myRes);

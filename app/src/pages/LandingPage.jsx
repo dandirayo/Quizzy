@@ -5,7 +5,13 @@ import styles from './LandingPage.module.css';
 export default function LandingPage() {
   const { isAuthenticated, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className={styles.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ color: 'var(--muted)', fontSize: '0.95rem' }}>Memuat Quizzy...</div>
+      </div>
+    );
+  }
 
   // If already logged in, skip landing page and go to dashboard
   if (isAuthenticated) {

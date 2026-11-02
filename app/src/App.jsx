@@ -15,6 +15,8 @@ import WouldYouRatherPage from './pages/WouldYouRatherPage';
 import GuessPersonalityPage from './pages/GuessPersonalityPage';
 import ChatLobbyPage from './pages/ChatLobbyPage';
 import ChatRoomPage from './pages/ChatRoomPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
@@ -22,7 +24,7 @@ function App() {
       <Navbar />
       <main>
         <Routes>
-          {/* Public & Explore Routes (Bisa di-peek sebelum login) */}
+          {/* Public & Explore Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -39,6 +41,9 @@ function App() {
           <Route path="/games/guess" element={<GuessPersonalityPage />} />
           <Route path="/chat" element={<ChatLobbyPage />} />
           <Route path="/chat/:roomId" element={<ChatRoomPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          {/* Wildcard 404 Route */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
     </>

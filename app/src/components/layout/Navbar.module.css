@@ -119,14 +119,16 @@
   color: var(--text);
 }
 
-/* Mobile Menu Toggle Button */
+/* Mobile Menu Toggle Button (Accessible Tap Target >= 44px) */
 .mobileMenuBtn {
   display: none;
   background: transparent;
   border: none;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 8px;
   position: relative;
   align-items: center;
@@ -173,7 +175,7 @@
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 960px) {
   .center {
     display: none;
   }

@@ -59,11 +59,11 @@ export default function WouldYouRatherPage() {
   const currentQuestion = WOULD_YOU_RATHER[currentIndex];
   const answered = answers[currentQuestion.id];
 
-  // Mock percentages based on id just to be deterministic but fun
+  // Deterministic percentage simulation based on question ID
   const getPercentages = (id) => {
-    const p1 = (Number(id) * 37) % 100;
-    const pA = p1 < 20 ? p1 + 30 : p1; // ensure not too low
-    return { a: pA, b: 100 - pA };
+    const numericPart = parseInt(String(id).replace(/\D/g, ''), 10) || 1;
+    const p1 = ((numericPart * 37 + 17) % 41) + 30; // Generates 30% to 70% reliably
+    return { a: p1, b: 100 - p1 };
   };
 
   const percentages = getPercentages(currentQuestion.id);
@@ -107,6 +107,12 @@ export default function WouldYouRatherPage() {
               </div>}
             </button>
           </div>
+
+          {answered && (
+            <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.75rem' }}>
+              * Estimasi preferensi komunitas Quizzy
+            </p>
+          )}
 
           {answered && (
             <div className={styles.funFact}>

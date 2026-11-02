@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getFriendships, sendFriendRequest, respondFriendRequest, removeFriend, searchUsers, getAllUsers } from '../services/db';
+import { getFriendships, sendFriendRequest, respondFriendRequest, removeFriend, searchUsers, getAllUsers, getStorageMode } from '../services/db';
 import styles from './FriendsPage.module.css';
 
 const FriendsPage = () => {
   const { user, isAuthenticated } = useAuth();
+  const storageMode = getStorageMode();
 
   const [activeTab, setActiveTab] = useState('friends'); // 'friends', 'incoming', 'outgoing'
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,11 +15,9 @@ const FriendsPage = () => {
   const [hasSearched, setHasSearched] = useState(false);
 
   const [friendships, setFriendships] = useState({ friends: [], incoming: [], outgoing: [] });
-  const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
-
-  // Suggestions for community members to add
   const [suggestions, setSuggestions] = useState([]);
+  const [publicMembers, setPublicMembers] = useState([]);
 
   const loadData = async () => {
     if (!user) return;
@@ -36,16 +35,21 @@ const FriendsPage = () => {
       setSuggestions(notConnected);
     } catch (err) {
       console.error('Failed to load friendships', err);
-    } finally {
-      setLoading(false);
     }
   };
+
+  // For guests: load registered community members dynamically
+  useEffect(() => {
+    if (!isAuthenticated) {
+      getAllUsers(null).then(users => {
+        setPublicMembers(users.slice(0, 6));
+      });
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
       loadData();
-    } else {
-      setLoading(false);
     }
   }, [isAuthenticated, user]);
 
@@ -59,7 +63,7 @@ const FriendsPage = () => {
     setIsSearching(true);
     setHasSearched(true);
     try {
-      const results = await searchUsers(searchQuery, user.id);
+      const results = await searchUsers(searchQuery, user?.id);
       setSearchResults(results);
     } catch (err) {
       console.error('Search error', err);
@@ -74,10 +78,10 @@ const FriendsPage = () => {
       setMsg('Permintaan pertemanan berhasil dikirim! 🤝');
       setTimeout(() => setMsg(''), 3000);
       loadData();
-      // Remove from search results or mark as pending
       setSearchResults(prev => prev.map(u => u.id === targetId ? { ...u, isPending: true } : u));
     } catch (err) {
-      alert(err.message || 'Gagal mengirim permintaan');
+      setMsg('⚠️ ' + (err.message || 'Gagal mengirim permintaan'));
+      setTimeout(() => setMsg(''), 3000);
     }
   };
 
@@ -88,19 +92,20 @@ const FriendsPage = () => {
       setTimeout(() => setMsg(''), 3000);
       loadData();
     } catch (err) {
-      alert('Gagal memproses permintaan: ' + err.message);
+      setMsg('⚠️ Gagal memproses permintaan: ' + err.message);
+      setTimeout(() => setMsg(''), 3000);
     }
   };
 
   const handleRemoveFriend = async (friendshipId) => {
-    if (!window.confirm('Yakin ingin menghapus teman ini?')) return;
     try {
       await removeFriend(friendshipId);
       setMsg('Teman berhasil dihapus.');
       setTimeout(() => setMsg(''), 3000);
       loadData();
     } catch (err) {
-      alert('Gagal menghapus teman: ' + err.message);
+      setMsg('⚠️ Gagal menghapus teman: ' + err.message);
+      setTimeout(() => setMsg(''), 3000);
     }
   };
 
@@ -119,51 +124,40 @@ const FriendsPage = () => {
           </div>
         </div>
 
-        {/* Sneak peek of community members */}
-        <section className={styles.suggestionsSection} style={{ marginTop: '2.5rem', width: '100%', maxWidth: '720px' }}>
-          <h3 className={styles.suggestionsTitle}>👀 Intip Profil Anggota Komunitas</h3>
-          <div className={styles.friendsGrid}>
-            <div className={styles.friendCard}>
-              <div className={styles.friendCardHeader}>
-                <img
-                  src="https://api.dicebear.com/7.x/bottts/svg?seed=dendiz7"
-                  alt="Dendi Pratama"
-                  className={styles.friendAvatar}
-                />
-                <div>
-                  <h3 className={styles.displayName}>Dendi Pratama</h3>
-                  <span className={styles.username}>@dendiz7 • Cowo (INTJ)</span>
+        {/* Dynamic preview of actual registered community members */}
+        {publicMembers.length > 0 ? (
+          <section className={styles.suggestionsSection} style={{ marginTop: '2.5rem', width: '100%', maxWidth: '720px', marginInline: 'auto' }}>
+            <h3 className={styles.suggestionsTitle}>👀 Profil Anggota Komunitas Terdaftar</h3>
+            <div className={styles.friendsGrid}>
+              {publicMembers.map((member) => (
+                <div key={member.id} className={styles.friendCard}>
+                  <div className={styles.friendCardHeader}>
+                    <img
+                      src={member.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${member.username}`}
+                      alt={member.display_name}
+                      className={styles.friendAvatar}
+                      loading="lazy"
+                    />
+                    <div>
+                      <h3 className={styles.displayName}>{member.display_name}</h3>
+                      <span className={styles.username}>@{member.username}</span>
+                    </div>
+                  </div>
+                  <p className={styles.friendBio}>{member.bio || 'Penggemar refleksi diri Quizzy 🌱'}</p>
+                  <div className={styles.friendActions}>
+                    <Link to={`/profile/${member.username}`} className="btn btn-secondary" style={{ flex: 1 }}>
+                      Lihat Profil 📇
+                    </Link>
+                  </div>
                 </div>
-              </div>
-              <p className={styles.friendBio}>Thinker & Strategist. Cowo yang suka logika, teknologi, dan eksplorasi diri ⚡🎮</p>
-              <div className={styles.friendActions}>
-                <Link to="/profile/dendiz7" className="btn btn-secondary" style={{ flex: 1 }}>
-                  Lihat Profil 📇
-                </Link>
-              </div>
+              ))}
             </div>
-
-            <div className={styles.friendCard}>
-              <div className={styles.friendCardHeader}>
-                <img
-                  src="https://api.dicebear.com/7.x/bottts/svg?seed=dea33"
-                  alt="Dea Anindita"
-                  className={styles.friendAvatar}
-                />
-                <div>
-                  <h3 className={styles.displayName}>Dea Anindita</h3>
-                  <span className={styles.username}>@dea33 • Cewe (ENFP)</span>
-                </div>
-              </div>
-              <p className={styles.friendBio}>Creative & Empathetic Soul. Cewe yang suka kopi, journaling, dan ngobrol mendalam 🌸✨</p>
-              <div className={styles.friendActions}>
-                <Link to="/profile/dea33" className="btn btn-secondary" style={{ flex: 1 }}>
-                  Lihat Profil 📇
-                </Link>
-              </div>
-            </div>
+          </section>
+        ) : (
+          <div style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--muted)', fontSize: '0.9rem' }}>
+            ✨ Jadilah anggota pertama yang mendaftar dan membagikan profil kepribadianmu di Quizzy!
           </div>
-        </section>
+        )}
       </div>
     );
   }
@@ -177,13 +171,30 @@ const FriendsPage = () => {
         </p>
       </header>
 
+      {/* Storage Mode Information Banner */}
+      {!storageMode.isCloud && (
+        <div style={{
+          background: 'rgba(59, 130, 246, 0.1)',
+          border: '1px solid rgba(59, 130, 246, 0.25)',
+          borderRadius: '12px',
+          padding: '0.85rem 1.25rem',
+          fontSize: '0.85rem',
+          color: '#93c5fd',
+          marginBottom: '1.5rem',
+          textAlign: 'center',
+          lineHeight: '1.45'
+        }}>
+          💾 <strong>Mode Penyimpanan Browser:</strong> Akun dan hasil kuis tersimpan di browser perangkat ini. Untuk menghubungkan antar teman di berbagai perangkat secara online, Anda dapat menyambungkan Supabase.
+        </div>
+      )}
+
       {msg && (
         <div className="fade-up" style={{
           padding: '0.75rem 1.25rem',
-          background: 'rgba(34, 197, 94, 0.15)',
-          border: '1px solid rgba(34, 197, 94, 0.3)',
+          background: msg.startsWith('⚠️') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+          border: msg.startsWith('⚠️') ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(34, 197, 94, 0.3)',
           borderRadius: '10px',
-          color: '#4ade80',
+          color: msg.startsWith('⚠️') ? '#f87171' : '#4ade80',
           marginBottom: '1.5rem',
           textAlign: 'center'
         }}>
@@ -203,7 +214,7 @@ const FriendsPage = () => {
               setHasSearched(false);
             }
           }}
-          placeholder="Cari username atau nama teman (contoh: nendra17, dendiz7, dea33)..."
+          placeholder="Cari username atau nama teman..."
           className={styles.searchInput}
         />
         <button type="submit" className={`btn btn-primary ${styles.searchBtn}`} disabled={isSearching}>
@@ -235,6 +246,7 @@ const FriendsPage = () => {
                     src={target.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${target.username}`}
                     alt={target.display_name}
                     className={styles.avatar}
+                    loading="lazy"
                   />
                   <div className={styles.userNames}>
                     <span className={styles.displayName}>{target.display_name}</span>
@@ -248,17 +260,20 @@ const FriendsPage = () => {
                   </Link>
 
                   {isFriend ? (
-                    <span style={{ fontSize: '0.8rem', color: '#4ade80' }}>✓ Berteman</span>
+                    <span className={styles.friendStatusBadge}>✓ Teman</span>
                   ) : isOutgoing ? (
-                    <span style={{ fontSize: '0.8rem', color: '#eab308' }}>⏳ Terkirim</span>
+                    <span className={styles.pendingBadge}>⏳ Menunggu Konfirmasi</span>
                   ) : isIncoming ? (
                     <button
                       type="button"
-                      onClick={() => handleRespondRequest(friendships.incoming.find(f => f.id === target.id)?.friendshipId, 'accepted')}
+                      onClick={() => {
+                        const inc = friendships.incoming.find(f => f.id === target.id);
+                        if (inc) handleRespondRequest(inc.friendshipId, 'accepted');
+                      }}
                       className="btn btn-primary"
                       style={{ fontSize: '0.8rem', padding: '6px 12px' }}
                     >
-                      Terima
+                      Terima Permintaan
                     </button>
                   ) : (
                     <button
@@ -267,7 +282,7 @@ const FriendsPage = () => {
                       className="btn btn-primary"
                       style={{ fontSize: '0.8rem', padding: '6px 12px' }}
                     >
-                      ➕ Tambah
+                      + Tambah Teman
                     </button>
                   )}
                 </div>
@@ -277,14 +292,14 @@ const FriendsPage = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className={styles.tabs}>
+      {/* Navigation Tabs */}
+      <div className={styles.tabsContainer}>
         <button
           type="button"
           className={`${styles.tab} ${activeTab === 'friends' ? styles.activeTab : ''}`}
           onClick={() => setActiveTab('friends')}
         >
-          Daftar Teman
+          Teman Saya
           <span className={styles.tabBadge}>{friendships.friends.length}</span>
         </button>
 
@@ -295,7 +310,7 @@ const FriendsPage = () => {
         >
           Permintaan Masuk
           {friendships.incoming.length > 0 && (
-            <span className={styles.tabBadge} style={{ background: '#ec4899' }}>
+            <span className={`${styles.tabBadge} ${styles.alertBadge}`}>
               {friendships.incoming.length}
             </span>
           )}
@@ -325,6 +340,7 @@ const FriendsPage = () => {
                       src={friend.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${friend.username}`}
                       alt={friend.display_name}
                       className={styles.friendAvatar}
+                      loading="lazy"
                     />
                     <div>
                       <h3 className={styles.displayName}>{friend.display_name}</h3>
@@ -358,7 +374,7 @@ const FriendsPage = () => {
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>🤝</div>
               <h3>Belum Ada Teman</h3>
-              <p>Cari teman menggunakan kolom pencarian di atas atau tambahkan anggota rekomendasi di bawah!</p>
+              <p>Cari teman di atas atau tambahkan rekomendasi pengguna lain di bawah!</p>
             </div>
           )}
         </>
@@ -375,6 +391,7 @@ const FriendsPage = () => {
                     src={req.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${req.username}`}
                     alt={req.display_name}
                     className={styles.avatar}
+                    loading="lazy"
                   />
                   <div className={styles.userNames}>
                     <span className={styles.displayName}>{req.display_name}</span>
@@ -387,15 +404,17 @@ const FriendsPage = () => {
                     type="button"
                     onClick={() => handleRespondRequest(req.friendshipId, 'accepted')}
                     className="btn btn-primary"
+                    style={{ fontSize: '0.85rem' }}
                   >
-                    ✓ Terima
+                    Terima
                   </button>
                   <button
                     type="button"
                     onClick={() => handleRespondRequest(req.friendshipId, 'declined')}
                     className="btn btn-secondary"
+                    style={{ fontSize: '0.85rem' }}
                   >
-                    ✕ Tolak
+                    Tolak
                   </button>
                 </div>
               </div>
@@ -403,8 +422,8 @@ const FriendsPage = () => {
           ) : (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon}>📬</div>
-              <h3>Tidak Ada Permintaan Masuk</h3>
-              <p>Saat seseorang mengirimimu permintaan pertemanan, permintaan itu akan muncul di sini.</p>
+              <h3>Kotak Masuk Bersih</h3>
+              <p>Tidak ada permintaan pertemanan baru yang sedang menunggu persetujuanmu.</p>
             </div>
           )}
         </div>
@@ -421,6 +440,7 @@ const FriendsPage = () => {
                     src={req.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${req.username}`}
                     alt={req.display_name}
                     className={styles.avatar}
+                    loading="lazy"
                   />
                   <div className={styles.userNames}>
                     <span className={styles.displayName}>{req.display_name}</span>
@@ -465,6 +485,7 @@ const FriendsPage = () => {
                     src={member.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${member.username}`}
                     alt={member.display_name}
                     className={styles.friendAvatar}
+                    loading="lazy"
                   />
                   <div>
                     <h3 className={styles.displayName}>{member.display_name}</h3>

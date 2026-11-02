@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './LoginPage.module.css';
@@ -46,6 +46,14 @@ const RegisterPage = () => {
     setUsername(cleaned);
   };
 
+  const redirectTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -72,7 +80,7 @@ const RegisterPage = () => {
     }
 
     try {
-      await register(
+      const res = await register(
         email.trim(),
         password,
         username.trim(),
@@ -81,8 +89,13 @@ const RegisterPage = () => {
         currentAvatarUrl
       );
 
+      if (res?.emailConfirmationRequired) {
+        setSuccessMsg(res.message || 'Registrasi berhasil! Cek email untuk verifikasi.');
+        return;
+      }
+
       setSuccessMsg(`Akun @${username} berhasil dibuat! Mengalihkan ke Beranda... 🎉`);
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         navigate('/dashboard', { replace: true });
       }, 900);
     } catch (err) {
@@ -182,10 +195,14 @@ const RegisterPage = () => {
 
           {/* Gender / Vibe Selector */}
           <div className={styles.formGroup}>
-            <label>Identitas / Gender</label>
-            <div className={styles.genderSelector}>
+            <span id="gender-label" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem', display: 'block' }}>
+              Identitas / Gender
+            </span>
+            <div className={styles.genderSelector} role="radiogroup" aria-labelledby="gender-label">
               <button
                 type="button"
+                role="radio"
+                aria-checked={gender === 'male'}
                 className={`${styles.genderOption} ${gender === 'male' ? styles.genderOptionActive : ''}`}
                 onClick={() => setGender('male')}
               >
@@ -194,6 +211,8 @@ const RegisterPage = () => {
               </button>
               <button
                 type="button"
+                role="radio"
+                aria-checked={gender === 'female'}
                 className={`${styles.genderOption} ${gender === 'female' ? styles.genderOptionActive : ''}`}
                 onClick={() => setGender('female')}
               >
@@ -202,6 +221,8 @@ const RegisterPage = () => {
               </button>
               <button
                 type="button"
+                role="radio"
+                aria-checked={gender === 'other'}
                 className={`${styles.genderOption} ${gender === 'other' ? styles.genderOptionActive : ''}`}
                 onClick={() => setGender('other')}
               >
@@ -270,6 +291,10 @@ const RegisterPage = () => {
           <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={loading}>
             {loading ? 'Mendaftarkan Akun...' : 'Daftar Akun Baru 🚀'}
           </button>
+
+          <p style={{ fontSize: '0.75rem', color: 'var(--muted)', textAlign: 'center', marginTop: '0.75rem', lineHeight: '1.4' }}>
+            Dengan mendaftar, kamu menyetujui <Link to="/privacy" style={{ color: 'var(--accent-text)', textDecoration: 'underline' }}>Kebijakan Privasi & Ketentuan</Link> Quizzy.
+          </p>
         </form>
 
         <div className={styles.divider}>

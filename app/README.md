@@ -1,16 +1,91 @@
-# React + Vite
+# Quizzy 🧠✨
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Platform kuis kepribadian interaktif, refleksi psikologis, mini games santai, dan perbandingan kecocokan karakter bersama teman.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Fitur Utama
 
-## React Compiler
+1. **Kuis Psikologi Komprehensif**
+   - MBTI (16 Tipe Kepribadian)
+   - RIASEC (Minat Karir & Vokasional)
+   - Big Five Personality
+   - Attachment Style (Gaya Kelekatan Emosional)
+   - Enneagram & DISC
+2. **4 Mini Games Interaktif**
+   - *Daily Dilemma*: Refleksi skenario moral & psikologis harian.
+   - *Personality Swipe*: Swipe kartu preferensi cepat.
+   - *Mending Mana? (Would You Rather)*: Pilihan preferensi dengan komparasi persentase komunitas.
+   - *Tebak Kepribadian*: Quiz tebak karakter berdasarkan skenario perilaku.
+3. **Sosial & Komunitas**
+   - Kartu Identitas Psikologis profil terpadu.
+   - Pencarian teman terdaftar secara dinamis.
+   - Permintaan pertemanan (Kirim, Terima, Tolak, Hapus).
+   - *Compare Mode*: Analisis kecocokan kepribadian berdampingan dengan teman.
+   - *Blind Chat (Simulasi AI Bot)*: Eksplorasi obrolan anonim berbasis tipe kepribadian.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🛠️ Tech Stack & Arsitektur
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Frontend:** React 19, Vite 8, React Router v7, CSS Modules + Vanilla CSS Variables
+- **Security:** SHA-256 client hashing (`crypto.subtle`), Sanitized Data Layer, Row Level Security (RLS)
+- **Database/Backend Support:**
+  - *Mode Lokal:* `localStorage` dengan auto-sanitasi data sensitif dan per-browser storage.
+  - *Mode Cloud:* Supabase (PostgreSQL Auth & PostgREST Database dengan RLS policies).
+- **Deployment:**
+  - GitHub Pages (`https://dandirayo.github.io/Quizzy/`) via GitHub Actions.
+  - Docker Compose + Nginx Alpine di VPS (port `127.0.0.1:5051:80` dengan reverse proxy).
+
+---
+
+## 💻 Panduan Menjalankan Lokal
+
+```bash
+# 1. Masuk ke direktori app
+cd app
+
+# 2. Pasang dependensi
+npm ci
+
+# 3. Jalankan automated test
+npm test
+
+# 4. Jalankan linter
+npm run lint
+
+# 5. Jalankan server dev
+npm run dev
+```
+
+Aplikasi dapat diakses di `http://localhost:7766/`.
+
+---
+
+## 🔐 Konfigurasi Supabase (Opsional untuk Online Multiplayer)
+
+Buat file `.env` di folder `app/`:
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Jalankan skrip migrasi database di SQL Editor Supabase:
+`app/supabase/migrations/001_initial_schema.sql`.
+
+Untuk menghubungkan ke GitHub Pages, tambahkan `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY` ke **Settings > Secrets and variables > Actions > Repository secrets**.
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+```bash
+# Jalankan unit test suite
+npm test
+
+# Jalankan oxlint
+npm run lint
+
+# Jalankan build verifikasi
+npm run build
+```

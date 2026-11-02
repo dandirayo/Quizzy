@@ -83,7 +83,8 @@ const ProfilePage = () => {
       setMsg('Permintaan pertemanan terkirim! 🤝');
       setTimeout(() => setMsg(''), 3000);
     } catch (err) {
-      alert(err.message || 'Gagal mengirim permintaan pertemanan');
+      setMsg('⚠️ ' + (err.message || 'Gagal mengirim permintaan pertemanan'));
+      setTimeout(() => setMsg(''), 3500);
     }
   };
 
@@ -102,7 +103,8 @@ const ProfilePage = () => {
       setMsg('Profil berhasil diperbarui! ✨');
       setTimeout(() => setMsg(''), 3000);
     } catch (err) {
-      alert('Gagal memperbarui profil: ' + err.message);
+      setMsg('⚠️ Gagal memperbarui profil: ' + err.message);
+      setTimeout(() => setMsg(''), 3500);
     }
   };
 

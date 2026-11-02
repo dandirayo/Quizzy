@@ -3,16 +3,16 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from './ChatRoomPage.module.css';
 
 export default function ChatRoomPage() {
-  const { roomId } = useParams();
+  const { roomId: _roomId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   
   // Data dari halaman lobby (saat dummy match)
-  const partnerMbti = location.state?.partnerMbti || '???';
+  const partnerMbti = location.state?.partnerMbti || 'INTJ';
   const partnerName = location.state?.partnerName || 'Anonim';
-  const revealedName = location.state?.revealedName || 'Dea Anindita';
-  const revealedUsername = location.state?.revealedUsername || 'dea33';
-  const revealedAvatar = location.state?.revealedAvatar || '👩';
+  const revealedName = location.state?.revealedName || 'Quizzy Bot';
+  const revealedUsername = location.state?.revealedUsername || 'quizzy_bot';
+  const revealedAvatar = location.state?.revealedAvatar || '🤖';
   
   const [messages, setMessages] = useState([
     { id: 1, sender: 'system', text: `Kamu terhubung dengan seorang ${partnerMbti}! Mulai ngobrol 👋` }

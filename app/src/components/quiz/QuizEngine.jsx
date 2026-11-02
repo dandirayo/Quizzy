@@ -253,6 +253,7 @@ export default function QuizEngine({ quizId, onComplete }) {
           setSavedToDb(true);
         } catch (err) {
           console.error('Failed to auto-save to DB', err);
+          setSavedToDb('error');
         }
       }
 
@@ -419,9 +420,19 @@ export default function QuizEngine({ quizId, onComplete }) {
 
         {/* Sync / Save notification */}
         {isAuthenticated ? (
-          <div className={styles.savedBanner}>
-            ✓ Hasil kuis berhasil disimpan ke profil <strong>@{user.username}</strong>
-          </div>
+          savedToDb === true ? (
+            <div className={styles.savedBanner}>
+              ✓ Hasil kuis berhasil disimpan ke profil <strong>@{user?.username}</strong>
+            </div>
+          ) : savedToDb === 'error' ? (
+            <div className={styles.savedBanner} style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+              ⚠️ Kendala sinkronisasi online, hasil tersimpan di browser lokal
+            </div>
+          ) : (
+            <div className={styles.savedBanner} style={{ color: 'var(--muted)' }}>
+              ⏳ Menyimpan hasil ke profil...
+            </div>
+          )
         ) : (
           <div className={styles.guestBanner}>
             <span>💡 <strong>Ingin menyimpan hasil ini?</strong></span>

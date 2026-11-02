@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { getUserProfile, saveUserQuizResult, initLocalDb } from '../services/db';
+import { hashPassword, verifyPassword } from '../utils/crypto';
+import { safeJsonParse, sanitizeUser } from '../utils/helpers';
 
 const AuthContext = createContext();
 
@@ -9,30 +11,50 @@ export const useAuth = () => useContext(AuthContext);
 const ACTIVE_USER_KEY = 'quizzy_active_user_session';
 const LOCAL_USERS_KEY = 'quizzy_db_users';
 
+// Whitelist of valid psychological quiz IDs that can be converted from guest sessions
+const VALID_QUIZ_IDS = [
+  'mbti',
+  'riasec',
+  'bigfive',
+  'love-style',
+  'attachment',
+  'work-style',
+  'social-battery',
+  'enneagram',
+  'disc',
+  'personality-core'
+];
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Sync any guest quiz results stored in localStorage to the user's database profile
+  // Sync any guest quiz results stored in localStorage to the user's database profile (Whitelisted)
   const syncGuestResults = async (userId) => {
     try {
       const keys = Object.keys(localStorage);
       for (const key of keys) {
         if (key.startsWith('quizzy_') && !key.startsWith('quizzy_db_') && key !== ACTIVE_USER_KEY) {
+          const quizId = key.replace('quizzy_', '');
+          
+          // Strict whitelist check: prevent dilemma/wyr answers from being converted to fake quiz results
+          if (!VALID_QUIZ_IDS.includes(quizId)) continue;
+
           const raw = localStorage.getItem(key);
           if (raw) {
             try {
-              const parsed = JSON.parse(raw);
-              const quizId = key.replace('quizzy_', '');
-              await saveUserQuizResult(userId, {
-                quizId,
-                dominantResult: parsed.dominant || parsed.title || 'Selesai',
-                dominantEmoji: parsed.emoji || '✨',
-                scores: parsed.percentages || parsed.result?.percentages || {},
-                isPublic: true
-              });
-              // Remove temporary guest key so it does not sync repeatedly
-              localStorage.removeItem(key);
+              const parsed = safeJsonParse(raw);
+              if (parsed) {
+                await saveUserQuizResult(userId, {
+                  quizId,
+                  dominantResult: parsed.dominant || parsed.title || 'Selesai',
+                  dominantEmoji: parsed.emoji || '✨',
+                  scores: parsed.percentages || parsed.result?.percentages || {},
+                  isPublic: true
+                });
+                // Remove temporary guest key once safely synced
+                localStorage.removeItem(key);
+              }
             } catch (e) {
               console.warn('Could not sync quiz result for key:', key);
             }
@@ -48,7 +70,6 @@ export const AuthProvider = ({ children }) => {
     let mounted = true;
 
     async function initializeAuth() {
-      // Initialize seed database first if needed
       initLocalDb();
 
       if (isSupabaseConfigured) {
@@ -77,7 +98,7 @@ export const AuthProvider = ({ children }) => {
               username: session.user.user_metadata?.username || 'user',
               display_name: session.user.user_metadata?.display_name || 'Pengguna'
             };
-            setUser(userObj);
+            setUser(sanitizeUser(userObj));
             syncGuestResults(session.user.id);
           } else {
             setUser(null);
@@ -87,13 +108,13 @@ export const AuthProvider = ({ children }) => {
         if (mounted) setLoading(false);
         return () => subscription.unsubscribe();
       } else {
-        // Local mode session check
+        // Local mode session check with safe sanitization
         const stored = localStorage.getItem(ACTIVE_USER_KEY);
         if (stored) {
-          try {
-            const parsed = JSON.parse(stored);
-            if (mounted) setUser(parsed);
-          } catch (e) {
+          const parsed = safeJsonParse(stored);
+          if (parsed && parsed.id && mounted) {
+            setUser(sanitizeUser(parsed));
+          } else {
             localStorage.removeItem(ACTIVE_USER_KEY);
           }
         }
@@ -106,7 +127,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // REGISTER
-  const register = async (email, password, username, displayName, gender = 'male', avatarUrl = null) => {
+  const register = async (email, password, username, displayName, gender = 'cowo', avatarUrl = null) => {
     setLoading(true);
     try {
       const cleanUsername = (username || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -137,6 +158,16 @@ export const AuthProvider = ({ children }) => {
           }
         });
         if (error) throw error;
+
+        // If email confirmation is required by Supabase settings
+        if (data?.user && !data.session) {
+          return {
+            success: true,
+            emailConfirmationRequired: true,
+            message: 'Registrasi berhasil! Silakan cek email Anda untuk verifikasi akun.'
+          };
+        }
+
         if (data?.user) {
           const profile = await getUserProfile(data.user.id);
           const registeredUser = profile || {
@@ -147,7 +178,8 @@ export const AuthProvider = ({ children }) => {
             gender: gender,
             avatar_url: avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`
           };
-          setUser(registeredUser);
+          const safeUser = sanitizeUser(registeredUser);
+          setUser(safeUser);
           await syncGuestResults(data.user.id);
         }
         return { success: true };
@@ -155,7 +187,7 @@ export const AuthProvider = ({ children }) => {
 
       // Local fallback mode
       initLocalDb();
-      const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
+      const users = safeJsonParse(localStorage.getItem(LOCAL_USERS_KEY), []);
       
       const usernameExists = users.some(u => u.username && u.username.toLowerCase() === cleanUsername.toLowerCase());
       if (usernameExists) {
@@ -168,26 +200,31 @@ export const AuthProvider = ({ children }) => {
       }
 
       const defaultAvatar = avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanUsername}`;
+      const hashedPassword = await hashPassword(password);
 
-      const newUser = {
+      const newUserRecord = {
         id: `user-${Date.now()}`,
         email: email.toLowerCase().trim(),
         username: cleanUsername,
         display_name: (displayName && displayName.trim()) || cleanUsername,
-        gender: gender || 'male',
-        password: password,
+        gender: gender || 'cowo',
+        password: hashedPassword, // Stored hashed
         avatar_url: defaultAvatar,
         bio: 'Penggemar refleksi diri di Quizzy 🌱',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
 
-      users.push(newUser);
+      users.push(newUserRecord);
       localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-      localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(newUser));
-      setUser(newUser);
-      await syncGuestResults(newUser.id);
-      return { success: true, user: newUser };
+
+      // Sanitize user before saving to active session and state
+      const safeActiveUser = sanitizeUser(newUserRecord);
+      localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(safeActiveUser));
+      setUser(safeActiveUser);
+      await syncGuestResults(newUserRecord.id);
+
+      return { success: true, user: safeActiveUser };
     } finally {
       setLoading(false);
     }
@@ -212,7 +249,8 @@ export const AuthProvider = ({ children }) => {
         if (error) throw error;
         if (data?.user) {
           const profile = await getUserProfile(data.user.id);
-          setUser(profile || { id: data.user.id, email: data.user.email });
+          const safeUser = sanitizeUser(profile || { id: data.user.id, email: data.user.email });
+          setUser(safeUser);
           await syncGuestResults(data.user.id);
         }
         return { success: true };
@@ -220,7 +258,7 @@ export const AuthProvider = ({ children }) => {
 
       // Local fallback mode
       initLocalDb();
-      const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
+      const users = safeJsonParse(localStorage.getItem(LOCAL_USERS_KEY), []);
       const target = emailOrUsername.toLowerCase().trim().replace(/^@/, '');
       const matched = users.find(u => 
         (u.email && u.email.toLowerCase() === target) || 
@@ -231,32 +269,35 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Akun tidak ditemukan. Silakan periksa kembali username/email atau daftar akun baru.');
       }
 
-      // Password verification
-      if (matched.password) {
-        const isDemo = (matched.username === 'dendiz7' || matched.username === 'dea33');
-        if (matched.password !== password && !(isDemo && password === 'demo123')) {
-          throw new Error('Password salah. Silakan coba lagi.');
-        }
-      } else {
-        // Upgrade legacy user record with entered password
-        matched.password = password;
+      // Secure Password verification using hash
+      const isValid = await verifyPassword(password, matched.password);
+      if (!isValid) {
+        throw new Error('Password salah. Silakan coba lagi.');
+      }
+
+      // Automatically upgrade legacy unhashed password to hash
+      if (matched.password && matched.password.length !== 64 && !matched.password.startsWith('fb_')) {
+        const hashed = await hashPassword(password);
+        matched.password = hashed;
         const idx = users.findIndex(u => u.id === matched.id);
         if (idx !== -1) {
-          users[idx].password = password;
+          users[idx].password = hashed;
           localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
         }
       }
 
-      localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(matched));
-      setUser(matched);
+      // Save sanitized user session (NEVER store password in session)
+      const safeUser = sanitizeUser(matched);
+      localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(safeUser));
+      setUser(safeUser);
       await syncGuestResults(matched.id);
-      return { success: true, user: matched };
+      return { success: true, user: safeUser };
     } finally {
       setLoading(false);
     }
   };
 
-  // GOOGLE LOGIN
+  // GOOGLE LOGIN (Disabled or transparent warning in local mode)
   const loginWithGoogle = async () => {
     if (isSupabaseConfigured) {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -267,31 +308,22 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    // Local fallback demo
-    initLocalDb();
-    const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
-    let googleUser = users.find(u => u.email === 'google.user@gmail.com');
+    throw new Error('Login Google memerlukan konfigurasi Supabase OAuth aktif. Silakan gunakan daftar/masuk dengan username dan password.');
+  };
 
-    if (!googleUser) {
-      googleUser = {
-        id: `google-user-${Date.now()}`,
-        email: 'google.user@gmail.com',
-        username: 'google_user',
-        display_name: 'Google User',
-        gender: 'other',
-        password: 'google_oauth_user',
-        avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=google_user',
-        bio: 'Masuk melalui Google Sign-in 🌐',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      users.push(googleUser);
-      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+  // RESET PASSWORD REQUEST
+  const resetPassword = async (email) => {
+    if (isSupabaseConfigured) {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+      if (error) throw error;
+      return { success: true, message: 'Tautan reset password telah dikirim ke email Anda.' };
     }
-
-    localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(googleUser));
-    setUser(googleUser);
-    await syncGuestResults(googleUser.id);
+    return {
+      success: true,
+      message: 'Mode lokal: Silakan daftar akun baru atau hubungi administrator untuk mereset akun.'
+    };
   };
 
   // LOGOUT
@@ -305,17 +337,34 @@ export const AuthProvider = ({ children }) => {
 
   // UPDATE PROFILE
   const updateProfile = (updatedData) => {
-    const updated = { ...user, ...updatedData };
+    const updated = sanitizeUser({ ...user, ...updatedData });
     setUser(updated);
     if (!isSupabaseConfigured) {
       localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(updated));
-      const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
+      const users = safeJsonParse(localStorage.getItem(LOCAL_USERS_KEY), []);
       const idx = users.findIndex(u => u.id === updated.id);
       if (idx !== -1) {
-        users[idx] = updated;
+        users[idx] = { ...users[idx], ...updatedData };
         localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
       }
     }
+  };
+
+  // DELETE ACCOUNT (Self Data Erasure)
+  const deleteAccount = async () => {
+    if (!user) return false;
+    if (isSupabaseConfigured) {
+      // Supabase user deletion
+      const { error } = await supabase.from('profiles').delete().eq('id', user.id);
+      if (error) throw error;
+    } else {
+      initLocalDb();
+      const users = safeJsonParse(localStorage.getItem(LOCAL_USERS_KEY), []);
+      const filteredUsers = users.filter(u => u.id !== user.id);
+      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(filteredUsers));
+    }
+    await logout();
+    return true;
   };
 
   const value = {
@@ -324,6 +373,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     loginWithGoogle,
+    resetPassword,
+    deleteAccount,
     logout,
     updateProfile,
     isAuthenticated: !!user
